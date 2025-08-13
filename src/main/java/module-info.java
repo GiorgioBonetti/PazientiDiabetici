@@ -6,4 +6,6 @@ module com.example.pazienti {
 
     opens com.example.pazienti to javafx.fxml;
     exports com.example.pazienti;
+    exports com.example.pazienti.controller;
+    opens com.example.pazienti.controller to javafx.fxml;
 }
