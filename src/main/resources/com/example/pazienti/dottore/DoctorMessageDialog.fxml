@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<DialogPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <headerText>Invia messaggio al paziente</headerText>
+    <content>
+        <GridPane hgap="10" vgap="8">
+            <children>
+                <Label text="Oggetto:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtOggetto" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Messaggio:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextArea fx:id="txtMessaggio" prefRowCount="6" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            </children>
+        </GridPane>
+    </content>
+    <buttonTypes>
+        <ButtonType text="Invia" buttonData="OK_DONE"/>
+        <ButtonType text="Annulla" buttonData="CANCEL_CLOSE"/>
+    </buttonTypes>
+</DialogPane>
