@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fitToWidth="true">
+    <content>
+        <VBox spacing="12" prefWidth="900.0">
+            <children>
+                <Label text="Profilo Paziente" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Separator/>
+                <GridPane hgap="10" vgap="8">
+                    <children>
+                        <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtNome" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                        <Label text="Cognome:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtCognome" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <Label text="Data di nascita:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtDOB" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <Label text="Email:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtEmail" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                        <Label text="Telefono:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtPhone" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    </children>
+                </GridPane>
+
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <children>
+                        <Button text="Salva" fx:id="btnSalva"/>
+                    </children>
+                </HBox>
+            </children>
+            <padding><Insets top="10" right="10" bottom="20" left="10"/></padding>
+        </VBox>
+    </content>
+</ScrollPane>

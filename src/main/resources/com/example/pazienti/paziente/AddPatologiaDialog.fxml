@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<DialogPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <content>
+        <GridPane hgap="8" vgap="8">
+            <children>
+                <Label text="Patologia:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtPatologia" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Data diagnosi:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtDataDiag" promptText="gg/mm/aaaa" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="In corso:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <CheckBox fx:id="chkInCorso" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Note:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNote" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            </children>
+        </GridPane>
+    </content>
+    <buttonTypes>
+        <ButtonType text="Salva" buttonData="OK_DONE"/>
+        <ButtonType text="Annulla" buttonData="CANCEL_CLOSE"/>
+    </buttonTypes>
+    <headerText>Aggiungi patologia</headerText>
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+</DialogPane>
