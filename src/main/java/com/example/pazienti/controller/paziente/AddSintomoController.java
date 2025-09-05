@@ -1,4 +1,4 @@
-package com.example.pazienti.controller;
+package com.example.pazienti.controller.paziente;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;

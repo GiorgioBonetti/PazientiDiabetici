@@ -8,4 +8,8 @@ module com.example.pazienti {
     exports com.example.pazienti;
     exports com.example.pazienti.controller;
     opens com.example.pazienti.controller to javafx.fxml;
+    exports com.example.pazienti.controller.paziente;
+    opens com.example.pazienti.controller.paziente to javafx.fxml;
+    exports com.example.pazienti.controller.dottore;
+    opens com.example.pazienti.controller.dottore to javafx.fxml;
 }
