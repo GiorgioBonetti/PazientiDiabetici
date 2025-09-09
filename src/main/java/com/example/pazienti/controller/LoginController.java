@@ -8,10 +8,15 @@ public class LoginController {
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private Button loginButton;
-    @FXML private Button cancelButton;
 
     @FXML private void initialize() {
         // inizializzazione login
+    }
+
+    @FXML private void handleLogin() {
+        String username = usernameField.getText();
+        String password = passwordField.getText();
+        // gestione login DB
     }
 }
 

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" prefHeight="800.0" prefWidth="1200.0">
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <children>
+                <Label text="Glicemie" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Button text="Aggiungi misurazione" fx:id="btnAddReading"/>
+                <ComboBox fx:id="cmbPeriodo" promptText="Periodo"/>
+                <Button text="Aggiorna" fx:id="btnRefresh"/>
+            </children>
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="12">
+            <children>
+                <TitledPane text="Andamento" expanded="true">
+                    <content>
+                        <LineChart fx:id="chartGlicemie" animated="false" prefHeight="300.0">
+                            <xAxis><CategoryAxis label="Data"/></xAxis>
+                            <yAxis><NumberAxis label="mg/dL"/></yAxis>
+                        </LineChart>
+                    </content>
+                </TitledPane>
+
+                <TitledPane text="Misurazioni" expanded="true">
+                    <content>
+                        <TableView fx:id="tblGlicemie" prefHeight="360.0">
+                            <columns>
+                                <TableColumn fx:id="colData" text="Data/Ora" prefWidth="160"/>
+                                <TableColumn fx:id="colContesto" text="Contesto" prefWidth="160"/>
+                                <TableColumn fx:id="colValore" text="Valore (mg/dL)" prefWidth="140"/>
+                                <TableColumn fx:id="colNote" text="Note" prefWidth="300"/>
+                                <TableColumn fx:id="colAzioni" text="Azioni" prefWidth="140"/>
+                            </columns>
+                            <placeholder><Label text="Nessuna misurazione"/></placeholder>
+                        </TableView>
+                    </content>
+                </TitledPane>
+            </children>
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+        </VBox>
+    </center>
+</BorderPane>

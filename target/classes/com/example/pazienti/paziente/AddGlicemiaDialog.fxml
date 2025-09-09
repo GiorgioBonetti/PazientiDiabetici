@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<DialogPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <content>
+        <GridPane hgap="8" vgap="8">
+            <children>
+                <Label text="Data/Ora:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtDateTime" promptText="gg/mm/aaaa hh:mm" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Contesto:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="cmbContesto" promptText="pre-pasto / 2h post" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Valore (mg/dL):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtValore" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Note:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNote" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            </children>
+        </GridPane>
+    </content>
+    <buttonTypes>
+        <ButtonType fx:id="okButton" text="Salva" buttonData="OK_DONE"/>
+        <ButtonType text="Annulla" buttonData="CANCEL_CLOSE"/>
+    </buttonTypes>
+    <headerText>Aggiungi misurazione</headerText>
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+</DialogPane>

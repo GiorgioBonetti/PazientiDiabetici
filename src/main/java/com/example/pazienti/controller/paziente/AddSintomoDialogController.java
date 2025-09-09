@@ -13,10 +13,14 @@ public class AddSintomoDialogController {
     @FXML private Slider intensitaSlider;
     @FXML private TextArea descrizioneArea;
     @FXML private Button saveButton;
-    @FXML private Button cancelButton;
+    @FXML private Button backButton;
 
     @FXML private void initialize() {
         // inizializzazione dialog aggiungi sintomo
+    }
+
+    @FXML private void handleSaveSintomo() {
+        // logica per salvare il sintomo nel DB
     }
 }
 

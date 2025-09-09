@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            prefHeight="800.0" prefWidth="1200.0">
+
+    <!-- TOP: Header -->
+    <top>
+        <HBox spacing="12.0" alignment="CENTER_LEFT">
+            <children>
+                <Label text="Telemedicina T2D — Dashboard" />
+                <Pane HBox.hgrow="ALWAYS" />
+                <TextField promptText="Cerca paziente..." prefWidth="320.0" />
+                <Button text="Cerca" />
+                <MenuButton text="Account">
+                    <items>
+                        <MenuItem text="Profilo" />
+                        <MenuItem text="Esci" />
+                    </items>
+                </MenuButton>
+            </children>
+            <padding>
+                <Insets top="10.0" right="12.0" bottom="10.0" left="12.0" />
+            </padding>
+        </HBox>
+    </top>
+
+    <!-- LEFT: Navigazione -->
+    <left>
+        <VBox spacing="8.0">
+            <children>
+                <Label text="Navigazione" />
+                <ToggleButton text="Dashboard" selected="true" />
+                <ToggleButton text="Pazienti" />
+                <ToggleButton text="Terapie" />
+                <ToggleButton text="Alert" />
+                <Separator />
+                <ToggleButton text="Impostazioni" />
+            </children>
+            <padding>
+                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0" />
+            </padding>
+        </VBox>
+    </left>
+
+    <!-- CENTER: Contenuti -->
+    <center>
+        <VBox spacing="12.0">
+            <children>
+                <!-- Grafico trend glicemico medio settimanale -->
+                <TitledPane text="Trend glicemia media (ultime 8 settimane)" expanded="true">
+                    <content>
+                        <LineChart animated="false" prefHeight="260.0">
+                            <xAxis>
+                                <CategoryAxis label="Settimana" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="mg/dL" />
+                            </yAxis>
+                        </LineChart>
+                    </content>
+                </TitledPane>
+
+                <!-- Tabella priorità pazienti -->
+                <TitledPane text="Pazienti prioritari" expanded="true">
+                    <content>
+                        <TableView prefHeight="360.0">
+                            <columns>
+                                <TableColumn text="Paziente" prefWidth="200.0" />
+                                <TableColumn text="% Out-of-Range (7g)" prefWidth="170.0" />
+                                <TableColumn text="Aderenza 7g" prefWidth="130.0" />
+                                <TableColumn text="Ultima glicemia" prefWidth="150.0" />
+                                <TableColumn text="Alert" prefWidth="140.0" />
+                            </columns>
+                        </TableView>
+                    </content>
+                </TitledPane>
+            </children>
+            <padding>
+                <Insets top="12.0" right="12.0" bottom="12.0" left="12.0" />
+            </padding>
+        </VBox>
+    </center>
+
+
+    <!-- BOTTOM: status bar -->
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <children>
+                <Label text="Pronto" />
+            </children>
+            <padding>
+                <Insets top="8.0" right="12.0" bottom="8.0" left="12.0" />
+            </padding>
+        </HBox>
+    </bottom>
+
+</BorderPane>

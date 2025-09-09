@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<DialogPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <headerText>Terapia</headerText>
+    <content>
+        <VBox spacing="10">
+            <children>
+                <GridPane hgap="10" vgap="8">
+                    <children>
+                        <Label text="Farmaco:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtFarmaco" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                        <Label text="Dose (valore e unità):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtDose" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <Label text="Frequenza/die:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtFreq" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <Label text="Indicazioni:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtIndicazioni" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                        <Label text="Periodo (dal - al):" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtPeriodo" promptText="gg/mm/aaaa - gg/mm/aaaa" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    </children>
+                </GridPane>
+            </children>
+            <padding><Insets top="5" right="5" bottom="5" left="5"/></padding>
+        </VBox>
+    </content>
+    <buttonTypes>
+        <ButtonType text="Salva" buttonData="OK_DONE"/>
+        <ButtonType text="Annulla" buttonData="CANCEL_CLOSE"/>
+    </buttonTypes>
+</DialogPane>
