@@ -1,5 +1,3 @@
-// Classe modello per rappresentare una riga della tabella delle terapie.
-// Contiene le proprietà: paziente, tipoAlert, dataOra, dettagli.
 package com.example.pazienti.model;
 
 import javafx.beans.property.SimpleStringProperty;

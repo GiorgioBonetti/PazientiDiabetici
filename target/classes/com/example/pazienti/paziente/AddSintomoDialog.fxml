@@ -1,33 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
 
-<DialogPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
-    <content>
-        <GridPane hgap="8" vgap="8">
-            <children>
-                <Label text="Sintomo:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="txtSintomo" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-
-                <Label text="Data inizio:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <TextField fx:id="txtDataInizio" promptText="gg/mm/aaaa" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-
-                <Label text="Data fine:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <TextField fx:id="txtDataFine" promptText="opzionale" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-
-                <Label text="Patologia associata:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <ComboBox fx:id="cmbPatologia" promptText="(Nessuna)" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-
-                <Label text="Note:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <TextField fx:id="txtNote" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-            </children>
-        </GridPane>
-    </content>
-    <buttonTypes>
-        <ButtonType text="Salva" buttonData="OK_DONE"/>
-        <ButtonType text="Annulla" buttonData="CANCEL_CLOSE"/>
-    </buttonTypes>
-    <headerText>Aggiungi sintomo</headerText>
-    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-</DialogPane>
+<VBox alignment="CENTER" prefHeight="533.0" prefWidth="492.0" spacing="8.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pazienti.controller.paziente.AddSintomoDialogController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <Label fx:id="titleLabel" prefHeight="27.0" prefWidth="790.0" text="Sintomo">
+        <font>
+          <Font name="System Bold" size="26.0" />
+        </font>
+        <VBox.margin>
+          <Insets bottom="10.0" />
+        </VBox.margin>
+    </Label>
+    <Label layoutX="30.0" layoutY="155.0" prefHeight="27.0" prefWidth="790.0" text="Nome">
+        <VBox.margin>
+          <Insets />
+        </VBox.margin>
+        <font>
+          <Font size="14.0" />
+        </font>
+    </Label>
+    <ChoiceBox fx:id="sintomoChoiceBox" prefHeight="26.0" prefWidth="465.0" />
+    <Label layoutX="30.0" layoutY="172.0" prefHeight="27.0" prefWidth="790.0" text="Periodo">
+        <font>
+          <Font size="14.0" />
+        </font>
+    </Label>
+    <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="452.0">
+        <Label alignment="CENTER_RIGHT" prefHeight="27.0" text="Da" textAlignment="CENTER">
+            <HBox.margin>
+                <Insets right="10.0" />
+            </HBox.margin>
+        </Label>
+        <DatePicker fx:id="periodoPicker" prefHeight="26.0" prefWidth="183.0" />
+        <Label alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="50.0" text="A" textAlignment="CENTER">
+            <HBox.margin>
+                <Insets right="10.0" />
+            </HBox.margin>
+        </Label>
+        <DatePicker layoutX="10.0" layoutY="10.0" prefHeight="26.0" prefWidth="183.0" />
+    </HBox>
+    <Label layoutX="30.0" layoutY="236.0" prefHeight="27.0" prefWidth="790.0" text="Frequenza">
+        <font>
+          <Font size="14.0" />
+        </font>
+    </Label>
+    <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="29.0" prefWidth="200.0" spacing="100.0">
+        <RadioButton fx:id="continuoRadio" mnemonicParsing="false" selected="true" text="Continuo">
+            <toggleGroup>
+                <ToggleGroup fx:id="OpzioniFrequenza" />
+            </toggleGroup>
+        </RadioButton>
+        <RadioButton fx:id="ricorrenteRadio" layoutX="417.0" layoutY="10.0" mnemonicParsing="false" text="Ricorrente" toggleGroup="$OpzioniFrequenza" />
+        <RadioButton fx:id="occasionaleRadio" layoutX="531.0" layoutY="10.0" mnemonicParsing="false" text="Occasionale" toggleGroup="$OpzioniFrequenza" />
+    </HBox>
+    <Label layoutX="30.0" layoutY="122.0" prefHeight="27.0" prefWidth="790.0" text="Intensità">
+        <font>
+          <Font size="14.0" />
+        </font>
+    </Label>
+    <Slider fx:id="intensitaSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
+    <Label layoutX="30.0" layoutY="350.0" prefHeight="27.0" prefWidth="790.0" text="Note aggiuntive">
+        <font>
+          <Font size="14.0" />
+        </font>
+    </Label>
+    <TextArea fx:id="descrizioneArea" prefHeight="75.0" prefWidth="452.0" />
+    <HBox alignment="CENTER" prefWidth="784.0" spacing="250.0">
+        <VBox.margin>
+            <Insets top="20.0" />
+        </VBox.margin>
+        <Button fx:id="backButton" mnemonicParsing="false" onAction="#handleBack" text="Indietro" />
+        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveSintomo" text="Salva" />
+    </HBox>
+</VBox>

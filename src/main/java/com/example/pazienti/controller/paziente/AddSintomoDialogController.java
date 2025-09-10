@@ -22,5 +22,10 @@ public class AddSintomoDialogController {
     @FXML private void handleSaveSintomo() {
         // logica per salvare il sintomo nel DB
     }
+
+    @FXML private void handleBack() {
+        // logica per tornare alla dashboard paziente
+        backButton.getScene().getWindow().hide();
+    }
 }
 

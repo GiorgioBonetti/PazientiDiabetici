@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<DialogPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<DialogPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.pazienti.controller.paziente.AddPatologiaDialogController">
     <content>
         <GridPane hgap="8" vgap="8">
             <children>

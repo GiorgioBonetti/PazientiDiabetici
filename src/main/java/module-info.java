@@ -4,7 +4,6 @@ module com.example.pazienti {
 
     requires org.kordamp.bootstrapfx.core;
     requires javafx.base;
-    requires com.example.pazienti;
     requires javafx.graphics;
 
     opens com.example.pazienti to javafx.fxml;

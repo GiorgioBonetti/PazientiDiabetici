@@ -63,7 +63,7 @@
                 <HBox alignment="CENTER_LEFT" spacing="10">
                     <children>
                         <Label fx:id="patologieLabel" style="-fx-font-weight: bold;" text="Patologie" />
-                        <Button fx:id="addPatologiaButton" onAction="#handleAddPatologia" text="Aggiungi patologia" />
+                        <Button fx:id="addPatologiaButton" text="Aggiungi patologia" />
                     </children>
                 </HBox>
 
@@ -90,8 +90,8 @@
     <bottom>
         <HBox alignment="CENTER_RIGHT" spacing="10">
             <children>
-                <Button fx:id="refreshButton" onAction="#handleRefresh" text="Aggiorna" />
-                <Button fx:id="logoutButton" onAction="#handleLogout" text="Esci" />
+                <Button fx:id="btnRefresh" text="Aggiorna" />
+                <Button fx:id="btnEsci" text="Esci" />
             </children>
             <padding><Insets bottom="10" left="10" right="10" top="10" /></padding>
         </HBox>
