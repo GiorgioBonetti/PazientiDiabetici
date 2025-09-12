@@ -5,16 +5,21 @@ import javafx.scene.control.*;
 
 public class PatientProfiloController {
     @FXML private Label titleLabel;
-    @FXML private Label nameLabel;
-    @FXML private Label dobLabel;
 
-    @FXML private Button editButton;
-    @FXML private Button closeButton;
+    @FXML private TextField nomeTextField;
+    @FXML private TextField cognomeTextField;
+    @FXML private DatePicker dataNascitaDatePicker;
+    @FXML private TextField emailTextField;
+    @FXML private TextField phoneTextField;
 
-    @FXML private TextArea notesArea;
+    @FXML private Button saveButton;
 
     @FXML private void initialize() {
         // inizializzazione profilo paziente
+    }
+
+    @FXML private void handleSaveButton() {
+        // logica per salvare le modifiche al profilo
     }
 }
 
