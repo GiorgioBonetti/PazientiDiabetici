@@ -1,10 +1,9 @@
-package com.example.pazienti.controller;
+package com.example.pazienti.controller.dottore;
 
 import com.example.pazienti.model.AlertRow;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 public class AlertController {
     @FXML private Label titleLabel;

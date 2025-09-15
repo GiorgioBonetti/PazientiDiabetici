@@ -1,4 +1,4 @@
-package com.example.pazienti.controller;
+package com.example.pazienti.controller.dottore;
 
 import com.example.pazienti.model.TerapieRow;
 import javafx.collections.ObservableList;

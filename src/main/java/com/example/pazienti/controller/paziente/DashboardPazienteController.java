@@ -63,7 +63,6 @@ public class DashboardPazienteController {
     @FXML private TableColumn<PatologieRow, String> colAzioni;
 
     @FXML private void handleAddPatologia() {
-        // logica per aggiungere patologia
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/pazienti/paziente/AddPatologiaDialog.fxml"));
             Parent root = loader.load();
