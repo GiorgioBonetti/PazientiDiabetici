@@ -1,5 +1,6 @@
 package com.example.pazienti.controller.dottore;
 
+import com.example.pazienti.DB.DbPaziente;
 import com.example.pazienti.model.PazientiRow;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,9 @@ import java.io.IOException;
 public class DashboardController {
     @FXML private Label titleLabel;
 
+    DbPaziente dbPaziente = new DbPaziente();
+
+
     @FXML private TextField searchBar;
     @FXML private Button searchButton;
     @FXML private MenuItem profileButton;
@@ -25,6 +29,9 @@ public class DashboardController {
     @FXML private ToggleButton impostazioniButton;
 
     @FXML private void handlePazienti() {
+
+
+
         // apertura pazienti
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/pazienti/dottore/DoctorPatientList.fxml"));
@@ -100,10 +107,9 @@ public class DashboardController {
         colAlert.setCellValueFactory(cellData -> cellData.getValue().alertProperty());
 
         // Esempio di popolamento della tabella con dati fittizi (da sostituire con dati reali dal DB)
+
         javafx.collections.ObservableList<PazientiRow> pazientiList = javafx.collections.FXCollections.observableArrayList(
-                new PazientiRow("Mario Rossi", "5", "80%", "2025-09-09 10:30", "Iperglicemia"),
-                new PazientiRow("Luca Bianchi", "2", "90%", "2025-09-08 08:15", "Ipoglicemia"),
-                new PazientiRow("Anna Verdi", "0", "100%", "2025-09-07 20:00", "Nessun alert")
+                dbPaziente.getAllUtenti()
         );
         tblPazienti.setItems(pazientiList);
     }

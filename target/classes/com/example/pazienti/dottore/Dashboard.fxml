@@ -1,35 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.FXCollections?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            prefHeight="800.0" prefWidth="1200.0">
+<BorderPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pazienti.controller.dottore.DashboardController">
 
     <!-- TOP: Header -->
     <top>
-        <HBox spacing="12.0" alignment="CENTER_LEFT">
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
             <children>
-                <Label text="Telemedicina T2D — Dashboard" />
+                <Label fx:id="titleLabel" text="Telemedicina T2D — Dashboard" />
                 <Pane HBox.hgrow="ALWAYS" />
-                <TextField promptText="Cerca paziente..." prefWidth="320.0" />
-                <Button text="Cerca" />
+                <TextField fx:id="searchBar" prefWidth="320.0" promptText="Cerca paziente..." />
+                <Button fx:id="searchButton" text="Cerca" />
                 <MenuButton text="Account">
                     <items>
-                        <MenuItem text="Profilo" />
-                        <MenuItem text="Esci" />
+                        <MenuItem fx:id="profileButton" text="Profilo" />
+                        <MenuItem fx:id="logoutButton" text="Esci" />
                     </items>
                 </MenuButton>
             </children>
             <padding>
-                <Insets top="10.0" right="12.0" bottom="10.0" left="12.0" />
+                <Insets bottom="10.0" left="12.0" right="12.0" top="10.0" />
             </padding>
         </HBox>
     </top>
@@ -39,15 +33,14 @@
         <VBox spacing="8.0">
             <children>
                 <Label text="Navigazione" />
-                <ToggleButton text="Dashboard" selected="true" />
-                <ToggleButton text="Pazienti" />
-                <ToggleButton text="Terapie" />
-                <ToggleButton text="Alert" />
+                <ToggleButton fx:id="pazientiButton" onAction="#handlePazienti" text="Pazienti" />
+                <ToggleButton fx:id="terapieButton" onAction="#handleTerapie" text="Terapie" />
+                <ToggleButton fx:id="alertButton" onAction="#handleAlert" text="Alert" />
                 <Separator />
-                <ToggleButton text="Impostazioni" />
+                <ToggleButton fx:id="impostazioniButton" text="Impostazioni" />
             </children>
             <padding>
-                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0" />
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
         </VBox>
     </left>
@@ -57,7 +50,7 @@
         <VBox spacing="12.0">
             <children>
                 <!-- Grafico trend glicemico medio settimanale -->
-                <TitledPane text="Trend glicemia media (ultime 8 settimane)" expanded="true">
+                <TitledPane expanded="true" text="Trend glicemia media (ultime 8 settimane)">
                     <content>
                         <LineChart animated="false" prefHeight="260.0">
                             <xAxis>
@@ -71,22 +64,22 @@
                 </TitledPane>
 
                 <!-- Tabella priorità pazienti -->
-                <TitledPane text="Pazienti prioritari" expanded="true">
+                <TitledPane expanded="true" text="Pazienti prioritari">
                     <content>
                         <TableView prefHeight="360.0">
                             <columns>
-                                <TableColumn text="Paziente" prefWidth="200.0" />
-                                <TableColumn text="% Out-of-Range (7g)" prefWidth="170.0" />
-                                <TableColumn text="Aderenza 7g" prefWidth="130.0" />
-                                <TableColumn text="Ultima glicemia" prefWidth="150.0" />
-                                <TableColumn text="Alert" prefWidth="140.0" />
+                                <TableColumn prefWidth="200.0" text="Paziente" />
+                                <TableColumn prefWidth="170.0" text="% Out-of-Range (7g)" />
+                                <TableColumn prefWidth="130.0" text="Aderenza 7g" />
+                                <TableColumn prefWidth="150.0" text="Ultima glicemia" />
+                                <TableColumn prefWidth="140.0" text="Alert" />
                             </columns>
                         </TableView>
                     </content>
                 </TitledPane>
             </children>
             <padding>
-                <Insets top="12.0" right="12.0" bottom="12.0" left="12.0" />
+                <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
             </padding>
         </VBox>
     </center>
@@ -99,7 +92,7 @@
                 <Label text="Pronto" />
             </children>
             <padding>
-                <Insets top="8.0" right="12.0" bottom="8.0" left="12.0" />
+                <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
             </padding>
         </HBox>
     </bottom>
