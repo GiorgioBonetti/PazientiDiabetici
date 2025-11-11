@@ -66,10 +66,10 @@
                 <!-- Tabella priorità pazienti -->
                 <TitledPane expanded="true" text="Pazienti prioritari">
                     <content>
-                        <TableView prefHeight="360.0">
+                        <TableView fx:id="tblPazienti" prefHeight="360.0">
                             <columns>
                                 <TableColumn prefWidth="200.0" text="Paziente" />
-                                <TableColumn prefWidth="170.0" text="% Out-of-Range (7g)" />
+                                <TableColumn prefWidth="170.0" text="Out-of-Range (7g)" />
                                 <TableColumn prefWidth="130.0" text="Aderenza 7g" />
                                 <TableColumn prefWidth="150.0" text="Ultima glicemia" />
                                 <TableColumn prefWidth="140.0" text="Alert" />

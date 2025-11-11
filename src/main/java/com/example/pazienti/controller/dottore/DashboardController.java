@@ -2,6 +2,8 @@ package com.example.pazienti.controller.dottore;
 
 import com.example.pazienti.DB.DbPaziente;
 import com.example.pazienti.model.PazientiRow;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -100,17 +102,19 @@ public class DashboardController {
 
     @FXML private void initialize() {
         // inizializzazione
-        colPaziente.setCellValueFactory(cellData -> cellData.getValue().pazienteProperty());
-        colOutOfRange.setCellValueFactory(cellData -> cellData.getValue().outOfRangeProperty());
-        colAderenza.setCellValueFactory(cellData -> cellData.getValue().aderenzaProperty());
-        colUltimaGlicemia.setCellValueFactory(cellData -> cellData.getValue().ultimaGlicemiaProperty());
-        colAlert.setCellValueFactory(cellData -> cellData.getValue().alertProperty());
+//        colPaziente.setCellValueFactory(cellData -> cellData.getValue().pazienteProperty());
+//        colOutOfRange.setCellValueFactory(cellData -> cellData.getValue().outOfRangeProperty());
+//        colAderenza.setCellValueFactory(cellData -> cellData.getValue().aderenzaProperty());
+//        colUltimaGlicemia.setCellValueFactory(cellData -> cellData.getValue().ultimaGlicemiaProperty());
+//        colAlert.setCellValueFactory(cellData -> cellData.getValue().alertProperty());
 
         // Esempio di popolamento della tabella con dati fittizi (da sostituire con dati reali dal DB)
+        ObservableList<PazientiRow> pazientiList = FXCollections.observableArrayList();
 
-        javafx.collections.ObservableList<PazientiRow> pazientiList = javafx.collections.FXCollections.observableArrayList(
-                dbPaziente.getAllUtenti()
-        );
+        for (PazientiRow p : dbPaziente.getAllUtenti()) {
+            pazientiList.add(p);
+        }
+
         tblPazienti.setItems(pazientiList);
     }
 }

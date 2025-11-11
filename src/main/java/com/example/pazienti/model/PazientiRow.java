@@ -1,26 +1,34 @@
 package com.example.pazienti.model;
 
+import com.example.pazienti.classi.Paziente;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class PazientiRow {
-    private final StringProperty paziente;
+    private final Paziente paziente;
     private final StringProperty outOfRange;
     private final StringProperty aderenza;
     private final StringProperty ultimaGlicemia;
     private final StringProperty alert;
 
-    public PazientiRow(String paziente, String outOfRange, String aderenza, String ultimaGlicemia, String alert) {
-        this.paziente = new SimpleStringProperty(paziente);
+    public PazientiRow(Paziente paziente, String outOfRange, String aderenza, String ultimaGlicemia, String alert) {
+        this.paziente = paziente;
         this.outOfRange = new SimpleStringProperty(outOfRange);
         this.aderenza = new SimpleStringProperty(aderenza);
         this.ultimaGlicemia = new SimpleStringProperty(ultimaGlicemia);
         this.alert = new SimpleStringProperty(alert);
     }
 
-    public String getPaziente() { return paziente.get(); }
-    public void setPaziente(String value) { paziente.set(value); }
-    public StringProperty pazienteProperty() { return paziente; }
+    public Paziente getPaziente() { return paziente; }
+//    public void setPaziente(String value) { paziente.set(value); }
+    // espone il nome completo del paziente come StringProperty per l'uso nelle TableView
+    public StringProperty pazienteProperty() {
+        return new SimpleStringProperty(paziente != null ? paziente.getNomeCognome() : "");
+    };
+
+//    // opzionali: getter/setter sul nome visualizzato
+//    public String getPazienteNome() { return pazienteNome.get(); }
+//    public void setPazienteNome(String value) { pazienteNome.set(value); }
 
     public String getOutOfRange() { return outOfRange.get(); }
     public void setOutOfRange(String value) { outOfRange.set(value); }

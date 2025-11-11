@@ -17,7 +17,7 @@
         <TableView fx:id="tblPazienti" prefHeight="600.0">
             <columns>
                 <TableColumn fx:id="colNome" text="Paziente" prefWidth="220"/>
-                <TableColumn fx:id="colOor" text="% Out-of-Range (7g)" prefWidth="170"/>
+                <TableColumn fx:id="colOor" text="Out-of-Range (7g)" prefWidth="170"/>
                 <TableColumn fx:id="colAdh" text="Aderenza 7g" prefWidth="140"/>
                 <TableColumn fx:id="colUlt" text="Ultima glicemia" prefWidth="160"/>
                 <TableColumn fx:id="colStato" text="Stato" prefWidth="120"/>

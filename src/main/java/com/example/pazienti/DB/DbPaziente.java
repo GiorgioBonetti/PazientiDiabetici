@@ -1,6 +1,7 @@
 package com.example.pazienti.DB;
 
 
+import com.example.pazienti.classi.Paziente;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -21,7 +22,7 @@ public class DbPaziente {
      */
     public ObservableList<PazientiRow> getAllUtenti() {
         ObservableList<PazientiRow> listaUtenti = FXCollections.observableArrayList();
-        String sql = "SELECT id, nome, Cognome FROM Paziente";
+        String sql = "SELECT * FROM Paziente";
 
         // Usiamo try-with-resources per chiudere automaticamente connessione e statement
         try (Connection conn = DbConnection.getInstance().getConnection();
@@ -29,10 +30,21 @@ public class DbPaziente {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
+                Paziente p = new Paziente(
+                        rs.getInt("id"),
+                        rs.getString("Password"),
+                        rs.getString("codiceFiscale"),
+                        rs.getString("eMail"),
+                        rs.getDate("dataNascita")
+                        ,rs.getString("Cognome"),
+                        rs.getString("nome"),
+                        rs.getInt("idDiabetologo")
+                );
                 // Crea un oggetto Utente per ogni riga del risultato
                 listaUtenti.add(new PazientiRow(
-                        rs.getString("nome") +" " + rs.getString("Cognome"),
-                        "", // outOfRange placeholder
+                        p,
+                        "", // outOfRa
+                        // nge placeholder
                         "", // aderenza placeholder
                         "",  // ultimaGlicemia placeholder
                         "" // alert placeholder
