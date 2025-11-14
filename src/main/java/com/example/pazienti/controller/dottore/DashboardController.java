@@ -1,6 +1,7 @@
 package com.example.pazienti.controller.dottore;
 
 import com.example.pazienti.DB.DbPaziente;
+import com.example.pazienti.classi.Paziente;
 import com.example.pazienti.model.PazientiRow;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -109,13 +110,13 @@ public class DashboardController {
 //        colAlert.setCellValueFactory(cellData -> cellData.getValue().alertProperty());
 
         // Esempio di popolamento della tabella con dati fittizi (da sostituire con dati reali dal DB)
-        ObservableList<PazientiRow> pazientiList = FXCollections.observableArrayList();
+        ObservableList<Paziente> pazientiList = FXCollections.observableArrayList();
 
-        for (PazientiRow p : dbPaziente.getAllUtenti()) {
+        for (Paziente p : dbPaziente.getAllUtenti()) {
             pazientiList.add(p);
         }
 
-        tblPazienti.setItems(pazientiList);
+       // tblPazienti.setItems(pazientiList);
     }
 }
 

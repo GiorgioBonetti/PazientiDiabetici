@@ -20,8 +20,8 @@ public class DbPaziente {
      * Recupera tutti gli utenti dal database.
      * @return Una ObservableList di Utenti (perfetta per JavaFX).
      */
-    public ObservableList<PazientiRow> getAllUtenti() {
-        ObservableList<PazientiRow> listaUtenti = FXCollections.observableArrayList();
+    public ObservableList<Paziente> getAllUtenti() {
+        ObservableList<Paziente> listaUtenti = FXCollections.observableArrayList();
         String sql = "SELECT * FROM Paziente";
 
         // Usiamo try-with-resources per chiudere automaticamente connessione e statement
@@ -41,14 +41,7 @@ public class DbPaziente {
                         rs.getInt("idDiabetologo")
                 );
                 // Crea un oggetto Utente per ogni riga del risultato
-                listaUtenti.add(new PazientiRow(
-                        p,
-                        "", // outOfRa
-                        // nge placeholder
-                        "", // aderenza placeholder
-                        "",  // ultimaGlicemia placeholder
-                        "" // alert placeholder
-                ));
+                listaUtenti.add(p);
             }
         } catch (SQLException e) {
             System.err.println("Errore durante il caricamento degli utenti: " + e.getMessage());
