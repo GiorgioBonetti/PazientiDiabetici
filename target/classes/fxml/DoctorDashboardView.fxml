@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.DoctorDashboardController"
+      stylesheets="@../css/app.css"
+      spacing="12">
+
+    <children>
+        <!-- Titolo pagina -->
+        <VBox spacing="2">
+            <children>
+                <HBox spacing="6" alignment="CENTER_LEFT">
+                    <children>
+                        <Label text="Dashboard" styleClass="page-title"/>
+                        <Label text="Panoramica pazienti e allarmi" styleClass="page-subtitle"/>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
+        <!-- KPI row -->
+        <HBox spacing="12" styleClass="kpi-row">
+            <children>
+                <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="Pazienti in carico" styleClass="kpi-label"/>
+                        <Label fx:id="totalPatientsLabel" text="24" styleClass="kpi-value"/>
+                        <Label text="± rispetto a settimana scorsa" styleClass="kpi-helper"/>
+                    </children>
+                </VBox>
+
+                <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="Allarmi attivi" styleClass="kpi-label"/>
+                        <Label fx:id="activeAlertsLabel" text="4" styleClass="kpi-value"/>
+                        <Label text="Valori glicemici fuori soglia" styleClass="kpi-helper"/>
+                    </children>
+                </VBox>
+
+                <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="Visite oggi" styleClass="kpi-label"/>
+                        <Label fx:id="todayVisitsLabel" text="5" styleClass="kpi-value"/>
+                        <Label text="In presenza o video" styleClass="kpi-helper"/>
+                    </children>
+                </VBox>
+
+                <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="Messaggi non letti" styleClass="kpi-label"/>
+                        <Label fx:id="unreadMessagesLabel" text="2" styleClass="kpi-value"/>
+                        <Label text="Ultime 24 ore" styleClass="kpi-helper"/>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <!-- Main grid -->
+        <HBox spacing="16" VBox.vgrow="ALWAYS">
+            <!-- Colonna sinistra: allarmi + agenda -->
+            <VBox spacing="0"  styleClass="card" prefHeight="300" HBox.hgrow="ALWAYS">
+                <children>
+                    <!-- Card allarmi -->
+                    <BorderPane styleClass="card">
+                        <VBox.margin>
+                            <Insets top="20" right="16" bottom="24" left="16"/>
+                        </VBox.margin>
+                        <top>
+                            <HBox spacing="8"
+                                  alignment="CENTER_LEFT"
+                                  styleClass="card-header">
+                                <children>
+                                    <Label text="Allarmi pazienti" styleClass="card-title"/>
+                                    <Label fx:id="alertsCountBadge" text="3" styleClass="chip-alert"/>
+                                    <Pane HBox.hgrow="ALWAYS"/>
+                                    <ChoiceBox fx:id="alertsFilter"
+                                               prefWidth="140"
+                                               styleClass="field-control"/>
+                                </children>
+                            </HBox>
+                        </top>
+                        <center>
+                            <TableView fx:id="alertsTable" styleClass="table-card" prefHeight="180">
+                                <columns>
+                                    <TableColumn fx:id="colAlertPatient" text="Paziente" prefWidth="150"/>
+                                    <TableColumn fx:id="colAlertType" text="Tipo" prefWidth="130"/>
+                                    <TableColumn fx:id="colAlertValue" text="Valore" prefWidth="90"/>
+                                    <TableColumn fx:id="colAlertTime" text="Ora" prefWidth="80"/>
+                                    <TableColumn fx:id="colAlertPriority" text="Priorità" prefWidth="90"/>
+                                </columns>
+                            </TableView>
+                        </center>
+                    </BorderPane>
+
+                    <!-- CARD: Pazienti poco attivi -->
+                    <BorderPane styleClass="card">
+                        <VBox.margin>
+                            <Insets top="0" right="16" bottom="24" left="16"/>
+                        </VBox.margin>
+                        <top>
+                            <HBox spacing="8"
+                                  alignment="CENTER_LEFT"
+                                  styleClass="card-header">
+                                <children>
+                                    <Label text="Pazienti poco attivi"
+                                           styleClass="card-title"/>
+                                    <Pane HBox.hgrow="ALWAYS"/>
+                                    <!-- in futuro: filtro "Oltre 3 giorni / 7 giorni / 14 giorni" -->
+                                </children>
+                            </HBox>
+                        </top>
+
+                        <center>
+                            <TableView fx:id="lowActivityTable"
+                                       prefHeight="220"
+                                       styleClass="rounded-table">
+                                <columns>
+                                    <TableColumn fx:id="colLowActPatient"
+                                                 text="Paziente"
+                                                 prefWidth="180"/>
+                                    <TableColumn fx:id="colLowActLastValue"
+                                                 text="Ultima glicemia"
+                                                 prefWidth="120"/>
+                                    <TableColumn fx:id="colLowActLastDate"
+                                                 text="Ultima misura"
+                                                 prefWidth="150"/>
+                                    <TableColumn fx:id="colLowActDaysAgo"
+                                                 text="Giorni fa"
+                                                 prefWidth="90"/>
+                                </columns>
+                            </TableView>
+                        </center>
+                    </BorderPane>
+                </children>
+            </VBox>
+
+            <!-- CARD: Pazienti -->
+            <BorderPane styleClass="card">
+                <top>
+                    <HBox spacing="8" alignment="CENTER_LEFT" styleClass="card-header">
+                        <children>
+                            <Label text="Pazienti" styleClass="card-title"/>
+                            <Pane HBox.hgrow="ALWAYS"/>
+                            <TextField fx:id="patientSearchField"
+                                       promptText="Cerca per nome o codice"
+                                       styleClass="field-control"/>
+                        </children>
+                    </HBox>
+                </top>
+
+                <center>
+                    <ListView fx:id="patientsListView"
+                              styleClass="rounded-table"
+                              prefHeight="260"/>
+                </center>
+            </BorderPane>
+        </HBox>
+
+    </children>
+</VBox>

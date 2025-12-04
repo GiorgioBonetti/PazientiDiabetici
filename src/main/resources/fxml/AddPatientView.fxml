@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           stylesheets="@../css/app.css"
+           fx:controller="it.univr.diabete.controller.AddPatientController"
+           styleClass="dialog-root">
+
+    <children>
+        <VBox spacing="18"
+              alignment="TOP_CENTER"
+              prefHeight="500"
+              prefWidth="350"
+              maxWidth="620"
+              styleClass="dialog-card"
+              style="-fx-padding: 24;">
+
+            <!-- TITLE -->
+            <Label text="Nuovo paziente" styleClass="dialog-title"/>
+            <Label text="Inserisci i dati del nuovo paziente"
+                   styleClass="dialog-subtitle"/>
+
+            <!-- FORM -->
+            <VBox spacing="12" style="-fx-padding: 6 0 0 0;">
+
+                <!-- Nome -->
+                <VBox spacing="4">
+                    <Label text="Nome" styleClass="dialog-field-label"/>
+                    <TextField fx:id="nomeField" styleClass="field-control"/>
+                </VBox>
+
+                <!-- Cognome -->
+                <VBox spacing="4">
+                    <Label text="Cognome" styleClass="dialog-field-label"/>
+                    <TextField fx:id="cognomeField" styleClass="field-control"/>
+                </VBox>
+
+                <!-- Email -->
+                <VBox spacing="4">
+                    <Label text="Email" styleClass="dialog-field-label"/>
+                    <TextField fx:id="emailField" styleClass="field-control"/>
+                </VBox>
+
+                <!-- Telefono -->
+                <VBox spacing="4">
+                    <Label text="Numero telefono" styleClass="dialog-field-label"/>
+                    <TextField fx:id="telefonoField" styleClass="field-control"/>
+                </VBox>
+
+                <!-- CF -->
+                <VBox spacing="4">
+                    <Label text="Codice fiscale" styleClass="dialog-field-label"/>
+                    <TextField fx:id="cfField" styleClass="field-control"/>
+                </VBox>
+
+                <!-- Sesso -->
+                <VBox spacing="4">
+                    <Label text="Sesso" styleClass="dialog-field-label"/>
+                    <ChoiceBox fx:id="sessoChoice" styleClass="field-control">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="M"/>
+                                <String fx:value="F"/>
+                                <String fx:value="Altro"/>
+                            </FXCollections>
+                        </items>
+                    </ChoiceBox>
+                </VBox>
+
+                <!-- Data nascita -->
+                <VBox spacing="4">
+                    <Label text="Data di nascita" styleClass="dialog-field-label"/>
+                    <DatePicker fx:id="dataNascitaPicker" styleClass="field-control"/>
+                </VBox>
+
+                <!-- Password -->
+                <VBox spacing="4">
+                    <Label text="Password iniziale" styleClass="dialog-field-label"/>
+                    <PasswordField fx:id="passwordField" styleClass="field-control"/>
+                </VBox>
+
+            </VBox>
+
+            <!-- BUTTONS -->
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="Annulla"
+                        styleClass="btn-ghost"
+                        onAction="#handleCancel"/>
+                <Button text="Crea paziente"
+                        styleClass="btn-primary"
+                        onAction="#handleSave"/>
+            </HBox>
+        </VBox>
+    </children>
+</StackPane>

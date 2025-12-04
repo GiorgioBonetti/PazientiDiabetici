@@ -1,0 +1,670 @@
+
+
+
+/* ====== ROOT / BACKGROUND ====== */
+
+.root-bg {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e5e7eb, #e0e7ff);
+}
+
+.app-shell {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.18), 24, 0.35, 0, 6);
+}
+
+/* ====== TOP BAR ====== */
+
+.topbar {
+    -fx-padding: 8 18 8 18;
+    -fx-background-color: rgba(255,255,255,0.9);
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 0 0 1 0;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.topbar-title-main {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.topbar-title-sub {
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #4f46e5;
+    -fx-text-transform: uppercase;
+    -fx-label-padding: 0 0 2 0;
+}
+
+.topbar-date-label {
+    -fx-font-size: 10px;
+    -fx-text-fill: #6b7280;
+    -fx-text-transform: uppercase;
+}
+
+.topbar-date-value {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #111827;
+}
+
+/* Badge ruolo (DIABETOLOGO / PAZIENTE) */
+
+.role-badge {
+    -fx-background-color: #e0e7ff;
+    -fx-text-fill: #4338ca;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 999;
+}
+
+/* Avatar utente */
+
+/* Contenitore del chip utente */
+.user-chip {
+    -fx-background-color: #e5e7eb;
+    -fx-background-radius: 999;
+    -fx-padding: 6 12 6 12;
+    -fx-alignment: CENTER;      /* centra verticalmente */
+}
+
+/* Cerchio viola con iniziali */
+.user-avatar-initials {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #4f46e5, #4338ca);
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-font-size: 12px;
+
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-pref-width: 32px;
+    -fx-pref-height: 32px;
+
+    -fx-alignment: CENTER;
+    -fx-text-alignment: center;
+    -fx-background-radius: 999;
+}
+
+/* Testo del ruolo a destra delle iniziali */
+.user-avatar-role {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6b7280;
+}
+
+/* Icon button (campanella notifiche) */
+
+.icon-button {
+    -fx-background-radius: 50;
+    -fx-background-color: white;
+    -fx-padding: 10;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 16px;  /* dimensione icona */
+}
+
+.icon-button:focused {
+    -fx-background-radius: 50;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 0);
+}
+
+.icon-button:hover {
+    -fx-background-color: #f3f4f6;
+}
+
+/* ====== SIDEBAR ====== */
+
+.sidebar {
+    -fx-background-color: rgba(255,255,255,0.9);
+    -fx-padding: 16 12 16 12;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 0 1 0 0;
+}
+
+.sidebar-title {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #6b7280;
+    -fx-text-transform: uppercase;
+    -fx-label-padding: 0 0 8 0;
+}
+
+.nav-item {
+    -fx-background-radius: 12;
+    -fx-padding: 6 10 6 10;
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #4b5563;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+}
+
+.nav-item:hover {
+    -fx-background-color: #f3f4f6;
+}
+
+.nav-item-selected {
+    -fx-background-color: #e0e7ff;
+    -fx-text-fill: #4338ca;
+}
+
+.nav-dot {
+    -fx-background-radius: 999;
+    -fx-background-color: #9ca3af;
+}
+
+/* Footer sidebar */
+
+.sidebar-footer-title {
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #6b7280;
+}
+
+.sidebar-footer-link {
+    -fx-font-size: 11px;
+    -fx-text-fill: #4f46e5;
+}
+
+.sidebar-footer-link:hover {
+    -fx-underline: true;
+}
+
+.sidebar-footer-version {
+    -fx-font-size: 10px;
+    -fx-text-fill: #9ca3af;
+}
+
+/* ====== PAGE TITLES ====== */
+
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.page-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b7280;
+}
+
+.page-title-accent {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #4f46e5;
+}
+
+/* ====== KPI CARDS ====== */
+
+.kpi-row {
+    -fx-spacing: 12;
+}
+
+.kpi-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-padding: 10 14 10 14;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 10, 0.2, 0, 3);
+}
+
+.kpi-card-emphasis {
+    -fx-border-color: #fecaca;
+    -fx-background-color: #fef2f2;
+}
+
+.kpi-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #6b7280;
+}
+
+.kpi-value {
+    -fx-font-size: 22px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.kpi-helper {
+    -fx-font-size: 10px;
+    -fx-text-fill: #9ca3af;
+}
+
+/* ====== GENERIC CARDS ====== */
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 18;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.04), 12, 0.15, 0, 2);
+}
+/* Card più stretta per la tabella misurazioni */
+.narrow-card {
+    -fx-pref-width: 520;
+    -fx-max-width: 520;
+}
+
+.card-header {
+    -fx-padding: 8 12 8 12;
+    -fx-border-color: #f3f4f6;
+    -fx-border-width: 0 0 1 0;
+}
+
+.card-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #111827;
+}
+
+.card-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: #9ca3af;
+}
+
+/* Chip allarmi, label ecc. */
+
+.chip-alert {
+    -fx-background-color: #fee2e2;
+    -fx-text-fill: #b91c1c;
+    -fx-font-size: 10px;
+    -fx-font-weight: 600;
+    -fx-padding: 2 6 2 6;
+    -fx-background-radius: 999;
+}
+
+.chip-status-ok {
+    -fx-background-color: #ecfdf3;
+    -fx-text-fill: #15803d;
+    -fx-font-size: 10px;
+    -fx-font-weight: 600;
+    -fx-padding: 2 6 2 6;
+    -fx-background-radius: 999;
+}
+
+/* ====== BUTTONS / FIELDS ====== */
+
+.btn-primary {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #4f46e5, #4338ca);
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 999;
+    -fx-padding: 8 14 8 14;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #4338ca;
+}
+
+.btn-ghost {
+    -fx-background-color: transparent;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 999;
+    -fx-text-fill: #374151;
+    -fx-font-size: 11px;
+    -fx-padding: 5 12 5 12;
+    -fx-cursor: hand;
+}
+
+.btn-ghost:hover {
+    -fx-background-color: rgba(0,0,0,0.04);
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+.quick-action {
+    -fx-background-color: #e0e7ff;
+    -fx-text-fill: #312e81;
+    -fx-background-radius: 999;
+    -fx-padding: 8 14 8 14;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+
+.quick-action:hover {
+    -fx-background-color: #c7d2fe;
+}
+
+/* Input */
+
+.field-control {
+    -fx-background-color: white;
+    -fx-background-radius: 999;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 999;
+    -fx-padding: 6 12 6 12;
+    -fx-font-size: 12px;
+}
+
+.field-control:focused,.btn-ghost:focused {
+    -fx-border-color: #4f46e5;
+    -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.25), 10, 0.2, 0, 2);
+}
+
+.field-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6b7280;
+}
+
+/* Login */
+
+.login-card {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.16), 24, 0.32, 0, 6);
+}
+
+.app-title-main {
+    -fx-font-size: 22px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.app-title-sub {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6b7280;
+}
+
+/* Error label login */
+
+.error-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #b91c1c;
+}
+/* Patients list */
+
+.patient-list-cell {
+    -fx-padding: 6 10 6 10;
+    -fx-background-radius: 12;
+}
+
+.patient-list-cell-selected {
+    -fx-background-color: #e0e7ff;
+}
+
+.patient-list-name {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #111827;
+}
+
+.patient-list-id {
+    -fx-font-size: 10px;
+    -fx-text-fill: #9ca3af;
+}
+
+/* TableView minimal clean */
+
+.table-view {
+    -fx-background-radius: 18;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #f9fafb;
+    -fx-background-radius: 18 18 0 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-size: 26;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 10px;
+    -fx-font-weight: 600;
+}
+
+.table-row-cell {
+    -fx-font-size: 11px;
+}
+
+.table-row-cell:filled:selected {
+    -fx-background-color: #eef2ff;
+}
+
+/* Rimuove totalmente la barra grigia sopra */
+.table-view .column-header-background {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+/* Header delle colonne (titoli) */
+.table-view .column-header {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-padding: 12 0;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER;
+}
+
+/* Corpo della tabella */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+.table-view:focused,.card-body:focused,.rounded-table:focused{
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Righe della tabella */
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+}
+
+/* Nessuna barra sotto */
+.table-view .filler {
+    -fx-background-color: white;
+}
+.table-card {
+    -fx-column-resize-policy: constrained-resize-policy;
+}
+/* corpo bianco PIENO all'interno delle card */
+.card-body {
+    -fx-background-color: white;
+    -fx-background-radius: 0 0 16 16; /* segue il bordo della card */
+    -fx-padding: 0;
+}
+
+.rounded-table {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.04), 12, 0.15, 0, 2);
+}
+
+
+/*add glicemia*/
+
+/* Sfondo generico dei dialoghi */
+.dialog-root {
+    -fx-background-color: transparent;
+}
+
+/* Card centrale del popup */
+.dialog-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.12), 24, 0, 0, 10);
+}
+
+/* Testi */
+.dialog-title {
+    -fx-font-family: "Inter Bold";
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
+}
+
+.dialog-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b7280;
+}
+
+.dialog-field-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #374151;
+}
+
+
+/* ==========================
+      TERAPIA – CARD STYLE
+   ========================== */
+
+.therapy-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+
+    /* Padding interno: top-right-bottom-left */
+    -fx-padding: 16 16 16 16;
+
+    /* Spaziatura fra testo e bordo */
+    -fx-spacing: 6;
+
+    /* Ombra leggera */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 10, 0.2, 0, 2);
+
+    -fx-cursor: hand;
+}
+
+/* Hover leggero per feedback */
+.therapy-card:hover {
+    -fx-background-color: #f9fafb;
+}
+
+/* Card selezionata */
+.therapy-card-selected {
+    -fx-border-color: #4f46e5;
+    -fx-border-width: 2;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+}
+/* ====== BADGE TERAPIA ====== */
+.therapy-badge {
+    -fx-background-radius: 999;
+    -fx-padding: 3 10 3 10;
+    -fx-font-size: 10px;
+    -fx-font-weight: 600;
+}
+
+/* Stati */
+.therapy-active {
+    -fx-background-color: #e0f2fe;
+    -fx-text-fill: #0369a1;
+}
+
+.therapy-expired {
+    -fx-background-color:  #15803d;
+    -fx-text-fill: #e0f2fe;
+}
+
+.therapy-upcoming {
+    -fx-background-color: #fef9c3;
+    -fx-text-fill: #854d0e;
+}
+
+
+
+.edit-btn {
+    -fx-cursor: hand;
+    -fx-padding: 4;
+    -fx-shape: "M12 2l2 2-8 8H4v-2z M3 13h2l8-8-2-2z";
+    -fx-background-color: #4f46e5; /* viola blu come la tua UI */
+    -fx-min-width: 16px;
+    -fx-min-height: 16px;
+    -fx-max-width: 16px;
+    -fx-max-height: 16px;
+    -fx-opacity: 0;
+}
+.table-row-cell:hover .edit-btn {
+    -fx-background-color: #4338ca;
+    -fx-opacity: 1;
+}
+
+
+/*dashboard pazienti*/
+.patient-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 18;
+    -fx-padding: 12 16 12 16;
+    -fx-spacing: 12;
+    -fx-alignment: CENTER_LEFT;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.04), 10, 0.15, 0, 2);
+}
+
+.patient-card-main {
+    -fx-spacing: 4;
+}
+
+.patient-card-name {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #111827;
+}
+
+.patient-card-sub {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6b7280;
+}
+
+.patient-card-actions {
+    -fx-spacing: 6;
+    -fx-alignment: CENTER_RIGHT;
+}
+
+
+/*misurazioni doctor*/
+
+/* card delle misurazioni in dashboard diabetologo */
+.measure-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 22;
+    -fx-border-radius: 22;
+    -fx-border-color: #e5e7eb;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.07), 10, 0.2, 0, 2);
+}
+
+.measure-card-hover {
+    -fx-border-color: #6366f1;          /* viola tipo terapia */
+    -fx-border-width: 1.5;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(99,102,241,0.25), 16, 0.4, 0, 4);
+}
+
+.measure-card-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+}
+
+.measure-card-sub {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6b7280;
+}
+
+/* mini grafico */
+.measure-card-sparkline {
+    -fx-stroke: #ef4444;
+    -fx-stroke-width: 2;
+    -fx-fill: transparent;
+}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox spacing="16" alignment="CENTER"
+      styleClass="dialog-card"
+      stylesheets="@../css/app.css"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.EditAssunzioneController">
+    <children>
+        <VBox spacing="16"
+              prefWidth="320"
+              styleClass="dialog-card">
+                <Label text="Modifica assunzione" styleClass="dialog-title"/>
+
+                <VBox spacing="6" alignment="CENTER_LEFT" style="-fx-padding: 0 16 0 16;">
+                    <Label fx:id="dataLabel" styleClass="dialog-subtitle"/>
+
+                    <Label text="Quantità assunta" styleClass="dialog-field-label"/>
+                    <TextField fx:id="quantitaField" styleClass="field-control"/>
+
+                    <Label text="Data e ora" styleClass="dialog-field-label"/>
+                    <DatePicker fx:id="dataPicker" />
+                    <TextField fx:id="oraField" promptText="HH:mm" styleClass="field-control"/>
+                </VBox>
+
+                <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 0 16 0 16;">
+                    <Button text="Annulla" styleClass="btn-ghost" onAction="#handleCancel"/>
+                    <Button text="Salva" styleClass="btn-primary" onAction="#handleSave"/>
+                </HBox>
+            <padding>
+                <Insets top="20" right="24" bottom="20" left="24"/>
+            </padding>
+    </VBox>
+    </children>
+    <padding>
+        <Insets top="20" right="24" bottom="20" left="24"/>
+    </padding>
+</VBox>

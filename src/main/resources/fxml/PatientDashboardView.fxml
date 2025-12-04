@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.PatientDashboardController"
+      stylesheets="@../css/app.css"
+      spacing="12">
+
+    <children>
+        <!-- Header -->
+        <VBox spacing="4">
+            <children>
+                <HBox spacing="6" alignment="CENTER_LEFT">
+                    <children>
+                        <Label text="Benvenuto" styleClass="page-title"/>
+                        <Label fx:id="patientNameLabel"
+                               text="Nome"
+                               styleClass="page-title-accent"/>
+                    </children>
+                </HBox>
+                <Label text="Qui puoi controllare la glicemia, la terapia e comunicare con il tuo diabetologo."
+                       wrapText="true"
+                       styleClass="page-subtitle"/>
+            </children>
+        </VBox>
+
+        <!-- Azioni rapide -->
+        <HBox spacing="10">
+            <children>
+                <Button fx:id="addGlycemiaButton"
+                        text="Registra glicemia"
+                        onAction="#handleAddGlicemia"
+                        styleClass="quick-action"/>
+                <Button fx:id="therapyButton"
+                        text="Vedi terapia"
+                        styleClass="quick-action"
+                        onAction="#handleOpenTerapia"
+                />
+                <Button fx:id="messageDoctorButton"
+                        text="Scrivi al diabetologo"
+                        styleClass="quick-action"/>
+            </children>
+        </HBox>
+
+        <!-- Main layout -->
+        <HBox spacing="16" VBox.vgrow="ALWAYS">
+            <!-- Colonna sinistra: oggi + ultime misurazioni -->
+            <VBox spacing="12" HBox.hgrow="ALWAYS">
+                <children>
+                    <!-- Oggi -->
+                    <BorderPane styleClass="card">
+                        <top>
+                            <HBox spacing="8"
+                                  alignment="CENTER_LEFT"
+                                  styleClass="card-header">
+                                <children>
+                                    <Label text="Oggi" styleClass="card-title"/>
+                                    <Pane HBox.hgrow="ALWAYS"/>
+                                    <Label fx:id="todayDateLabel"
+                                           text="26 Nov 2025"
+                                           styleClass="card-subtitle"/>
+                                </children>
+                            </HBox>
+                        </top>
+                        <center>
+                            <VBox spacing="6" >
+                                <padding>
+                                    <Insets top="10" right="10" bottom="10" left="10"/>
+                                </padding>
+                                <children>
+                                    <CheckBox fx:id="chkMattino"
+                                              text="Misura glicemia del mattino"/>
+                                    <CheckBox fx:id="chkPranzo"
+                                              text="Misura glicemia prima di pranzo"/>
+                                    <CheckBox fx:id="chkCena"
+                                              text="Misura glicemia prima di cena"/>
+                                    <CheckBox fx:id="chkTerapiaAssunta"
+                                              text="Terapia assunta"/>
+                                </children>
+                            </VBox>
+                        </center>
+                    </BorderPane>
+
+                    <!-- Ultime misurazioni -->
+                    <BorderPane styleClass="card">
+                        <top>
+                            <HBox spacing="8"
+                                  alignment="CENTER_LEFT"
+                                  styleClass="card-header">
+                                <children>
+                                    <Label text="Ultime misurazioni" styleClass="card-title"/>
+                                    <Pane HBox.hgrow="ALWAYS"/>
+                                    <Button fx:id="addGlycemiaButton"
+                                            text="Registra glicemia"
+                                            onAction="#handleAddGlicemia"
+                                            styleClass="btn-ghost"/>
+                                    <ChoiceBox fx:id="measurementFilter" onAction="#handleMeasurementFilterChange" styleClass="btn-ghost"/>
+                                </children>
+                            </HBox>
+                        </top>
+                        <center>
+                            <TableView fx:id="measurementsTable" prefHeight="220">
+                                <columns>
+                                    <TableColumn fx:id="colMeasDate" text="Data e ora" prefWidth="150"/>
+                                    <TableColumn fx:id="colMeasValue" text="Valore (mg/dL)" prefWidth="120"/>
+                                    <TableColumn fx:id="colDashMoment" text="Momento" prefWidth="120"/>
+                                </columns>
+                            </TableView>
+                        </center>
+                    </BorderPane>
+                </children>
+            </VBox>
+
+            <!-- Colonna destra: visite + messaggi -->
+            <VBox spacing="12" prefWidth="300">
+                <children>
+                    <!-- Prossime visite -->
+                    <BorderPane styleClass="card">
+                        <top>
+                            <HBox spacing="8"
+                                  alignment="CENTER_LEFT"
+                                  styleClass="card-header">
+                                <children>
+                                    <Label text="Prossime visite" styleClass="card-title"/>
+                                </children>
+                            </HBox>
+                        </top>
+                        <center>
+                            <ListView styleClass="card-body" fx:id="nextVisitsList" prefHeight="140"/>
+                        </center>
+                    </BorderPane>
+
+                    <!-- Messaggi -->
+                    <BorderPane styleClass="card">
+                        <top>
+                            <HBox spacing="8"
+                                  alignment="CENTER_LEFT"
+                                  styleClass="card-header">
+                                <children>
+                                    <Label text="Messaggi" styleClass="card-title"/>
+                                    <Pane HBox.hgrow="ALWAYS"/>
+                                    <Button fx:id="openChatButton"
+                                            text="Apri chat"
+                                            styleClass="btn-ghost"/>
+                                </children>
+                            </HBox>
+                        </top>
+                        <center>
+                            <ListView styleClass="card-body" fx:id="messagesPreviewList" prefHeight="140"/>
+                        </center>
+                    </BorderPane>
+                </children>
+            </VBox>
+        </HBox>
+    </children>
+</VBox>

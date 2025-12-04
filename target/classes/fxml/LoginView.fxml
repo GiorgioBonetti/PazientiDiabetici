@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="it.univr.diabete.controller.LoginController"
+           styleClass="root-bg">
+
+    <children>
+        <VBox alignment="CENTER" spacing="16"
+              prefWidth="450">
+            <children>
+                <Label text="Telemedicina"
+                       styleClass="topbar-title-sub"/>
+                <Label text="Gestione diabete tipo 2"
+                       styleClass="app-title-main"/>
+
+                <BorderPane maxWidth="420"
+                            prefWidth="420"
+                            styleClass="login-card">
+                    <center>
+                        <VBox spacing="14">
+                            <children>
+                                <Label text="Accedi al tuo account"
+                                       styleClass="page-title"/>
+
+                                <Label text="Seleziona il tuo ruolo e inserisci le credenziali fornite dalla struttura."
+                                       wrapText="true"
+                                       styleClass="app-title-sub"/>
+
+                                <VBox spacing="6">
+                                    <children>
+                                        <Label text="Email"
+                                               styleClass="field-label"/>
+                                        <TextField fx:id="emailField"
+                                                   promptText="nome.cognome@example.com"
+                                                   styleClass="field-control"/>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="6">
+                                    <children>
+                                        <Label text="Password"
+                                               styleClass="field-label"/>
+                                        <PasswordField fx:id="passwordField"
+                                                       promptText="••••••••"
+                                                       styleClass="field-control"/>
+                                    </children>
+                                </VBox>
+
+                                <HBox alignment="CENTER_RIGHT">
+                                    <children>
+                                        <Hyperlink fx:id="forgotPasswordLink"
+                                                   text="Password dimenticata?"
+                                                   styleClass="sidebar-footer-link"/>
+                                    </children>
+                                </HBox>
+
+                                <Button fx:id="loginButton"
+                                        text="Accedi"
+                                        onAction="#handleLogin"
+                                        styleClass="btn-primary"/>
+
+                                <Label fx:id="loginErrorLabel"
+                                       text=""
+                                       visible="false"
+                                       managed="false"
+                                       styleClass="error-label"/>
+                            </children>
+                        </VBox>
+                    </center>
+                </BorderPane>
+
+                <Label text="Servizio sperimentale di telemedicina per pazienti con diabete di tipo 2."
+                       styleClass="app-title-sub"/>
+            </children>
+        </VBox>
+    </children>
+</StackPane>

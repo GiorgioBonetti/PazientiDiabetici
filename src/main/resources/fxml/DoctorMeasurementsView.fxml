@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.univr.diabete.controller.DoctorMeasurementsController"
+      spacing="16"
+      stylesheets="@../css/app.css">
+
+    <padding>
+        <Insets top="5" right="7" bottom="5" left="7"/>
+    </padding>
+
+    <!-- Titolo -->
+    <Label text="Misurazioni pazienti"
+           style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+
+    <!-- Campo ricerca -->
+    <!-- campo di ricerca esistente -->
+    <TextField fx:id="searchField"
+               promptText="Cerca per nome, cognome o ID"
+               styleClass="field-control"/>
+
+    <!-- Contenitore scrollabile SOLO per la griglia -->
+    <ScrollPane fx:id="scrollPane"
+                fitToWidth="true"
+                hbarPolicy="NEVER"
+                vbarPolicy="AS_NEEDED"
+                style="-fx-background-color: transparent; -fx-background-insets: 0;">
+        <content>
+            <FlowPane fx:id="cardsContainer"
+                      hgap="16" vgap="16"
+                      prefWrapLength="900" >
+                <padding>
+                    <Insets top="8" bottom="8"/>
+                </padding>
+            </FlowPane>
+        </content>
+    </ScrollPane>
+
+</VBox>

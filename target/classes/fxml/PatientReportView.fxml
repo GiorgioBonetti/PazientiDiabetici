@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.PatientReportController"
+      spacing="16"
+      stylesheets="@../css/app.css"
+      style="-fx-padding: 8 16 16 16;">
+
+    <children>
+
+        <!-- HEADER -->
+        <VBox spacing="4">
+            <children>
+                <!-- Titolo -->
+                <HBox spacing="4" alignment="CENTER_LEFT">
+                    <children>
+                        <Label text="Report glicemico"
+                               styleClass="page-title"/>
+                        <Label fx:id="patientNameLabel"
+                               text="Luigi Bianchi"
+                               styleClass="page-title-accent"/>
+                    </children>
+                </HBox>
+
+                <!-- Riga con filtro periodo -->
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <children>
+                        <Label text="Periodo"
+                               styleClass="field-label"/>
+
+                        <ComboBox fx:id="periodFilter"
+                                  prefWidth="180"
+                                  styleClass="field-control"/>
+
+                        <!-- Testo descrittivo del periodo scelto -->
+                        <Label fx:id="periodLabel"
+                               text="Ultimi 30 giorni"
+                               styleClass="page-subtitle"/>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
+        <!-- KPI ROW -->
+        <HBox spacing="12">
+            <!-- KPI MEDIA -->
+            <VBox styleClass="kpi-card" spacing="6">
+                <children>
+                    <Label text="Glicemia media" styleClass="kpi-label"/>
+                    <Label fx:id="avgLabel" text="–" styleClass="kpi-value"/>
+                    <Label text="mg/dL" styleClass="kpi-helper"/>
+                </children>
+            </VBox>
+
+            <!-- KPI MIN -->
+            <VBox styleClass="kpi-card" spacing="6">
+                <children>
+                    <Label text="Valore minimo" styleClass="kpi-label"/>
+                    <Label fx:id="minLabel" text="–" styleClass="kpi-value"/>
+                    <Label text="mg/dL" styleClass="kpi-helper"/>
+                </children>
+            </VBox>
+
+            <!-- KPI MAX -->
+            <VBox styleClass="kpi-card" spacing="6">
+                <children>
+                    <Label text="Valore massimo" styleClass="kpi-label"/>
+                    <Label fx:id="maxLabel" text="–" styleClass="kpi-value"/>
+                    <Label text="mg/dL" styleClass="kpi-helper"/>
+                </children>
+            </VBox>
+
+            <!-- KPI NUM MISURAZIONI -->
+            <VBox styleClass="kpi-card" spacing="6">
+                <children>
+                    <Label text="Numero misurazioni" styleClass="kpi-label"/>
+                    <Label fx:id="countLabel" text="0" styleClass="kpi-value"/>
+                    <Label text="nel periodo" styleClass="kpi-helper"/>
+                </children>
+            </VBox>
+        </HBox>
+
+        <!-- RIGA 2: GRAFICO A SINISTRA, QUADRO CLINICO A DESTRA -->
+        <HBox spacing="16">
+
+            <!-- CARD GLICEMIA (SINISTRA) -->
+            <BorderPane styleClass="card" HBox.hgrow="ALWAYS">
+                <top>
+                    <HBox spacing="8"
+                          alignment="CENTER_LEFT"
+                          styleClass="card-header">
+                        <children>
+                            <Label text="Andamento glicemia"
+                                   styleClass="card-title"/>
+                            <Pane HBox.hgrow="ALWAYS"/>
+                        </children>
+                    </HBox>
+                </top>
+
+                <center>
+                    <LineChart fx:id="reportChart"
+                               animated="false"
+                               legendVisible="false"
+                               prefHeight="260"
+                               prefWidth="500">
+                        <xAxis>
+                            <CategoryAxis fx:id="xAxis" label="Data"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis fx:id="yAxis" label="mg/dL"/>
+                        </yAxis>
+                    </LineChart>
+                </center>
+            </BorderPane>
+
+            <!-- CARD QUADRO CLINICO (DESTRA) -->
+            <BorderPane styleClass="card" prefWidth="260">
+                <top>
+                    <HBox spacing="8"
+                          alignment="CENTER_LEFT"
+                          styleClass="card-header">
+                        <children>
+                            <Label text="Quadro clinico"
+                                   styleClass="card-title"/>
+                            <Pane HBox.hgrow="ALWAYS"/>
+                        </children>
+                    </HBox>
+                </top>
+
+                <center>
+                    <!-- Dentro questa card mettiamo 3 mini-card -->
+                    <VBox spacing="10" >
+                        <padding>
+                            <Insets top="5" right="5" bottom="5" left="5"/>
+                        </padding>
+                        <!-- Sintomi -->
+                        <VBox styleClass="kpi-card" spacing="4">
+                            <children>
+                                <Label text="Sintomi recenti"
+                                       styleClass="kpi-label"/>
+                                <Label fx:id="symptomsLabel"
+                                       text="Nessun sintomo registrato"
+                                       wrapText="true"
+                                       styleClass="page-subtitle"/>
+                            </children>
+                        </VBox>
+
+                        <!-- Fattori di rischio -->
+                        <VBox styleClass="kpi-card" spacing="4">
+                            <children>
+                                <Label text="Fattori di rischio"
+                                       styleClass="kpi-label"/>
+                                <Label fx:id="risksLabel"
+                                       text="Nessun fattore indicato"
+                                       wrapText="true"
+                                       styleClass="page-subtitle"/>
+                            </children>
+                        </VBox>
+
+                        <!-- Patologie note -->
+                        <VBox styleClass="kpi-card" spacing="4">
+                            <children>
+                                <Label text="Patologie note"
+                                       styleClass="kpi-label"/>
+                                <Label fx:id="pathologiesLabel"
+                                       text="Nessuna patologia registrata"
+                                       wrapText="true"
+                                       styleClass="page-subtitle"/>
+                            </children>
+                        </VBox>
+                    </VBox>
+                </center>
+            </BorderPane>
+
+        </HBox>
+
+        <!-- RIGA 3: CARD TERAPIA ATTUALE SOTTO -->
+        <BorderPane styleClass="card">
+            <top>
+                <HBox spacing="8"
+                      alignment="CENTER_LEFT"
+                      styleClass="card-header">
+                    <children>
+                        <Label text="Terapia attuale"
+                               styleClass="card-title"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="therapyStatusLabel"
+                               text="In corso"
+                               styleClass="chip-status-ok"/>
+                    </children>
+                </HBox>
+            </top>
+
+            <center>
+                <GridPane hgap="18" vgap="6">
+                    <padding>
+                        <Insets top="5" right="5" bottom="5" left="5"/>
+                    </padding>
+                    <columnConstraints>
+                        <ColumnConstraints halignment="RIGHT" minWidth="90"/>
+                        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS"/>
+                    </columnConstraints>
+
+                    <children>
+                        <!-- Farmaco -->
+                        <Label text="Farmaco:"
+                               GridPane.rowIndex="0" GridPane.columnIndex="0"
+                               styleClass="kpi-label"/>
+                        <Label fx:id="therapyDrugLabel"
+                               text="—"
+                               GridPane.rowIndex="0" GridPane.columnIndex="1"
+                               styleClass="page-subtitle"/>
+
+                        <!-- Dosaggio -->
+                        <Label text="Dosaggio:"
+                               GridPane.rowIndex="1" GridPane.columnIndex="0"
+                               styleClass="kpi-label"/>
+                        <Label fx:id="therapyDoseLabel"
+                               text="—"
+                               GridPane.rowIndex="1" GridPane.columnIndex="1"
+                               styleClass="page-subtitle"/>
+
+                        <!-- Frequenza -->
+                        <Label text="Frequenza:"
+                               GridPane.rowIndex="2" GridPane.columnIndex="0"
+                               styleClass="kpi-label"/>
+                        <Label fx:id="therapyFreqLabel"
+                               text="—"
+                               GridPane.rowIndex="2" GridPane.columnIndex="1"
+                               styleClass="page-subtitle"/>
+
+                        <!-- Periodo -->
+                        <Label text="Periodo:"
+                               GridPane.rowIndex="3" GridPane.columnIndex="0"
+                               styleClass="kpi-label"/>
+                        <Label fx:id="therapyPeriodLabel"
+                               text="—"
+                               GridPane.rowIndex="3" GridPane.columnIndex="1"
+                               styleClass="page-subtitle"/>
+                    </children>
+                </GridPane>
+            </center>
+        </BorderPane>
+
+    </children>
+</VBox>
