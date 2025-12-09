@@ -34,6 +34,11 @@ public class PatientMeasurementsController {
 
     // 🔹 AGGIUNGI QUESTO: collega al bottone "Nuova misurazione" nel FXML
     @FXML
+    private Button goReportButton;
+
+    @FXML
+    private Button goTherapyButton;
+    @FXML
     private Button addGlycemiaButton;
 
     @FXML
@@ -75,7 +80,25 @@ public class PatientMeasurementsController {
 
     // 🔹 AGGIUNGI QUESTO: teniamo un riferimento alla colonna della matita
     private TableColumn<Glicemia, Void> colEdit;
+    @FXML
+    private void handleGoToReport() {
+        if (patientId <= 0) return;
 
+        MainShellController shell = MainApp.getMainShellController();
+        if (shell != null) {
+            shell.openPatientReport(patientNameLabel.getText(), patientId);
+        }
+    }
+
+    @FXML
+    private void handleGoToTherapy() {
+        if (patientId <= 0) return;
+
+        MainShellController shell = MainApp.getMainShellController();
+        if (shell != null) {
+            shell.openPatientTherapy(patientNameLabel.getText(), patientId);
+        }
+    }
     @FXML
     private void initialize() {
         // colonne tabella
@@ -226,18 +249,31 @@ public class PatientMeasurementsController {
     /** Colonna con la matita ✏️ */
     private void addEditColumn() {
         colEdit = new TableColumn<>("");
+        colEdit.setPrefWidth(40); // stretto
 
         colEdit.setCellFactory(column -> new TableCell<>() {
-            private final Button editBtn = new Button("✏️");
+
+            private final Button editBtn;
 
             {
-                editBtn.getStyleClass().add("edit-btn");
+                editBtn = new Button();
+                editBtn.getStyleClass().add("icon-edit-btn");
+
+                // SVG della matita
+                javafx.scene.shape.SVGPath icon = new javafx.scene.shape.SVGPath();
+                icon.setContent("M12.3 2.3L2 12.6V17h4.4L16.7 6.7 12.3 2.3z");
+                icon.setScaleX(0.9);
+                icon.setScaleY(0.9);
+
+                editBtn.setGraphic(icon);
+
                 editBtn.setOnAction(event -> {
                     Glicemia g = getTableView().getItems().get(getIndex());
-                    openEditGlicemiaPopup(g);
+                    if (g != null) {
+                        openEditGlicemiaPopup(g);
+                    }
                 });
             }
-
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);

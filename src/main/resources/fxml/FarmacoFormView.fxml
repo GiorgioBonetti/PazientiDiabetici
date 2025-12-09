@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.FarmacoFormController"
+      spacing="16"
+      styleClass="dialog-root"
+      stylesheets="@../css/app.css"
+      style="-fx-padding: 18 20 18 20;">
+
+    <children>
+
+        <!-- Header -->
+        <VBox spacing="4">
+            <children>
+                <Label fx:id="titleLabel"
+                       text="Nuovo farmaco"
+                       styleClass="dialog-title"/>
+                <Label text="Inserisci le informazioni del farmaco."
+                       styleClass="dialog-subtitle"/>
+            </children>
+        </VBox>
+
+        <!-- Campi -->
+        <VBox spacing="10">
+            <children>
+
+                <VBox spacing="4">
+                    <children>
+                        <Label text="Nome farmaco"
+                               styleClass="form-label"/>
+                        <TextField fx:id="nomeField"
+                                   promptText="Es. Metformina"
+                                   styleClass="rounded-field"/>
+                    </children>
+                </VBox>
+
+                <VBox spacing="4">
+                    <children>
+                        <Label text="Marca (opzionale)"
+                               styleClass="form-label"/>
+                        <TextField fx:id="marcaField"
+                                   promptText="Es. Generic"
+                                   styleClass="rounded-field"/>
+                    </children>
+                </VBox>
+
+            </children>
+        </VBox>
+
+        <!-- Errore -->
+        <Label fx:id="errorLabel"
+               textFill="red"
+               wrapText="true"
+               visible="false"
+               managed="false"/>
+
+        <!-- Pulsanti -->
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <children>
+                <Button text="Annulla"
+                        onAction="#handleCancel"
+                        styleClass="btn-secondary"/>
+                <Button text="Salva"
+                        onAction="#handleSave"
+                        styleClass="btn-primary"/>
+            </children>
+        </HBox>
+
+    </children>
+</VBox>

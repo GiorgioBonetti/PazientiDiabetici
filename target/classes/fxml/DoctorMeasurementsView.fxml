@@ -28,15 +28,17 @@
     <ScrollPane fx:id="scrollPane"
                 fitToWidth="true"
                 hbarPolicy="NEVER"
-                vbarPolicy="AS_NEEDED"
-                style="-fx-background-color: transparent; -fx-background-insets: 0;">
+                vbarPolicy="NEVER"
+                pannable="true"
+                style="
+                -fx-background-color: transparent;
+                -fx-background-insets: 0;
+            ">
         <content>
             <FlowPane fx:id="cardsContainer"
                       hgap="16" vgap="16"
-                      prefWrapLength="900" >
-                <padding>
-                    <Insets top="8" bottom="8"/>
-                </padding>
+                      prefWrapLength="900"
+                      style="-fx-background-color: transparent;">
             </FlowPane>
         </content>
     </ScrollPane>

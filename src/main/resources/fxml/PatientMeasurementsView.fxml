@@ -16,7 +16,7 @@
         <!-- HEADER -->
         <VBox spacing="4">
             <children>
-                <HBox spacing="4" alignment="CENTER_LEFT">
+                <HBox spacing="8" alignment="CENTER_LEFT">
                     <children>
                         <Label text="Misurazioni"
                                styleClass="page-title"/>
@@ -25,9 +25,27 @@
                                styleClass="page-title-accent"/>
                     </children>
                 </HBox>
-                <Label text="Qui puoi vedere lo storico delle tue misurazioni glicemiche."
-                       wrapText="true"
-                       styleClass="page-subtitle"/>
+                <!-- Bottoni di navigazione -->
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="Qui puoi vedere lo storico delle tue misurazioni glicemiche."
+                           wrapText="true"
+                           styleClass="page-subtitle"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="goReportButton"
+                            text="Report"
+                            onAction="#handleGoToReport"
+                            style="-fx-font-size: 12px"
+                            prefWidth="150"
+                            styleClass="btn-ghost"/>
+
+                    <Button fx:id="goTherapyButton"
+                            text="Terapia"
+                            prefWidth="150"
+                            style="-fx-font-size: 12px"
+                            onAction="#handleGoToTherapy"
+                            styleClass="btn-ghost"/>
+                </HBox>
+
             </children>
         </VBox>
 

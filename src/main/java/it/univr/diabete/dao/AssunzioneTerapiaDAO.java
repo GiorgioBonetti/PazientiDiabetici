@@ -1,15 +1,19 @@
 package it.univr.diabete.dao;
 
 import it.univr.diabete.model.AssunzioneTerapia;
-
 import java.util.List;
 
 public interface AssunzioneTerapiaDAO {
 
     /**
-     * Restituisce tutte le assunzioni di una certa terapia per un paziente.
+     * Restituisce tutte le assunzioni di uno specifico farmaco
+     * all'interno di una terapia, per un certo paziente.
+     *
+     * @param pazienteId        id del paziente
+     * @param terapiaFarmacoId  id della riga TerapiaFarmaco
      */
-    List<AssunzioneTerapia> findByPazienteAndTerapia(int pazienteId, int terapiaId) throws Exception;
+    List<AssunzioneTerapia> findByPazienteAndTerapiaFarmaco(int pazienteId,
+                                                            int terapiaFarmacoId) throws Exception;
 
     /**
      * Inserisce una nuova riga di assunzione.
@@ -17,12 +21,12 @@ public interface AssunzioneTerapiaDAO {
     void insert(AssunzioneTerapia a) throws Exception;
 
     /**
-     * Aggiorna una assunzione esistente (usata dal popup di modifica).
+     * Aggiorna una assunzione esistente (popup di modifica).
      */
     void update(AssunzioneTerapia a) throws Exception;
 
     /**
-     * Elimina una assunzione (se in futuro vuoi il bottone elimina).
+     * Elimina una assunzione.
      */
     void delete(int id) throws Exception;
 }

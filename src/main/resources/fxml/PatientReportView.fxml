@@ -5,6 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.shape.SVGPath?>
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="it.univr.diabete.controller.PatientReportController"
@@ -18,37 +19,61 @@
         <VBox spacing="4">
             <children>
                 <!-- Titolo -->
-                <HBox spacing="4" alignment="CENTER_LEFT">
+                <!-- HEADER REPORT -->
+                <HBox spacing="8" alignment="CENTER_LEFT">
                     <children>
                         <Label text="Report glicemico"
                                styleClass="page-title"/>
+
+                        <!-- nome paziente evidenziato -->
                         <Label fx:id="patientNameLabel"
-                               text="Luigi Bianchi"
+                               text="Mario Rossi"
                                styleClass="page-title-accent"/>
+                        <Button fx:id="editButton"
+                                onAction="#handleEditPatient"
+                                styleClass="icon-edit-btn">
+
+                            <graphic>
+                                <SVGPath content="M12.3 2.3 L3 11.6 L2 15.9 L6.3 14.9 L15.6 5.6 Z"/>
+                            </graphic>
+
+                        </Button>
+                        <Pane HBox.hgrow="ALWAYS"/>
+
+                        <!-- Bottone MATITA per aprire Scheda paziente -->
                     </children>
                 </HBox>
 
                 <!-- Riga con filtro periodo -->
-                <HBox spacing="8" alignment="CENTER_LEFT">
+                <!-- RIGA PERIODO + NAVIGAZIONE -->
+                <HBox spacing="12" alignment="CENTER_LEFT">
                     <children>
-                        <Label text="Periodo"
-                               styleClass="field-label"/>
-
-                        <ComboBox fx:id="periodFilter"
-                                  prefWidth="180"
-                                  styleClass="field-control"/>
-
-                        <!-- Testo descrittivo del periodo scelto -->
-                        <Label fx:id="periodLabel"
-                               text="Ultimi 30 giorni"
+                        <Label text="Qui puoi vedere il report completto."
+                               wrapText="true"
                                styleClass="page-subtitle"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <!-- Bottoni di navigazione -->
+                        <Button fx:id="goMeasurementsButton"
+                                text="Misurazioni"
+                                onAction="#handleGoToMeasurements"
+                                style="-fx-font-size: 12px"
+                                prefWidth="150"
+                                styleClass="btn-ghost"/>
+
+                        <Button fx:id="goTherapyButton"
+                                text="Terapia"
+                                prefWidth="150"
+                                style="-fx-font-size: 12px"
+                                onAction="#handleGoToTherapy"
+                                styleClass="btn-ghost"/>
                     </children>
                 </HBox>
+
             </children>
         </VBox>
 
         <!-- KPI ROW -->
-        <HBox spacing="12">
+        <HBox spacing="12" alignment="CENTER_LEFT">
             <!-- KPI MEDIA -->
             <VBox styleClass="kpi-card" spacing="6">
                 <children>
@@ -83,6 +108,26 @@
                     <Label fx:id="countLabel" text="0" styleClass="kpi-value"/>
                     <Label text="nel periodo" styleClass="kpi-helper"/>
                 </children>
+            </VBox>
+            <VBox spacing="6"
+                   alignment="CENTER"
+                   translateY="19">
+                    <children>
+
+                        <!-- Testo centrato sopra -->
+                        <Label fx:id="periodLabel"
+                               text=""
+                               styleClass="muted-label"
+                               style="-fx-font-size: 10px"
+                               alignment="CENTER"
+                               maxWidth="Infinity"/>
+
+                        <!-- ComboBox sotto -->
+                        <ComboBox fx:id="periodFilter"
+                                  prefWidth="170"
+                                  styleClass="btn-ghost"/>
+
+                    </children>
             </VBox>
         </HBox>
 

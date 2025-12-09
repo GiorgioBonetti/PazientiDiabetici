@@ -21,15 +21,20 @@ public class AddAssunzioneController {
     private DatePicker dateField;
 
     private int pazienteId;
-    private int terapiaId;
+    // 👇 adesso memorizziamo l'id della TerapiaFarmaco
+    private int terapiaFarmacoId;
 
     private Runnable onSave;
 
     private final AssunzioneTerapiaDAO dao = new AssunzioneTerapiaDAOImpl();
 
-    public void initData(int pazienteId, int terapiaId, Runnable onSave) {
+    /**
+     * @param pazienteId        id del paziente
+     * @param terapiaFarmacoId  id della riga TerapiaFarmaco
+     */
+    public void initData(int pazienteId, int terapiaFarmacoId, Runnable onSave) {
         this.pazienteId = pazienteId;
-        this.terapiaId = terapiaId;
+        this.terapiaFarmacoId = terapiaFarmacoId;
         this.onSave = onSave;
 
         dateField.setValue(LocalDate.now()); // default oggi
@@ -40,12 +45,17 @@ public class AddAssunzioneController {
         try {
             int q = Integer.parseInt(quantitaField.getText());
             LocalDate d = dateField.getValue();
+            if (d == null) {
+                // se vuoi puoi mostrare un alert
+                return;
+            }
 
             AssunzioneTerapia a = new AssunzioneTerapia();
             a.setQuantitaAssunta(q);
             a.setDateStamp(LocalDateTime.of(d, LocalTime.now()));
             a.setIdPaziente(pazienteId);
-            a.setIdTerapia(terapiaId);
+            // 👇 ora usiamo IdTerapiaFarmaco
+            a.setIdTerapiaFarmaco(terapiaFarmacoId);
 
             dao.insert(a);
 

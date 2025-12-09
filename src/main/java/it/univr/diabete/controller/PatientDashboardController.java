@@ -24,7 +24,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+import it.univr.diabete.dao.TerapiaFarmacoDAO;
+import it.univr.diabete.dao.impl.TerapiaFarmacoDAOImpl;
+import it.univr.diabete.model.TerapiaFarmaco;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -64,6 +66,8 @@ public class PatientDashboardController {
     // DAO per terapia / assunzioni (se non li hai già qui)
     private final TerapiaDAO terapiaDAO = new TerapiaDAOImpl();
     private final AssunzioneTerapiaDAO assunzioneDAO = new AssunzioneTerapiaDAOImpl();
+    // DAO per terapia / assunzioni
+     private final TerapiaFarmacoDAO terapiaFarmacoDAO = new TerapiaFarmacoDAOImpl(); // 👈 nuovo
     @FXML
     private ChoiceBox<String> measurementFilter;
 
@@ -238,11 +242,12 @@ public class PatientDashboardController {
     private void updateTodayTherapyTask() {
         if (patientId == null) {
             chkTerapiaAssunta.setSelected(false);
+            chkTerapiaAssunta.setDisable(true);
             return;
         }
 
         try {
-            // Recupera la/e terapia/e del paziente
+            // 1) Recupera le terapie del paziente
             List<Terapia> terapie = terapiaDAO.findByPazienteId(patientId);
 
             if (terapie.isEmpty()) {
@@ -252,33 +257,50 @@ public class PatientDashboardController {
                 return;
             }
 
-            // per ora uso la prima (o quella "corrente")
+            // 2) per ora consideriamo la prima terapia come "corrente"
             Terapia terapiaCorrente = terapie.get(0);
 
-            // tutte le assunzioni di quella terapia
-            List<AssunzioneTerapia> assunzioni =
-                    assunzioneDAO.findByPazienteAndTerapia(patientId, terapiaCorrente.getId());
+            // 3) Recupero i farmaci associati a questa terapia
+            List<TerapiaFarmaco> farmaci = terapiaFarmacoDAO.findByTerapiaId(terapiaCorrente.getId());
+
+            if (farmaci.isEmpty()) {
+                // terapia senza farmaci → non ha senso parlare di "assunzione completata"
+                chkTerapiaAssunta.setSelected(false);
+                chkTerapiaAssunta.setDisable(true);
+                return;
+            }
 
             LocalDate today = LocalDate.now();
 
-            int quantitaAssuntaOggi = assunzioni.stream()
-                    .filter(a -> isSameDay(a.getDateStamp(), today))
-                    .mapToInt(AssunzioneTerapia::getQuantitaAssunta)
+            // 4) Target giornaliero atteso: somma di (quantità per assunzione * assunzioni/giorno) per ogni farmaco
+            int targetGiornalieroTotale = farmaci.stream()
+                    .mapToInt(tf -> tf.getQuantitaAssunzione() * tf.getAssunzioniGiornaliere())
                     .sum();
 
-            // quantità giornaliera prevista = quantita per assunzione * assunzioni al giorno
-            int targetGiornaliero =
-                    terapiaCorrente.getQuantita() * terapiaCorrente.getAssunzioniGiornaliere();
+            // 5) Quantità effettivamente assunta oggi su tutti i farmaci
+            int quantitaAssuntaOggiTotale = 0;
 
-            boolean terapiaCompletaOggi = quantitaAssuntaOggi >= targetGiornaliero;
+            for (TerapiaFarmaco tf : farmaci) {
+                List<AssunzioneTerapia> assunzioni =
+                        assunzioneDAO.findByPazienteAndTerapiaFarmaco(patientId, tf.getId());
+
+                int qFarmacoOggi = assunzioni.stream()
+                        .filter(a -> isSameDay(a.getDateStamp(), today))
+                        .mapToInt(AssunzioneTerapia::getQuantitaAssunta)
+                        .sum();
+
+                quantitaAssuntaOggiTotale += qFarmacoOggi;
+            }
+
+            boolean terapiaCompletaOggi = quantitaAssuntaOggiTotale >= targetGiornalieroTotale;
 
             chkTerapiaAssunta.setDisable(false);
             chkTerapiaAssunta.setSelected(terapiaCompletaOggi);
 
         } catch (Exception e) {
             e.printStackTrace();
-            // in caso di errore non blocchiamo la UI
             chkTerapiaAssunta.setSelected(false);
+            chkTerapiaAssunta.setDisable(true);
         }
     }
     private void updateTodayTasks() {

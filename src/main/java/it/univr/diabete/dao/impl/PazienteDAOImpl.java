@@ -165,7 +165,7 @@ public class PazienteDAOImpl implements PazienteDAO {
             ps.setString(2, p.getCognome());
 
             if (p.getDataNascita() != null) {
-                ps.setDate(3, java.sql.Date.valueOf(p.getDataNascita()));
+                ps.setDate(3, Date.valueOf(p.getDataNascita()));
             } else {
                 ps.setNull(3, java.sql.Types.DATE);
             }
@@ -210,7 +210,7 @@ public class PazienteDAOImpl implements PazienteDAO {
             ps.setString(2, p.getCognome());
 
             if (p.getDataNascita() != null) {
-                ps.setDate(3, java.sql.Date.valueOf(p.getDataNascita()));
+                ps.setDate(3, Date.valueOf(p.getDataNascita()));
             } else {
                 ps.setNull(3, java.sql.Types.DATE);
             }

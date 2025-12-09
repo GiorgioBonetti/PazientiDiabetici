@@ -100,11 +100,6 @@
                                 text="Dashboard"
                                 onAction="#handleDashboardNav"
                                 styleClass="nav-item"/>
-                        <Button
-                                fx:id="patientsButton"
-                                text="Pazienti"
-                                onAction="#handleDoctorPatientsNav"
-                                styleClass="nav-item"/>
                         <Button fx:id="measurementsButton"
                                 text="Misurazioni"
                                 onAction="#handleMeasurementsNav"
@@ -112,6 +107,10 @@
                         <Button fx:id="therapyButton"
                                 text="Terapia"
                                 onAction="#handleTherapyNav"
+                                styleClass="nav-item"/>
+                        <Button fx:id="FarmacoButton"
+                                text="Farmaco"
+                                onAction="#handleFarmacoNav"
                                 styleClass="nav-item"/>
                         <Button fx:id="messagesButton"
                                 text="Messaggi"

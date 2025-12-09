@@ -242,6 +242,11 @@
     -fx-padding: 0;
     -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.04), 12, 0.15, 0, 2);
 }
+.card .scroll-bar {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
 /* Card più stretta per la tabella misurazioni */
 .narrow-card {
     -fx-pref-width: 520;
@@ -529,20 +534,24 @@
 
 .therapy-card {
     -fx-background-color: white;
-    -fx-background-radius: 18;
-    -fx-border-radius: 18;
+    -fx-background-radius: 22;
+    -fx-border-radius: 22;
+    -fx-padding: 16 16 16 16;      /* meno spazio sopra/sotto */
 
-    /* Padding interno: top-right-bottom-left */
-    -fx-padding: 16 16 16 16;
+    /* larghezza fissa */
+    -fx-pref-width: 190;
+    -fx-min-width: 190;
+    -fx-max-width: 190;
 
-    /* Spaziatura fra testo e bordo */
-    -fx-spacing: 6;
+    /* altezza più bassa */
+    -fx-pref-height: 100;
+    -fx-min-height: 100;
+    -fx-max-height: 100;
 
-    /* Ombra leggera */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 10, 0.2, 0, 2);
-
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 8, 0.2, 0, 2);
     -fx-cursor: hand;
 }
+
 
 /* Hover leggero per feedback */
 .therapy-card:hover {
@@ -667,4 +676,268 @@
     -fx-stroke: #ef4444;
     -fx-stroke-width: 2;
     -fx-fill: transparent;
+}
+
+.list-cell:focused,
+.list-cell:selected {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+.list-view:focused .list-cell {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+}
+/* ComboBox - popup elenco periodi */
+.combo-box-popup .list-view {
+    -fx-background-color: white;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #111827;   /* testo scuro e leggibile */
+}
+
+/* hover / selezionato nel menu a tendina */
+.combo-box-popup .list-view .list-cell:hover,
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #f5f3ff;
+    -fx-text-fill: #111827;
+}
+.icon-edit-btn {
+    -fx-background-color: #eef2ff;
+    -fx-border-color: #c4b5fd;
+    -fx-padding: 4;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-cursor: hand;
+}
+
+.icon-edit-btn:hover {
+    -fx-background-color: #eef2ff;
+    -fx-border-color: #c4b5fd;
+}
+
+.icon-edit-btn SVGPath {
+    -fx-fill: #4b5563;
+}
+
+.icon-edit-btn:hover SVGPath {
+    -fx-fill: #6d28d9;
+}
+
+.btn-primary-small {
+    -fx-background-color: #4f46e5;
+    -fx-text-fill: white;
+    -fx-background-radius: 999;
+    -fx-padding: 2 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+.icon-edit-btn {
+    -fx-background-color: transparent;
+    -fx-padding: 4;
+    -fx-cursor: hand;
+}
+
+.icon-edit-btn:hover {
+    -fx-background-color: #f3e8ff;
+    -fx-background-radius: 999;
+}
+
+.icon-edit-btn .svg-path {
+    -fx-fill: #4c1d95;
+}
+
+/* ---------- DIALOG MODERNI ---------- */
+
+.dialog-roo{
+    -fx-padding: 24;
+    -fx-background-color: #ffffff;
+    -fx-spacing: 16;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.12), 18, 0.0, 0, 8);
+}
+
+.dialog-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.dialog-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7280;
+}
+
+.form-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #4b5563;
+}
+
+.section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #111827;
+}
+
+.section-title-small {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #6b7280;
+}
+
+/* campi arrotondati */
+
+.rounded-field {
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-background-color: #f9fafb;
+    -fx-border-color: #e5e7eb;
+    -fx-padding: 8 14 8 14;
+}
+
+.rounded-field:focused {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #4f46e5;
+    -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.25), 10, 0.0, 0, 4);
+}
+
+/* bottoni */
+
+.btn-primary {
+    -fx-background-color: linear-gradient(to right, #4f46e5, #6366f1);
+    -fx-text-fill: white;
+    -fx-background-radius: 999;
+    -fx-padding: 8 22 8 22;
+    -fx-font-weight: 600;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #4f46e5;
+}
+
+.btn-secondary {
+    -fx-background-color: #f3f4f6;
+    -fx-text-fill: #111827;
+    -fx-background-radius: 999;
+    -fx-padding: 8 18 8 18;
+}
+/* Lista farmaci dentro Add/Edit therapy */
+.farmaco-list-view {
+    /* colore dello sfondo della lista */
+    -fx-background-color: transparent;
+
+    /* disattiva righe alternate: bianco = bianco */
+    -fx-control-inner-background: white;
+    -fx-control-inner-background-alt: white;
+}
+
+/* le celle non hanno un loro sfondo piatto (lo sfondo vero è il box interno) */
+.farmaco-list-view .list-cell {
+    -fx-background-color: transparent;
+}
+/* Nasconde completamente le scrollbar della ListView dei farmaci */
+.farmaco-list-view .scroll-bar {
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+    -fx-padding: 0;
+}
+/* card con pillole farmaci */
+
+.chip{
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #e5e7eb;
+    -fx-text-alignment: center;
+}
+/* ScrollPane dei farmaci selezionati */
+.chip-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    /* niente zebra/grigio interno */
+    -fx-control-inner-background: transparent;
+    -fx-control-inner-background-alt: transparent;
+}
+.chipFarmaci {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #e5e7eb;
+}
+/* anche il viewport interno deve essere trasparente */
+.chip-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* barre di scorrimento pulite */
+.chip-scroll .scroll-bar {
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+    -fx-padding: 0;
+}
+
+.chip-scroll .scroll-bar .thumb {
+    -fx-background-color: trasparent;      /* se vuoi, altrimenti metti transparent */
+
+}
+
+.chip-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #111827;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+/* Nasconde le scrollbar completamente */
+.scroll-pane .scroll-bar {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+
+/*css per dettaglio farmaci terapia*/
+.drug-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #e5e7eb;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 8, 0.2, 0, 2);
+}
+
+.drug-card:hover {
+    -fx-background-color: #f5f3ff;
+    -fx-border-color: #a855f7;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(129,140,248,0.35), 12, 0.3, 0, 4);
+}
+
+.drug-card-selected {
+    -fx-border-color: #4f46e5;
+    -fx-background-color: #eef2ff;
+}
+
+.drug-card-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #111827;
+}
+
+.drug-card-line {
+    -fx-font-size: 11px;
+    -fx-text-fill: #4b5563;
+}
+
+.drug-card-line-small {
+    -fx-font-size: 10px;
+    -fx-text-fill: #9ca3af;
 }

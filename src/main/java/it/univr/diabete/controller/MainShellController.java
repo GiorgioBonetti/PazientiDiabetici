@@ -36,6 +36,8 @@ public class MainShellController {
 
     @FXML
     private Button dashboardButton;
+    @FXML
+    private Button FarmacoButton;
 
     @FXML
     private Button patientsButton;
@@ -68,6 +70,7 @@ public class MainShellController {
      * Versione "vecchia": solo ruolo + nome.
      * La lasciamo per compatibilità, e dentro chiamiamo quella a 3 parametri con patientId = null.
      */
+
     public void setUserData(String role, String userName) {
         setUserData(role, userName, null);
     }
@@ -97,8 +100,6 @@ public class MainShellController {
     private void configureSidebarForRole() {
         boolean isPatient = "Paziente".equalsIgnoreCase(role);
 
-        patientsButton.setVisible(!isPatient);
-        patientsButton.setManaged(!isPatient);
 
         if (isPatient) {
             dashboardButton.setText("Home");
@@ -106,13 +107,17 @@ public class MainShellController {
             therapyButton.setText("Terapia");
             messagesButton.setText("Messaggi");
             reportsButton.setText("Report");
+            FarmacoButton.setVisible(false);
+            FarmacoButton.setManaged(false);
         } else {
             dashboardButton.setText("Dashboard");
-            patientsButton.setText("Pazienti");
             measurementsButton.setText("Misurazioni");
-            therapyButton.setText("Terapia");
+            FarmacoButton.setText("Farmaco");
             messagesButton.setText("Messaggi");
-            reportsButton.setText("Report");
+            reportsButton.setVisible(false);
+            reportsButton.setManaged(false);
+            therapyButton.setVisible(false);
+            therapyButton.setManaged(false);
         }
     }
 
@@ -179,9 +184,9 @@ public class MainShellController {
                 PatientDashboardController controller = loader.getController();
                 controller.setPatientData(userName, patientId); // 👈 qui passeremo anche l’id
             } else {
-                // Se vuoi, puoi passare info al controller del diabetologo
-                // DoctorDashboardController controller = loader.getController();
-                // controller.setDoctorData(userName);
+
+                DoctorDashboardController ctrl = loader.getController();
+                ctrl.setDoctorContext(loggedUserId);
             }
 
             contentArea.getChildren().setAll(dashboard);
@@ -246,9 +251,75 @@ public class MainShellController {
 
             PatientTherapyController controller = loader.getController();
             controller.setPatientContext(userName, patientId);
-
+            if (role.equals("Diabetologo")) {
+                controller.hideEditingTools();
+            }else{
+                controller.hideEditingToolsPat();
+            }
             contentArea.getChildren().setAll(view);
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void handleFarmacoNav() {
+        openFarmacoView(); // senza parametri
+    }
+    private void openFarmacoView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/FarmacoView.fxml"));
+            Parent root = loader.load();
+            contentArea.getChildren().setAll(root);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void openPatientMeasurements(String fullName, int patientId) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    MainApp.class.getResource("/fxml/PatientMeasurementsView.fxml"));
+            Parent view = loader.load();
+
+            PatientMeasurementsController ctrl = loader.getController();
+            ctrl.setPatientContext(fullName, patientId);
+            if (role.equals("Diabetologo")) {
+                ctrl.hideEditingTools();
+            }
+            contentArea.getChildren().setAll(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void openPatientReport(String fullName, int patientId) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    MainApp.class.getResource("/fxml/PatientReportView.fxml"));
+            Parent view = loader.load();
+
+            PatientReportController ctrl = loader.getController();
+            ctrl.setPatientContext(fullName, patientId);
+            contentArea.getChildren().setAll(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void openPatientTherapy(String fullName, int patientId) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    MainApp.class.getResource("/fxml/PatientTherapyView.fxml"));
+            Parent view = loader.load();
+
+            PatientTherapyController ctrl = loader.getController();
+            ctrl.setPatientContext(fullName, patientId);
+            if (role.equals("Diabetologo")) {
+                ctrl.hideEditingTools();
+            }else{
+                ctrl.hideEditingToolsPat();
+            }
+            contentArea.getChildren().setAll(view);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -275,27 +346,6 @@ public class MainShellController {
             e.printStackTrace();
         }
     }
-    @FXML
-    private void handleDoctorPatientsNav() {
-        if ("Paziente".equalsIgnoreCase(role)) {
-            return; // il bottone manco si vede, ma per sicurezza…
-        }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    MainApp.class.getResource("/fxml/DoctorPatientsView.fxml")
-            );
-            Parent view = loader.load();
-
-            DoctorPatientsController ctrl = loader.getController();
-            // 🔥 passo l’id del diabetologo loggato
-            ctrl.setDoctorContext(loggedUserId);
-
-            contentArea.getChildren().setAll(view);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     public void openPatientDetail(Paziente paziente) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -312,6 +362,7 @@ public class MainShellController {
             e.printStackTrace();
         }
     }
+
     public StackPane getContentArea() {
         return contentArea;
     }

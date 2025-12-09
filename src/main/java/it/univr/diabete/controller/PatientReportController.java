@@ -1,24 +1,32 @@
 package it.univr.diabete.controller;
 
+import it.univr.diabete.MainApp;
 import it.univr.diabete.dao.GlicemiaDAO;
+import it.univr.diabete.dao.PazienteDAO;
 import it.univr.diabete.dao.TerapiaDAO;
+import it.univr.diabete.dao.TerapiaFarmacoDAO;
 import it.univr.diabete.dao.impl.GlicemiaDAOImpl;
+import it.univr.diabete.dao.impl.PazienteDAOImpl;
 import it.univr.diabete.dao.impl.TerapiaDAOImpl;
+import it.univr.diabete.dao.impl.TerapiaFarmacoDAOImpl;
 import it.univr.diabete.model.Glicemia;
+import it.univr.diabete.model.Paziente;
 import it.univr.diabete.model.Terapia;
+import it.univr.diabete.model.TerapiaFarmaco;
 import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -27,69 +35,87 @@ public class PatientReportController {
     @FXML private ComboBox<String> periodFilter;
     @FXML private Label periodLabel;
 
-    @FXML
-    private Label symptomsLabel;
+    @FXML private Label symptomsLabel;
+    @FXML private Label risksLabel;
+    @FXML private Label pathologiesLabel;
 
-    @FXML
-    private Label risksLabel;
+    @FXML private Label therapyDrugLabel;
+    @FXML private Label therapyDoseLabel;
+    @FXML private Label therapyFreqLabel;
+    @FXML private Label therapyPeriodLabel;
 
-    @FXML
-    private Label pathologiesLabel;
+    @FXML private Label patientNameLabel;
 
-    @FXML
-    private Label therapyDrugLabel;
+    @FXML private Label avgLabel;
+    @FXML private Label minLabel;
+    @FXML private Label maxLabel;
+    @FXML private Label countLabel;
 
-    @FXML
-    private Label therapyDoseLabel;
+    @FXML private Label therapyLabel;        // se non usato puoi anche toglierlo da FXML
+    @FXML private Label therapyStatusLabel;
 
-    @FXML
-    private Label therapyFreqLabel;
+    @FXML private LineChart<String, Number> reportChart;
+    @FXML private CategoryAxis xAxis;
+    @FXML private NumberAxis yAxis;
 
-    @FXML
-    private Label therapyPeriodLabel;
+    @FXML private Button goMeasurementsButton;
+    @FXML private Button goTherapyButton;
+    @FXML private Button editPatientButton;
 
-    @FXML
-    private Label patientNameLabel;
-
-
-    @FXML
-    private Label avgLabel;
-
-    @FXML
-    private Label minLabel;
-
-    @FXML
-    private Label maxLabel;
-
-    @FXML
-    private Label countLabel;
-
-    @FXML
-    private Label therapyLabel;
-
-    @FXML
-    private Label therapyStatusLabel;
-
-    @FXML
-    private LineChart<String, Number> reportChart;
-
-    @FXML
-    private CategoryAxis xAxis;
-
-    @FXML
-    private NumberAxis yAxis;
-
+    private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
     private final TerapiaDAO terapiaDAO = new TerapiaDAOImpl();
+    private final TerapiaFarmacoDAO terapiaFarmacoDAO = new TerapiaFarmacoDAOImpl();
+
     private List<Glicemia> allMeasurements = new ArrayList<>();
     private List<Terapia> terapiePaziente = new ArrayList<>();
     private Integer patientId;
 
     private final DateTimeFormatter chartFormatter =
             DateTimeFormatter.ofPattern("dd/MM");
-
     private final DateTimeFormatter periodFormatter =
             DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    // ───────────────────────────── NAV / AZIONI ─────────────────────────────
+
+    @FXML
+    private void handleEditPatient() {
+        if (patientId == null || patientId <= 0) return;
+
+        try {
+            Paziente p = pazienteDAO.findById(patientId);
+            if (p == null) return;
+
+            MainShellController shell = MainApp.getMainShellController();
+            if (shell != null) {
+                shell.openPatientDetail(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleGoToMeasurements() {
+        if (patientId == null || patientId <= 0) return;
+
+        MainShellController shell = MainApp.getMainShellController();
+        if (shell != null) {
+            shell.openPatientMeasurements(patientNameLabel.getText(), patientId);
+        }
+    }
+
+    @FXML
+    private void handleGoToTherapy() {
+        if (patientId == null || patientId <= 0) return;
+
+        MainShellController shell = MainApp.getMainShellController();
+        if (shell != null) {
+            shell.openPatientTherapy(patientNameLabel.getText(), patientId);
+        }
+    }
+
+    // ───────────────────────────── INIT CONTEXT ─────────────────────────────
 
     /**
      * Chiamato dal MainShellController quando carica il report.
@@ -98,21 +124,24 @@ public class PatientReportController {
         this.patientId = patientId;
         patientNameLabel.setText(nomeCompleto);
 
-        loadAllMeasurements();   // tutte dal DB
-        setupPeriodFilter();     // inizializza combo
-        applyPeriodAndRefresh(); // filtro di default (Ultimi 30 giorni)
-        loadTherapyForPeriod();  // terapia nel periodo (vedi sotto)
+        loadAllMeasurements();
+        setupPeriodFilter();
+        applyPeriodAndRefresh();
+        loadTherapyForPeriod();
     }
+
+    // ───────────────────────────── GLICEMIE / GRAFICO ───────────────────────
+
     private void loadAllMeasurements() {
         try {
             allMeasurements = glicemiaDAO.findByPazienteId(patientId);
-            // Ordinate per data/ora crescente
             allMeasurements.sort(Comparator.comparing(Glicemia::getDataOra));
         } catch (Exception e) {
             e.printStackTrace();
             allMeasurements = new ArrayList<>();
         }
     }
+
     private void setupPeriodFilter() {
         periodFilter.getItems().setAll(
                 "Ultimi 7 giorni",
@@ -121,15 +150,14 @@ public class PatientReportController {
                 "Tutto"
         );
 
-        // default
         periodFilter.getSelectionModel().select("Ultimi 30 giorni");
 
-        // quando cambia il valore, ricalcola il report
         periodFilter.valueProperty().addListener((obs, oldVal, newVal) -> {
             applyPeriodAndRefresh();
             loadTherapyForPeriod();
         });
     }
+
     private void applyPeriodAndRefresh() {
         if (allMeasurements.isEmpty()) {
             updateKpi(Collections.emptyList());
@@ -149,7 +177,6 @@ public class PatientReportController {
             case "Tutto"            -> fromDateTime = null;
         }
 
-        // 👉 variabile final da usare nella lambda
         final LocalDateTime fromBoundary = fromDateTime;
 
         List<Glicemia> filtered = allMeasurements.stream()
@@ -157,7 +184,6 @@ public class PatientReportController {
                 .sorted(Comparator.comparing(Glicemia::getDataOra))
                 .toList();
 
-        // testo sotto al filtro
         if (fromBoundary == null || filtered.isEmpty()) {
             periodLabel.setText(filter);
         } else {
@@ -168,124 +194,6 @@ public class PatientReportController {
 
         updateKpi(filtered);
         updateChart(filtered);
-    }
-    private void loadTherapyForPeriod() {
-        try {
-            // se non l'hai ancora caricata dal DAO, fallo qui una sola volta
-            if (terapiePaziente.isEmpty()) {
-                terapiePaziente = terapiaDAO.findByPazienteId(patientId);
-            }
-
-            if (terapiePaziente.isEmpty()) {
-                therapyStatusLabel.setText("Nessuna terapia");
-                therapyDrugLabel.setText("—");
-                therapyDoseLabel.setText("—");
-                therapyFreqLabel.setText("—");
-                therapyPeriodLabel.setText("—");
-                return;
-            }
-
-            // calcolo range attuale dal testo del label oppure dal filtro
-            String filter = periodFilter.getValue();
-            LocalDate today = LocalDate.now();
-            LocalDate startDate;
-
-            switch (filter) {
-                case "Ultimi 7 giorni"  -> startDate = today.minusDays(6);
-                case "Ultimi 30 giorni" -> startDate = today.minusDays(29);
-                case "Ultimi 90 giorni" -> startDate = today.minusDays(89);
-                default                 -> startDate = null; // "Tutto"
-            }
-
-            LocalDate endDate = today;
-
-            // scegli una terapia che interseca il periodo (la prima che trovi)
-            Terapia selected = terapiePaziente.stream()
-                    .filter(t -> intersectsPeriod(t, startDate, endDate))
-                    .findFirst()
-                    .orElse(null);
-
-            if (selected == null) {
-                therapyStatusLabel.setText("Nessuna terapia nel periodo");
-                therapyDrugLabel.setText("—");
-                therapyDoseLabel.setText("—");
-                therapyFreqLabel.setText("—");
-                therapyPeriodLabel.setText("—");
-                return;
-            }
-
-            // status
-            LocalDate oggi = LocalDate.now();
-            if (selected.getDataInizio().isAfter(oggi)) {
-                therapyStatusLabel.setText("Non iniziata");
-            } else if (selected.getDataFine() != null && selected.getDataFine().isBefore(oggi)) {
-                therapyStatusLabel.setText("Completata");
-            } else {
-                therapyStatusLabel.setText("In corso");
-            }
-
-            therapyDrugLabel.setText(selected.getFarmacoNome());
-            therapyDoseLabel.setText(selected.getFarmacoDosaggio() + " mg");
-            therapyFreqLabel.setText(selected.getAssunzioniGiornaliere() + " volte al giorno");
-
-            if (selected.getDataFine() != null) {
-                therapyPeriodLabel.setText("dal " + selected.getDataInizio() +
-                        " al " + selected.getDataFine());
-            } else {
-                therapyPeriodLabel.setText("dal " + selected.getDataInizio());
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean intersectsPeriod(Terapia t, LocalDate start, LocalDate end) {
-        LocalDate inizio = t.getDataInizio();
-        LocalDate fine   = t.getDataFine(); // può essere null = ancora in corso
-
-        if (start == null) return true; // "Tutto": qualsiasi terapia va bene
-
-        if (fine == null) {
-            // terapia ancora in corso: basta che sia iniziata prima della fine
-            return !inizio.isAfter(end);
-        }
-
-        // intervallo [inizio, fine] interseca [start, end]
-        return !fine.isBefore(start) && !inizio.isAfter(end);
-    }
-    private void loadReportData() {
-        if (patientId == null) return;
-
-        LocalDate today = LocalDate.now();
-        LocalDate from = today.minusDays(30);
-
-        periodLabel.setText(
-                "Periodo: " + from.format(periodFormatter) + " - " + today.format(periodFormatter)
-        );
-
-        try {
-            List<Glicemia> all = glicemiaDAO.findByPazienteId(patientId);
-
-            List<Glicemia> last30 = all.stream()
-                    .filter(g -> g.getDataOra() != null &&
-                            !g.getDataOra().toLocalDate().isBefore(from))
-                    .sorted(Comparator.comparing(Glicemia::getDataOra))
-                    .toList();
-
-            updateKpi(last30);
-            updateChart(last30);
-            loadTherapySummary();
-
-            // TODO: quando avrai i DAO per sintomi / fattori / patologie,
-            // qui li carichi dal DB.
-            symptomsLabel.setText("Funzionalità in sviluppo");
-            risksLabel.setText("Funzionalità in sviluppo");
-            pathologiesLabel.setText("Funzionalità in sviluppo");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void updateKpi(List<Glicemia> data) {
@@ -326,60 +234,204 @@ public class PatientReportController {
 
         reportChart.getData().add(series);
 
-        // sistema range asse Y
         int min = data.stream().mapToInt(Glicemia::getValore).min().orElse(0);
         int max = data.stream().mapToInt(Glicemia::getValore).max().orElse(0);
 
-        if (min == max) {
-            yAxis.setLowerBound(min - 10);
-            yAxis.setUpperBound(max + 10);
-        } else {
-            yAxis.setLowerBound(min - 10);
-            yAxis.setUpperBound(max + 10);
-        }
-        yAxis.setTickUnit(Math.max(5, (yAxis.getUpperBound() - yAxis.getLowerBound()) / 6.0));
+        yAxis.setLowerBound(min - 10);
+        yAxis.setUpperBound(max + 10);
+        yAxis.setTickUnit(
+                Math.max(5, (yAxis.getUpperBound() - yAxis.getLowerBound()) / 6.0)
+        );
     }
 
+    // ───────────────────────────── TERAPIA / BOX DESTRA ─────────────────────
+
+    /**
+     * Carica le terapie del paziente e mostra quella rilevante nel periodo selezionato.
+     * (per ora la prima terapia che interseca il periodo).
+     */
+    private void loadTherapyForPeriod() {
+        try {
+            if (terapiePaziente.isEmpty()) {
+                terapiePaziente = terapiaDAO.findByPazienteId(patientId);
+            }
+
+            if (terapiePaziente.isEmpty()) {
+                showNoTherapy();
+                return;
+            }
+
+            String filter = periodFilter.getValue();
+            LocalDate today = LocalDate.now();
+            LocalDate startDate;
+
+            switch (filter) {
+                case "Ultimi 7 giorni"  -> startDate = today.minusDays(6);
+                case "Ultimi 30 giorni" -> startDate = today.minusDays(29);
+                case "Ultimi 90 giorni" -> startDate = today.minusDays(89);
+                default                 -> startDate = null; // "Tutto"
+            }
+
+            LocalDate endDate = today;
+
+            Terapia selected = terapiePaziente.stream()
+                    .filter(t -> intersectsPeriod(t, startDate, endDate))
+                    .findFirst()
+                    .orElse(null);
+
+            if (selected == null) {
+                therapyStatusLabel.setText("Nessuna terapia nel periodo");
+                therapyDrugLabel.setText("—");
+                therapyDoseLabel.setText("—");
+                therapyFreqLabel.setText("—");
+                therapyPeriodLabel.setText("—");
+                return;
+            }
+
+            fillTherapyDetails(selected);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showNoTherapy();
+        }
+    }
+
+    /**
+     * Versione "generale" usata da loadReportData (se la userai ancora).
+     * Prende semplicemente la prima terapia del paziente.
+     */
     private void loadTherapySummary() {
         try {
             List<Terapia> list = terapiaDAO.findByPazienteId(patientId);
             if (list.isEmpty()) {
-                therapyDrugLabel.setText("Nessuna terapia");
-                therapyDoseLabel.setText("—");
-                therapyFreqLabel.setText("—");
-                therapyPeriodLabel.setText("—");
-                therapyStatusLabel.setText("Nessuna");
+                showNoTherapy();
                 return;
             }
 
             Terapia t = list.get(0); // per ora la prima / quella attiva
+            fillTherapyDetails(t);
 
-            therapyDrugLabel.setText(t.getFarmacoNome());
-            therapyDoseLabel.setText(t.getFarmacoDosaggio() + " mg");
-            therapyFreqLabel.setText(t.getAssunzioniGiornaliere() + " volte al giorno");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showNoTherapy();
+        }
+    }
 
-            if (t.getDataFine() != null) {
-                therapyPeriodLabel.setText(
-                        "dal " + t.getDataInizio() + " al " + t.getDataFine()
-                );
-            } else {
-                therapyPeriodLabel.setText("dal " + t.getDataInizio());
-            }
+    /**
+     * Popola i label terapia (farmaco, dose, frequenza, periodo, stato)
+     * usando la nuova tabella TerapiaFarmaco.
+     */
+    private void fillTherapyDetails(Terapia terapia) throws Exception {
+        if (terapia == null) {
+            showNoTherapy();
+            return;
+        }
 
-            // stato semplice in base alle date
-            LocalDate oggi = LocalDate.now();
-            LocalDate inizio = t.getDataInizio();
-            LocalDate fine = t.getDataFine();
+        // Stato terapia in base alle date
+        LocalDate oggi = LocalDate.now();
+        LocalDate inizio = terapia.getDataInizio();
+        LocalDate fine   = terapia.getDataFine();
 
-            String stato;
-            if (inizio != null && oggi.isBefore(inizio)) {
-                stato = "Non iniziata";
-            } else if (fine != null && oggi.isAfter(fine)) {
-                stato = "Conclusa";
-            } else {
-                stato = "In corso";
-            }
-            therapyStatusLabel.setText(stato);
+        if (inizio != null && oggi.isBefore(inizio)) {
+            therapyStatusLabel.setText("Non iniziata");
+        } else if (fine != null && oggi.isAfter(fine)) {
+            therapyStatusLabel.setText("Completata");
+        } else {
+            therapyStatusLabel.setText("In corso");
+        }
+
+        if (fine != null) {
+            therapyPeriodLabel.setText("dal " + inizio + " al " + fine);
+        } else if (inizio != null) {
+            therapyPeriodLabel.setText("dal " + inizio);
+        } else {
+            therapyPeriodLabel.setText("—");
+        }
+
+        // Recupero i farmaci della terapia
+        List<TerapiaFarmaco> farmaci = terapiaFarmacoDAO.findByTerapiaId(terapia.getId());
+
+        if (farmaci.isEmpty()) {
+            therapyDrugLabel.setText("Terapia senza farmaci");
+            therapyDoseLabel.setText("—");
+            therapyFreqLabel.setText("—");
+            return;
+        }
+
+        TerapiaFarmaco tf = farmaci.get(0); // per ora mostriamo il primo
+        String nomeFarmaco;
+        if (tf.getFarmaco() != null) {
+            nomeFarmaco = tf.getFarmaco().getNome();
+        } else {
+            nomeFarmaco = "Farmaco ID " + tf.getIdFarmaco();
+        }
+
+        if (farmaci.size() > 1) {
+            therapyDrugLabel.setText(nomeFarmaco + " (+ " + (farmaci.size() - 1) + " altri)");
+        } else {
+            therapyDrugLabel.setText(nomeFarmaco);
+        }
+
+        therapyDoseLabel.setText(tf.getQuantitaAssunzione() + " unità");
+        therapyFreqLabel.setText(tf.getAssunzioniGiornaliere() + " volte al giorno");
+    }
+
+    private void showNoTherapy() {
+        therapyStatusLabel.setText("Nessuna terapia");
+        therapyDrugLabel.setText("—");
+        therapyDoseLabel.setText("—");
+        therapyFreqLabel.setText("—");
+        therapyPeriodLabel.setText("—");
+    }
+
+    private boolean intersectsPeriod(Terapia t, LocalDate start, LocalDate end) {
+        LocalDate inizio = t.getDataInizio();
+        LocalDate fine   = t.getDataFine(); // può essere null = ancora in corso
+
+        if (start == null) return true; // "Tutto": qualsiasi terapia va bene
+
+        if (inizio == null && fine == null) {
+            // se per qualche motivo sono null entrambi, la consideriamo sempre valida
+            return true;
+        }
+
+        if (fine == null) {
+            // terapia ancora in corso: basta che sia iniziata prima della fine
+            return inizio == null || !inizio.isAfter(end);
+        }
+
+        // intervallo [inizio, fine] interseca [start, end]
+        return !fine.isBefore(start) && !inizio.isAfter(end);
+    }
+
+    // ───────────────────────────── LEGACY (se lo usi ancora) ─────────────────
+
+    private void loadReportData() {
+        if (patientId == null) return;
+
+        LocalDate today = LocalDate.now();
+        LocalDate from = today.minusDays(30);
+
+        periodLabel.setText(
+                "Periodo: " + from.format(periodFormatter) + " - " + today.format(periodFormatter)
+        );
+
+        try {
+            List<Glicemia> all = glicemiaDAO.findByPazienteId(patientId);
+
+            List<Glicemia> last30 = all.stream()
+                    .filter(g -> g.getDataOra() != null &&
+                            !g.getDataOra().toLocalDate().isBefore(from))
+                    .sorted(Comparator.comparing(Glicemia::getDataOra))
+                    .toList();
+
+            updateKpi(last30);
+            updateChart(last30);
+            loadTherapySummary();
+
+            symptomsLabel.setText("Funzionalità in sviluppo");
+            risksLabel.setText("Funzionalità in sviluppo");
+            pathologiesLabel.setText("Funzionalità in sviluppo");
 
         } catch (Exception e) {
             e.printStackTrace();
