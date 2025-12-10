@@ -69,7 +69,7 @@ public class PatientReportController {
 
     private List<Glicemia> allMeasurements = new ArrayList<>();
     private List<Terapia> terapiePaziente = new ArrayList<>();
-    private Integer patientId;
+    private String CodiceFiscale;
 
     private final DateTimeFormatter chartFormatter =
             DateTimeFormatter.ofPattern("dd/MM");
@@ -80,10 +80,10 @@ public class PatientReportController {
 
     @FXML
     private void handleEditPatient() {
-        if (patientId == null || patientId <= 0) return;
+        if (CodiceFiscale == null || CodiceFiscale.isEmpty()) return;
 
         try {
-            Paziente p = pazienteDAO.findById(patientId);
+            Paziente p = pazienteDAO.findById(CodiceFiscale);
             if (p == null) return;
 
             MainShellController shell = MainApp.getMainShellController();
@@ -97,21 +97,21 @@ public class PatientReportController {
 
     @FXML
     private void handleGoToMeasurements() {
-        if (patientId == null || patientId <= 0) return;
+        if (CodiceFiscale == null || CodiceFiscale.isEmpty()) return;
 
         MainShellController shell = MainApp.getMainShellController();
         if (shell != null) {
-            shell.openPatientMeasurements(patientNameLabel.getText(), patientId);
+            shell.openPatientMeasurements(patientNameLabel.getText(), CodiceFiscale);
         }
     }
 
     @FXML
     private void handleGoToTherapy() {
-        if (patientId == null || patientId <= 0) return;
+        if (CodiceFiscale == null || CodiceFiscale.isEmpty()) return;
 
         MainShellController shell = MainApp.getMainShellController();
         if (shell != null) {
-            shell.openPatientTherapy(patientNameLabel.getText(), patientId);
+            shell.openPatientTherapy(patientNameLabel.getText(), CodiceFiscale);
         }
     }
 
@@ -120,8 +120,8 @@ public class PatientReportController {
     /**
      * Chiamato dal MainShellController quando carica il report.
      */
-    public void setPatientContext(String nomeCompleto, int patientId) {
-        this.patientId = patientId;
+    public void setPatientContext(String nomeCompleto, String CodiceFiscale) {
+        this.CodiceFiscale = CodiceFiscale;
         patientNameLabel.setText(nomeCompleto);
 
         loadAllMeasurements();
@@ -134,7 +134,7 @@ public class PatientReportController {
 
     private void loadAllMeasurements() {
         try {
-            allMeasurements = glicemiaDAO.findByPazienteId(patientId);
+            allMeasurements = glicemiaDAO.findByPazienteId(CodiceFiscale);
             allMeasurements.sort(Comparator.comparing(Glicemia::getDataOra));
         } catch (Exception e) {
             e.printStackTrace();
@@ -253,7 +253,7 @@ public class PatientReportController {
     private void loadTherapyForPeriod() {
         try {
             if (terapiePaziente.isEmpty()) {
-                terapiePaziente = terapiaDAO.findByPazienteId(patientId);
+                terapiePaziente = terapiaDAO.findByPazienteId(CodiceFiscale);
             }
 
             if (terapiePaziente.isEmpty()) {
@@ -302,7 +302,7 @@ public class PatientReportController {
      */
     private void loadTherapySummary() {
         try {
-            List<Terapia> list = terapiaDAO.findByPazienteId(patientId);
+            List<Terapia> list = terapiaDAO.findByPazienteId(CodiceFiscale);
             if (list.isEmpty()) {
                 showNoTherapy();
                 return;
@@ -407,7 +407,7 @@ public class PatientReportController {
     // ───────────────────────────── LEGACY (se lo usi ancora) ─────────────────
 
     private void loadReportData() {
-        if (patientId == null) return;
+        if (CodiceFiscale == null) return;
 
         LocalDate today = LocalDate.now();
         LocalDate from = today.minusDays(30);
@@ -417,7 +417,7 @@ public class PatientReportController {
         );
 
         try {
-            List<Glicemia> all = glicemiaDAO.findByPazienteId(patientId);
+            List<Glicemia> all = glicemiaDAO.findByPazienteId(CodiceFiscale);
 
             List<Glicemia> last30 = all.stream()
                     .filter(g -> g.getDataOra() != null &&

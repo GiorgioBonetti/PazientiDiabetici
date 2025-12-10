@@ -1,15 +1,11 @@
 package it.univr.diabete.controller;
 
 import it.univr.diabete.database.Database;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
@@ -27,7 +23,7 @@ public class AddTherapyController {
     @FXML private Label errorLabel;
     @FXML private ScrollPane selectedFarmaciScroll;
     @FXML private TextField nomeTerapiaField;
-    private int patientId;
+    private String codiceFiscale;
     private Runnable onSavedCallback;
 
     // Tutti i nomi farmaco dal DB
@@ -153,8 +149,8 @@ public class AddTherapyController {
     }
 
     /** Chiamato dal PatientTherapyController quando apre il popup. */
-    public void initData(int patientId, Runnable onSavedCallback) {
-        this.patientId = patientId;
+    public void initData(String codiceFiscale, Runnable onSavedCallback) {
+        this.codiceFiscale = codiceFiscale;
         this.onSavedCallback = onSavedCallback;
     }
 
@@ -195,7 +191,7 @@ public class AddTherapyController {
             conn.setAutoCommit(false);
 
             // 1️⃣ inserisco la Terapia
-            int idTerapia = insertTerapia(conn, nomeTerapia, dataInizio, dataFine, patientId);
+            int idTerapia = insertTerapia(conn, nomeTerapia, dataInizio, dataFine, codiceFiscale);
 
             // 2️⃣ una riga in TerapiaFarmaco per ogni farmaco selezionato
             for (FarmacoInTerapia fit : selectedFarmaci) {
@@ -372,10 +368,10 @@ public class AddTherapyController {
                               String nomeTerapia,
                               LocalDate dataInizio,
                               LocalDate dataFine,
-                              int idPaziente) throws SQLException {
+                              String codiceFiscale) throws SQLException {
 
         String sql = """
-            INSERT INTO Terapia (Nome, DataInizio, DataFine, IdDiabetologo, IdPaziente)
+            INSERT INTO Terapia (Nome, DataInizio, DataFine, IdDiabetologo, fkPaziente)
             VALUES (?, ?, ?, ?, ?)
             """;
 
@@ -396,7 +392,7 @@ public class AddTherapyController {
             }
 
             ps.setInt(4, 1);          // TODO: Id diabetologo loggato
-            ps.setInt(5, idPaziente);
+            ps.setString(5,  codiceFiscale);
 
             ps.executeUpdate();
 

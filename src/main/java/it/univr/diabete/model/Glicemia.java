@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class Glicemia {
     private int id;
-    private int idPaziente;
+    private String idPaziente;
     private int valore;
     private LocalDateTime dataOra;
     private String momento;   // ⬅ AGGIUNTO
@@ -18,10 +18,10 @@ public class Glicemia {
         this.id = id;
     }
 
-    public int getIdPaziente() {
+    public String getIdPaziente() {
         return idPaziente;
     }
-    public void setIdPaziente(int idPaziente) {
+    public void setIdPaziente(String idPaziente) {
         this.idPaziente = idPaziente;
     }
 

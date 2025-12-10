@@ -11,7 +11,7 @@ import java.util.List;
 public class TerapiaDAOImpl implements TerapiaDAO {
 
     @Override
-    public List<Terapia> findByPazienteId(int idPaziente) throws Exception {
+    public List<Terapia> findByPazienteId(String codiceFiscale) throws Exception {
         String sql = """
                 SELECT t.Id,
                        t.Nome,
@@ -29,7 +29,7 @@ public class TerapiaDAOImpl implements TerapiaDAO {
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, idPaziente);
+            ps.setString(1, codiceFiscale);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

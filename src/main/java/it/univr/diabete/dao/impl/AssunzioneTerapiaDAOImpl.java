@@ -12,7 +12,7 @@ import java.util.List;
 public class AssunzioneTerapiaDAOImpl implements AssunzioneTerapiaDAO {
 
     @Override
-    public List<AssunzioneTerapia> findByPazienteAndTerapiaFarmaco(int pazienteId,
+    public List<AssunzioneTerapia> findByPazienteAndTerapiaFarmaco(String pazienteId,
                                                                    int terapiaFarmacoId) throws Exception {
 
         String sql = """
@@ -27,14 +27,14 @@ public class AssunzioneTerapiaDAOImpl implements AssunzioneTerapiaDAO {
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, pazienteId);
+            ps.setString(1, pazienteId);
             ps.setInt(2, terapiaFarmacoId);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     AssunzioneTerapia a = new AssunzioneTerapia();
                     a.setId(rs.getInt("Id"));
-                    a.setIdPaziente(rs.getInt("IdPaziente"));
+                    a.setIdPaziente(rs.getString("IdPaziente"));
                     a.setIdTerapiaFarmaco(rs.getInt("IdTerapiaFarmaco"));
 
                     Timestamp ts = rs.getTimestamp("DateStamp");
@@ -63,7 +63,7 @@ public class AssunzioneTerapiaDAOImpl implements AssunzioneTerapiaDAO {
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, a.getIdPaziente());
+            ps.setString(1, a.getIdPaziente());
             ps.setInt(2, a.getIdTerapiaFarmaco());
             ps.setTimestamp(3, Timestamp.valueOf(a.getDateStamp()));
             ps.setInt(4, a.getQuantitaAssunta());

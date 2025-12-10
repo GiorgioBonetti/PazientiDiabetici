@@ -12,14 +12,14 @@ import java.util.List;
 public class GlicemiaDAOImpl implements GlicemiaDAO {
 
     @Override
-    public List<Glicemia> findByPazienteId(int idPaziente) throws Exception {
+    public List<Glicemia> findByPazienteId(String codiceFiscale) throws Exception {
 
         String sql = "SELECT * FROM Glicemia WHERE IdPaziente = ? ORDER BY DateTime ASC";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, idPaziente);
+            ps.setString(1, codiceFiscale);
             ResultSet rs = ps.executeQuery();
 
             List<Glicemia> list = new ArrayList<>();
@@ -27,7 +27,7 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
             while (rs.next()) {
                 Glicemia g = new Glicemia();
                 g.setId(rs.getInt("Id"));
-                g.setIdPaziente(rs.getInt("IdPaziente"));
+                g.setIdPaziente(rs.getString("IdPaziente"));
                 g.setValore(rs.getInt("Valore"));
                 g.setMomento(rs.getString("Momento"));   // ⬅ AGGIUNTO
                 Timestamp ts = rs.getTimestamp("DateTime");
@@ -52,10 +52,10 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
             while (rs.next()) {
                 Glicemia g = new Glicemia();
                 g.setId(rs.getInt("Id"));
-                g.setIdPaziente(rs.getInt("IdPaziente"));
+                g.setIdPaziente(rs.getString("fkPaziente"));
                 g.setValore(rs.getInt("Valore"));
-                g.setDataOra(rs.getTimestamp("DateTime").toLocalDateTime());
-                g.setMomento(rs.getString("Momento")); // se hai la colonna
+                g.setDataOra(rs.getTimestamp("DateStamp").toLocalDateTime());
+                g.setMomento(rs.getString("ParteGiorno")); // se hai la colonna
 
                 result.add(g);
             }
@@ -66,12 +66,12 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
     @Override
     public void insert(Glicemia g) throws Exception {
 
-        String sql = "INSERT INTO Glicemia (IdPaziente, Valore, DateTime, Momento) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Glicemia (fkPaziente, Valore, DateStamp, ParteGiorno) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, g.getIdPaziente());
+            ps.setString(1, g.getIdPaziente());
             ps.setInt(2, g.getValore());
             ps.setTimestamp(3, Timestamp.valueOf(g.getDataOra()));
             ps.setString(4, g.getMomento());
@@ -83,7 +83,7 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
     @Override
     public void update(Glicemia g) throws Exception {
 
-        String sql = "UPDATE Glicemia SET Valore=?, Momento=? WHERE Id=?";
+        String sql = "UPDATE Glicemia SET Valore=?, ParteGiorno=? WHERE Id=?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

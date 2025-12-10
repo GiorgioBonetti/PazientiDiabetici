@@ -23,7 +23,7 @@ import java.util.List;
 
 public class DoctorDashboardController {
 
-    private int idDiabetologoLoggato;
+    private String idDiabetologoLoggato;
 
     @FXML
     private ListView<Paziente> patientsListView;
@@ -37,7 +37,7 @@ public class DoctorDashboardController {
     private FilteredList<Paziente> filteredPatients;
 
     // chiamato dal MainShellController
-    public void setDoctorContext(int doctorId) {
+    public void setDoctorContext(String doctorId) {
         this.idDiabetologoLoggato = doctorId;
         // se vuoi filtrare i pazienti per diabetologo, lo fai qui
         reloadPatients();
@@ -59,7 +59,7 @@ public class DoctorDashboardController {
             allPatients.setAll(lista);
 
             // opzionale: ultimi creati in alto
-            allPatients.sort((a, b) -> Integer.compare(b.getId(), a.getId()));
+            //allPatients.sort((a, b) -> Integer.compare(b.getId(), a.getId()));
 
             // filtered list
             filteredPatients = new FilteredList<>(allPatients, p -> true);
@@ -75,7 +75,7 @@ public class DoctorDashboardController {
                     if (q.isEmpty()) return true;
                     String fullName = (p.getNome() + " " + p.getCognome()).toLowerCase();
                     String email    = p.getEmail() != null ? p.getEmail().toLowerCase() : "";
-                    String idStr    = String.valueOf(p.getId());
+                    String idStr    = String.valueOf(p.getCodiceFiscale());
                     return fullName.contains(q) || email.contains(q) || idStr.contains(q);
                 });
             });
@@ -179,7 +179,7 @@ public class DoctorDashboardController {
             Parent view = loader.load();
 
             PatientReportController ctrl = loader.getController();
-            ctrl.setPatientContext(p.getNome() + " " + p.getCognome(), p.getId());
+            ctrl.setPatientContext(p.getNome() + " " + p.getCognome(), p.getCodiceFiscale());
 
             MainShellController shell = MainApp.getMainShellController();
             shell.getContentArea().getChildren().setAll(view);

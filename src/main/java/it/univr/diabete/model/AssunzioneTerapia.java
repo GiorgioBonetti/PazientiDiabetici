@@ -7,13 +7,13 @@ public class AssunzioneTerapia {
     private int id;
     private LocalDateTime dateStamp;
     private int quantitaAssunta;
-    private int idPaziente;
+    private String idPaziente;
     private int idTerapiaFarmaco;
 
     public AssunzioneTerapia() { }
 
     public AssunzioneTerapia(int id, LocalDateTime dateStamp,
-                             int quantitaAssunta, int idPaziente,
+                             int quantitaAssunta, String idPaziente,
                              int idTerapiaFarmaco) {
         this.id = id;
         this.dateStamp = dateStamp;
@@ -32,8 +32,8 @@ public class AssunzioneTerapia {
     public int getQuantitaAssunta() { return quantitaAssunta; }
     public void setQuantitaAssunta(int quantitaAssunta) { this.quantitaAssunta = quantitaAssunta; }
 
-    public int getIdPaziente() { return idPaziente; }
-    public void setIdPaziente(int idPaziente) { this.idPaziente = idPaziente; }
+    public String getIdPaziente() { return idPaziente; }
+    public void setIdPaziente(String idPaziente) { this.idPaziente = idPaziente; }
 
     public int getIdTerapiaFarmaco() { return idTerapiaFarmaco; }
     public void setIdTerapiaFarmaco(int idTerapiaFarmaco) { this.idTerapiaFarmaco = idTerapiaFarmaco; }

@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface GlicemiaDAO {
 
-    List<Glicemia> findByPazienteId(int idPaziente) throws Exception;
+    List<Glicemia> findByPazienteId(String codiceFiscale) throws Exception;
 
     // ⭐ AGGIUNGERE QUESTO:
     List<Glicemia> findAll() throws Exception;

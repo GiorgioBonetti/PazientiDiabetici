@@ -12,7 +12,7 @@ public interface AssunzioneTerapiaDAO {
      * @param pazienteId        id del paziente
      * @param terapiaFarmacoId  id della riga TerapiaFarmaco
      */
-    List<AssunzioneTerapia> findByPazienteAndTerapiaFarmaco(int pazienteId,
+    List<AssunzioneTerapia> findByPazienteAndTerapiaFarmaco(String pazienteId,
                                                             int terapiaFarmacoId) throws Exception;
 
     /**

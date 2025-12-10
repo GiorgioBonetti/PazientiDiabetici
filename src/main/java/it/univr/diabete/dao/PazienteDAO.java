@@ -10,7 +10,7 @@ public interface PazienteDAO {
 
     List<Paziente> findAll() throws Exception;
 
-    Paziente findById(int id) throws Exception;
+    Paziente findById(String CodiceFiscale) throws Exception;
 
     void insert(Paziente paziente) throws Exception;
 

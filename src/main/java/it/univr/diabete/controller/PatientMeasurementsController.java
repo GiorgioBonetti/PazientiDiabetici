@@ -70,7 +70,7 @@ public class PatientMeasurementsController {
 
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
 
-    private Integer patientId;
+    private String codiceFiscale;
 
     private final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("dd/MM HH:mm");
@@ -82,21 +82,21 @@ public class PatientMeasurementsController {
     private TableColumn<Glicemia, Void> colEdit;
     @FXML
     private void handleGoToReport() {
-        if (patientId <= 0) return;
+        if (codiceFiscale.isEmpty()) return;
 
         MainShellController shell = MainApp.getMainShellController();
         if (shell != null) {
-            shell.openPatientReport(patientNameLabel.getText(), patientId);
+            shell.openPatientReport(patientNameLabel.getText(), codiceFiscale);
         }
     }
 
     @FXML
     private void handleGoToTherapy() {
-        if (patientId <= 0) return;
+        if (codiceFiscale.isEmpty()) return;
 
         MainShellController shell = MainApp.getMainShellController();
         if (shell != null) {
-            shell.openPatientTherapy(patientNameLabel.getText(), patientId);
+            shell.openPatientTherapy(patientNameLabel.getText(), codiceFiscale);
         }
     }
     @FXML
@@ -139,17 +139,17 @@ public class PatientMeasurementsController {
         addEditColumn();
     }
 
-    public void setPatientContext(String fullName, int id) {
-        this.patientId = id;
+    public void setPatientContext(String fullName, String codiceFiscale) {
+        this.codiceFiscale = codiceFiscale;
         patientNameLabel.setText(fullName);
         loadMeasurements();
     }
 
     private void loadMeasurements() {
-        if (patientId == null) return;
+        if (codiceFiscale.isEmpty()) return;
 
         try {
-            List<Glicemia> lista = glicemiaDAO.findByPazienteId(patientId);
+            List<Glicemia> lista = glicemiaDAO.findByPazienteId(codiceFiscale);
             allMeasurements.setAll(lista);
             applyFilterAndRefresh();
         } catch (Exception e) {
@@ -223,7 +223,7 @@ public class PatientMeasurementsController {
 
     @FXML
     private void handleAddGlicemia() {
-        if (patientId == null) return;
+        if (codiceFiscale.isEmpty()) return;
 
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -232,7 +232,7 @@ public class PatientMeasurementsController {
             Parent root = loader.load();
 
             AddGlicemiaController controller = loader.getController();
-            controller.initData(patientId, this::loadMeasurements);
+            controller.initData(codiceFiscale, this::loadMeasurements);
 
             Stage popup = new Stage();
             popup.initOwner(measurementsTable.getScene().getWindow());

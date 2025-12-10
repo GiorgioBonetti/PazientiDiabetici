@@ -29,7 +29,7 @@ public class DoctorPatientsController {
     @FXML
     private TextField searchField;
     // id del diabetologo attualmente loggato
-    private int idDiabetologoLoggato;
+    private String idDiabetologoLoggato;
     @FXML
     private VBox patientsContainer;
 
@@ -52,7 +52,7 @@ public class DoctorPatientsController {
             filteredPatients.setPredicate(p -> {
                 if (text.isEmpty()) return true;
                 String fullName = (p.getNome() + " " + p.getCognome()).toLowerCase();
-                String id = String.valueOf(p.getId());
+                String id = String.valueOf(p.getCodiceFiscale());
                 return fullName.contains(text)
                         || id.contains(text)
                         || (p.getEmail() != null && p.getEmail().toLowerCase().contains(text));
@@ -62,7 +62,7 @@ public class DoctorPatientsController {
 
         renderCards();
     }
-    public void setDoctorContext(int idDiabetologo) {
+    public void setDoctorContext(String idDiabetologo) {
         this.idDiabetologoLoggato = idDiabetologo;
         reloadPatients(); // appena entro nella pagina carico i pazienti del medico
     }
@@ -186,7 +186,7 @@ public class DoctorPatientsController {
             PatientMeasurementsController ctrl = loader.getController();
             // passo nome completo + id del paziente scelto
             String fullName = p.getNome() + " " + p.getCognome();
-            ctrl.setPatientContext(fullName, p.getId());
+            ctrl.setPatientContext(fullName, p.getCodiceFiscale());
             ctrl.hideEditingTools();
             // metto la view dentro il contenitore centrale della MainShell
             MainShellController shell = MainApp.getMainShellController();
@@ -206,7 +206,7 @@ public class DoctorPatientsController {
 
             PatientTherapyController ctrl = loader.getController();
             String fullName = p.getNome() + " " + p.getCognome();
-            ctrl.setPatientContext(fullName, p.getId());
+            ctrl.setPatientContext(fullName, p.getCodiceFiscale());
             ctrl.hideEditingTools();
             MainShellController shell = MainApp.getMainShellController();
             shell.getContentArea().getChildren().setAll(view);
@@ -225,7 +225,7 @@ public class DoctorPatientsController {
 
             PatientReportController ctrl = loader.getController();
             String fullName = p.getNome() + " " + p.getCognome();
-            ctrl.setPatientContext(fullName, p.getId());
+            ctrl.setPatientContext(fullName, p.getCodiceFiscale());
 
             MainShellController shell = MainApp.getMainShellController();
             shell.getContentArea().getChildren().setAll(view);

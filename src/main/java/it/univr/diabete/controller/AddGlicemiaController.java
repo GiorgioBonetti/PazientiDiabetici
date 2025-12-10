@@ -18,7 +18,7 @@ public class AddGlicemiaController {
     @FXML
     private ComboBox<String> momentoChoice; // mattino / pranzo / ecc.
 
-    private int pazienteId;
+    private String codiceFiscale;
     private Runnable callbackRicarica;
 
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
@@ -34,8 +34,8 @@ public class AddGlicemiaController {
         momentoChoice.getSelectionModel().selectFirst();
     }
 
-    public void initData(int pazienteId, Runnable callback) {
-        this.pazienteId = pazienteId;
+    public void initData(String codiceFiscale, Runnable callback) {
+        this.codiceFiscale = codiceFiscale;
         this.callbackRicarica = callback;
     }
 
@@ -72,7 +72,7 @@ public class AddGlicemiaController {
             Glicemia g = new Glicemia();
             g.setValore(valore);
             g.setMomento(momento);           // <-- nuovo campo
-            g.setIdPaziente(pazienteId);
+            g.setIdPaziente(codiceFiscale);
             g.setDataOra(LocalDateTime.now());
 
             glicemiaDAO.insert(g);

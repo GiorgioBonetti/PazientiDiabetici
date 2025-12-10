@@ -48,7 +48,7 @@ public class DoctorMeasurementsController {
     private FilteredList<Paziente> filtered;
 
     // cache: tutte le glicemie raggruppate per paziente
-    private Map<Integer, List<Glicemia>> glicemiePerPaziente = new HashMap<>();
+    private Map<String, List<Glicemia>> glicemiePerPaziente = new HashMap<>();
 
     private final LocalDate today = LocalDate.now();
 
@@ -71,7 +71,7 @@ public class DoctorMeasurementsController {
                 if (t.isEmpty()) return true;
                 String fullName = (p.getNome() + " " + p.getCognome()).toLowerCase();
                 String email = (p.getEmail() != null) ? p.getEmail().toLowerCase() : "";
-                String id = String.valueOf(p.getId());
+                String id = String.valueOf(p.getCodiceFiscale());
                 return fullName.contains(t) || email.contains(t) || id.contains(t);
             });
             renderCards();
@@ -89,7 +89,7 @@ public class DoctorMeasurementsController {
             // pazienti
             allPatients.setAll(pazienteDAO.findAll());
             // ultimo creato in alto (id più grande prima)
-            allPatients.sort((a, b) -> Integer.compare(b.getId(), a.getId()));
+            //allPatients.sort((a, b) -> Integer.compare(b.getCodiceFiscale(), a.getCodiceFiscale()));
 
             // glicemie (una sola query)
             List<Glicemia> tutte = glicemiaDAO.findAll();
@@ -133,7 +133,7 @@ public class DoctorMeasurementsController {
         """);
 
         // ---- MISURAZIONI DI OGGI (usiamo la cache) ----
-        List<Glicemia> mis = glicemiePerPaziente.getOrDefault(p.getId(), List.of());
+        List<Glicemia> mis = glicemiePerPaziente.getOrDefault(p.getCodiceFiscale(), List.of());
 
         List<Glicemia> todayList = mis.stream()
                 .filter(g -> g.getDataOra().toLocalDate().equals(today))
@@ -358,7 +358,7 @@ public class DoctorMeasurementsController {
             Parent view = loader.load();
 
             PatientMeasurementsController ctrl = loader.getController();
-            ctrl.setPatientContext(p.getNome() + " " + p.getCognome(), p.getId());
+            ctrl.setPatientContext(p.getNome() + " " + p.getCognome(), p.getCodiceFiscale());
             ctrl.hideEditingTools();
             MainShellController shell = MainApp.getMainShellController();
             shell.getContentArea().getChildren().setAll(view);

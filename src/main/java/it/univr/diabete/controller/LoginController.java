@@ -51,18 +51,18 @@ public class LoginController {
 
             String role;
             String displayName;
-            Integer userId = null;  // 👈 id dell’utente loggato (paziente O diabetologo)
+            String userId = null;  // 👈 id dell’utente loggato (paziente O diabetologo)
 
             if (paziente != null) {
                 role = "Paziente";
                 displayName = paziente.getNome() + " " + paziente.getCognome();
-                userId = paziente.getId();          // 👈 id paziente
+                userId = paziente.getCodiceFiscale();          // 👈 id paziente
             } else {
                 diabetologo = diabetologoDAO.findByEmailAndPassword(email, password);
                 if (diabetologo != null) {
                     role = "Diabetologo";
                     displayName = diabetologo.getNome() + " " + diabetologo.getCognome();
-                    userId = diabetologo.getId();   // 👈 id diabetologo
+                    userId = diabetologo.getEmail();   // 👈 id diabetologo
                 } else {
                     showError("Credenziali errate.");
                     return;

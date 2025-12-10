@@ -20,7 +20,7 @@ public class AddAssunzioneController {
     @FXML
     private DatePicker dateField;
 
-    private int pazienteId;
+    private String pazienteId;
     // 👇 adesso memorizziamo l'id della TerapiaFarmaco
     private int terapiaFarmacoId;
 
@@ -32,7 +32,7 @@ public class AddAssunzioneController {
      * @param pazienteId        id del paziente
      * @param terapiaFarmacoId  id della riga TerapiaFarmaco
      */
-    public void initData(int pazienteId, int terapiaFarmacoId, Runnable onSave) {
+    public void initData(String pazienteId, int terapiaFarmacoId, Runnable onSave) {
         this.pazienteId = pazienteId;
         this.terapiaFarmacoId = terapiaFarmacoId;
         this.onSave = onSave;

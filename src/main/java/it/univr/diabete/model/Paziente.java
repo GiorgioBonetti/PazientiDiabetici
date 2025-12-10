@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 public class Paziente {
 
-    private int id;
     private String nome;
     private String cognome;
     private LocalDate dataNascita;
@@ -13,15 +12,14 @@ public class Paziente {
     private String sesso;
     private String codiceFiscale;
     private String password;
-    private int idDiabetologo;
+    private String idDiabetologo;
 
     public Paziente() {}
 
-    public Paziente(int id, String nome, String cognome, LocalDate dataNascita,
+    public Paziente(String nome, String cognome, LocalDate dataNascita,
                     String numeroTelefono, String email, String sesso,
-                    String codiceFiscale, String password, int idDiabetologo) {
+                    String codiceFiscale, String password, String idDiabetologo) {
 
-        this.id = id;
         this.nome = nome;
         this.cognome = cognome;
         this.dataNascita = dataNascita;
@@ -34,14 +32,6 @@ public class Paziente {
     }
 
     // GETTER E SETTER
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getNome() {
         return nome;
@@ -107,11 +97,11 @@ public class Paziente {
         this.password = password;
     }
 
-    public int getIdDiabetologo() {
+    public String getIdDiabetologo() {
         return idDiabetologo;
     }
 
-    public void setIdDiabetologo(int idDiabetologo) {
+    public void setIdDiabetologo(String idDiabetologo) {
         this.idDiabetologo = idDiabetologo;
     }
 

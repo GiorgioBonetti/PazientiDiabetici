@@ -63,7 +63,7 @@ public class PatientTherapyController {
 
     private Terapia       terapiaCorrente;
     private TerapiaFarmaco terapiaFarmacoCorrente;
-    private int pazienteId;
+    private String codiceFiscale;
 
     private final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private VBox selectedCard;   // card terapia selezionata
@@ -72,19 +72,19 @@ public class PatientTherapyController {
 
     @FXML
     private void handleGoToMeasurements() {
-        if (pazienteId <= 0) return;
+        if (codiceFiscale.isEmpty()) return;
         MainShellController shell = MainApp.getMainShellController();
         if (shell != null) {
-            shell.openPatientMeasurements(patientNameLabel.getText(), pazienteId);
+            shell.openPatientMeasurements(patientNameLabel.getText(), codiceFiscale);
         }
     }
 
     @FXML
     private void handleGoToReport() {
-        if (pazienteId <= 0) return;
+        if (codiceFiscale.isEmpty()) return;
         MainShellController shell = MainApp.getMainShellController();
         if (shell != null) {
-            shell.openPatientReport(patientNameLabel.getText(), pazienteId);
+            shell.openPatientReport(patientNameLabel.getText(), codiceFiscale);
         }
     }
 
@@ -109,8 +109,8 @@ public class PatientTherapyController {
     }
 
     // chiamato dal MainShellController
-    public void setPatientContext(String nomeCompleto, int patientId) {
-        this.pazienteId = patientId;
+    public void setPatientContext(String nomeCompleto, String codiceFiscale) {
+        this.codiceFiscale = codiceFiscale;
         patientNameLabel.setText(nomeCompleto);
         loadTerapie();
     }
@@ -119,7 +119,7 @@ public class PatientTherapyController {
 
     private void loadTerapie() {
         try {
-            List<Terapia> lista = terapiaDAO.findByPazienteId(pazienteId);
+            List<Terapia> lista = terapiaDAO.findByPazienteId(codiceFiscale);
 
             therapyCardsContainer.getChildren().clear();
             terapiaCorrente = null;
@@ -391,7 +391,7 @@ public class PatientTherapyController {
             Parent root = loader.load();
 
             AddAssunzioneController controller = loader.getController();
-            controller.initData(pazienteId, terapiaFarmacoCorrente.getId(), this::loadAssunzioni);
+            controller.initData(codiceFiscale, terapiaFarmacoCorrente.getId(), this::loadAssunzioni);
 
             Stage popup = new Stage();
             popup.initOwner(assunzioniTable.getScene().getWindow());
@@ -413,7 +413,7 @@ public class PatientTherapyController {
 
         try {
             List<AssunzioneTerapia> lista =
-                    assunzioneDAO.findByPazienteAndTerapiaFarmaco(pazienteId, terapiaFarmacoCorrente.getId());
+                    assunzioneDAO.findByPazienteAndTerapiaFarmaco(codiceFiscale, terapiaFarmacoCorrente.getId());
 
             List<AssunzioneTerapia> filtrate = lista.stream()
                     .filter(a -> {
@@ -491,7 +491,7 @@ public class PatientTherapyController {
     }
     private void reloadTerapieAndSelect(int terapiaIdDaSelezionare) {
         try {
-            List<Terapia> lista = terapiaDAO.findByPazienteId(pazienteId);
+            List<Terapia> lista = terapiaDAO.findByPazienteId(codiceFiscale);
 
             therapyCardsContainer.getChildren().clear();
             terapiaCorrente = null;
@@ -565,14 +565,14 @@ public class PatientTherapyController {
 
     @FXML
     private void handleAddTherapy() {
-        if (pazienteId <= 0) return;
+        if (codiceFiscale.isEmpty()) return;
 
         try {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/AddTherapyView.fxml"));
             Parent root = loader.load();
 
             AddTherapyController ctrl = loader.getController();
-            ctrl.initData(pazienteId, this::loadTerapie);
+            ctrl.initData(codiceFiscale, this::loadTerapie);
 
             Stage popup = new Stage();
             popup.initOwner(therapyRoot.getScene().getWindow());

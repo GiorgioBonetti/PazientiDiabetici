@@ -22,11 +22,11 @@ public class AddPatientController {
 
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
 
-    private int diabetologoId;           // viene passato dal controller del medico
+    private String diabetologoId;           // viene passato dal controller del medico
     private Runnable onSavedCallback;    // ricarica lista pazienti
 
     // --- inizializzazione dati da fuori ---
-    public void initData(int diabetologoId, Runnable callback) {
+    public void initData(String diabetologoId, Runnable callback) {
         this.diabetologoId = diabetologoId;
         this.onSavedCallback = callback;
     }

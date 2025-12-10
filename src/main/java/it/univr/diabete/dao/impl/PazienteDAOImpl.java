@@ -19,7 +19,6 @@ public class PazienteDAOImpl implements PazienteDAO {
     private Paziente mapRow(ResultSet rs) throws SQLException {
         Paziente p = new Paziente();
 
-        p.setId(rs.getInt("Id"));
         p.setNome(rs.getString("Nome"));
         p.setCognome(rs.getString("Cognome"));
 
@@ -34,7 +33,7 @@ public class PazienteDAOImpl implements PazienteDAO {
         p.setSesso(rs.getString("Sesso"));
         p.setCodiceFiscale(rs.getString("CodiceFiscale"));
         p.setPassword(rs.getString("Password"));
-        p.setIdDiabetologo(rs.getInt("idDiabetologo"));
+        p.setIdDiabetologo(rs.getString("fKDiabetologo"));
 
         return p;
     }
@@ -69,8 +68,7 @@ public class PazienteDAOImpl implements PazienteDAO {
     @Override
     public List<Paziente> findAll() throws Exception {
         String sql = """
-        SELECT Id,
-               Nome,
+        SELECT Nome,
                Cognome,
                eMail,
                NumeroTelefono,
@@ -78,8 +76,8 @@ public class PazienteDAOImpl implements PazienteDAO {
                Sesso,
                CodiceFiscale,
                Password,
-               idDiabetologo
-        FROM Paziente ORDER BY Id DESC 
+               fkDiabetologo,
+        FROM Paziente ORDER BY CodiceFiscale DESC 
         """;
 
         try (Connection conn = Database.getConnection();
@@ -90,7 +88,6 @@ public class PazienteDAOImpl implements PazienteDAO {
 
             while (rs.next()) {
                 Paziente p = new Paziente();
-                p.setId(rs.getInt("Id"));
                 p.setNome(rs.getString("Nome"));
                 p.setCognome(rs.getString("Cognome"));
                 p.setEmail(rs.getString("eMail"));          // occhio a eMail vs Email
@@ -104,7 +101,7 @@ public class PazienteDAOImpl implements PazienteDAO {
                 p.setSesso(rs.getString("Sesso"));
                 p.setCodiceFiscale(rs.getString("CodiceFiscale"));
                 p.setPassword(rs.getString("Password"));
-                p.setIdDiabetologo(rs.getInt("idDiabetologo"));
+                p.setIdDiabetologo(rs.getString("fkDiabetologo"));
 
                 result.add(p);
             }
@@ -113,24 +110,23 @@ public class PazienteDAOImpl implements PazienteDAO {
         }
     }
     @Override
-    public Paziente findById(int id) throws Exception {
+    public Paziente findById(String id) throws Exception {
         String sql = """
-            SELECT Id, Nome, Cognome, DataNascita, NumeroTelefono,
-                   eMail, Sesso, CodiceFiscale, Password, idDiabetologo
+            SELECT Nome, Cognome, DataNascita, NumeroTelefono,
+                   eMail, Sesso, CodiceFiscale, Password, fkDiabetologo
             FROM Paziente
-            WHERE Id = ?
+            WHERE CodiceFiscale = ?
             """;
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, id);
+            ps.setString(1, id);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
 
                 Paziente p = new Paziente();
-                p.setId(rs.getInt("Id"));
                 p.setNome(rs.getString("Nome"));
                 p.setCognome(rs.getString("Cognome"));
 
@@ -143,7 +139,7 @@ public class PazienteDAOImpl implements PazienteDAO {
                 p.setSesso(rs.getString("Sesso"));
                 p.setCodiceFiscale(rs.getString("CodiceFiscale"));
                 p.setPassword(rs.getString("Password"));
-                p.setIdDiabetologo(rs.getInt("idDiabetologo"));
+                p.setIdDiabetologo(rs.getString("fkDiabetologo"));
 
                 return p;
             }
@@ -154,7 +150,7 @@ public class PazienteDAOImpl implements PazienteDAO {
         String sql = """
             INSERT INTO Paziente
             (Nome, Cognome, DataNascita, NumeroTelefono,
-             eMail, Sesso, CodiceFiscale, Password, idDiabetologo)
+             eMail, Sesso, CodiceFiscale, Password, fkDiabetologo)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
@@ -175,16 +171,11 @@ public class PazienteDAOImpl implements PazienteDAO {
             ps.setString(6, p.getSesso());
             ps.setString(7, p.getCodiceFiscale());
             ps.setString(8, p.getPassword());
-            ps.setInt(9, p.getIdDiabetologo());
+            ps.setString(9, p.getIdDiabetologo());
 
             ps.executeUpdate();
 
-            // recupero ID generato e lo rimetto nell’oggetto
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    p.setId(rs.getInt(1));
-                }
-            }
+
         }
     }
     @Override
@@ -197,10 +188,9 @@ public class PazienteDAOImpl implements PazienteDAO {
                 NumeroTelefono = ?,
                 eMail = ?,
                 Sesso = ?,
-                CodiceFiscale = ?,
                 Password = ?,
-                idDiabetologo = ?
-            WHERE Id = ?
+                fkDiabetologo = ?
+            WHERE CodiceFiscale = ?
             """;
 
         try (Connection conn = Database.getConnection();
@@ -220,8 +210,7 @@ public class PazienteDAOImpl implements PazienteDAO {
             ps.setString(6, p.getSesso());
             ps.setString(7, p.getCodiceFiscale());
             ps.setString(8, p.getPassword());
-            ps.setInt(9, p.getIdDiabetologo());
-            ps.setInt(10, p.getId());
+            ps.setString(9, p.getIdDiabetologo());
 
             ps.executeUpdate();
         }

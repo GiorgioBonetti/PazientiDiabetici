@@ -64,8 +64,8 @@ public class MainShellController {
     private String userName;
 
     /** Id paziente (solo se role = Paziente, altrimenti null) */
-    private Integer patientId;
-    private Integer loggedUserId;
+    private String codiceFiscale;
+    private String loggedUserId;
     /**
      * Versione "vecchia": solo ruolo + nome.
      * La lasciamo per compatibilità, e dentro chiamiamo quella a 3 parametri con patientId = null.
@@ -77,14 +77,14 @@ public class MainShellController {
     /**
      * Versione completa: ruolo + nome + id paziente (se è un paziente).
      */
-    public void setUserData(String role, String userName, Integer userId) {
+    public void setUserData(String role, String userName, String codiceFiscale) {
         this.role = role;
         this.userName = userName;
-        this.loggedUserId = userId;
+        this.loggedUserId = codiceFiscale;
 
         // se è paziente salvo anche l'id paziente
         if ("Paziente".equalsIgnoreCase(role)) {
-            this.patientId = userId;
+            this.codiceFiscale = codiceFiscale;
         }
 
         String initials = getInitials(userName);
@@ -182,7 +182,7 @@ public class MainShellController {
 
             if ("Paziente".equalsIgnoreCase(role)) {
                 PatientDashboardController controller = loader.getController();
-                controller.setPatientData(userName, patientId); // 👈 qui passeremo anche l’id
+                controller.setPatientData(userName, codiceFiscale); // 👈 qui passeremo anche l’id
             } else {
 
                 DoctorDashboardController ctrl = loader.getController();
@@ -218,8 +218,8 @@ public class MainShellController {
                 Parent view = loader.load();
 
                 PatientMeasurementsController controller = loader.getController();
-                if (patientId != null && userName != null) {
-                    controller.setPatientContext(userName, patientId);
+                if (codiceFiscale != null && userName != null) {
+                    controller.setPatientContext(userName, codiceFiscale);
                 }
 
                 contentArea.getChildren().setAll(view);
@@ -250,7 +250,7 @@ public class MainShellController {
             Parent view = loader.load();
 
             PatientTherapyController controller = loader.getController();
-            controller.setPatientContext(userName, patientId);
+            controller.setPatientContext(userName, codiceFiscale);
             if (role.equals("Diabetologo")) {
                 controller.hideEditingTools();
             }else{
@@ -276,14 +276,14 @@ public class MainShellController {
         }
     }
 
-    public void openPatientMeasurements(String fullName, int patientId) {
+    public void openPatientMeasurements(String fullName, String codiceFiscale) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     MainApp.class.getResource("/fxml/PatientMeasurementsView.fxml"));
             Parent view = loader.load();
 
             PatientMeasurementsController ctrl = loader.getController();
-            ctrl.setPatientContext(fullName, patientId);
+            ctrl.setPatientContext(fullName, codiceFiscale);
             if (role.equals("Diabetologo")) {
                 ctrl.hideEditingTools();
             }
@@ -292,28 +292,28 @@ public class MainShellController {
             e.printStackTrace();
         }
     }
-    public void openPatientReport(String fullName, int patientId) {
+    public void openPatientReport(String fullName, String codiceFiscale) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     MainApp.class.getResource("/fxml/PatientReportView.fxml"));
             Parent view = loader.load();
 
             PatientReportController ctrl = loader.getController();
-            ctrl.setPatientContext(fullName, patientId);
+            ctrl.setPatientContext(fullName, codiceFiscale);
             contentArea.getChildren().setAll(view);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void openPatientTherapy(String fullName, int patientId) {
+    public void openPatientTherapy(String fullName, String codiceFiscale) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     MainApp.class.getResource("/fxml/PatientTherapyView.fxml"));
             Parent view = loader.load();
 
             PatientTherapyController ctrl = loader.getController();
-            ctrl.setPatientContext(fullName, patientId);
+            ctrl.setPatientContext(fullName, codiceFiscale);
             if (role.equals("Diabetologo")) {
                 ctrl.hideEditingTools();
             }else{
@@ -335,7 +335,7 @@ public class MainShellController {
 
                 PatientReportController controller = loader.getController();
                 // suppongo che hai già userName e patientId salvati nel MainShellController
-                controller.setPatientContext(userName, patientId);
+                controller.setPatientContext(userName, codiceFiscale);
 
                 contentArea.getChildren().setAll(view);
 

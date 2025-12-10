@@ -71,7 +71,7 @@ public class PatientDashboardController {
     @FXML
     private ChoiceBox<String> measurementFilter;
 
-    private Integer patientId;
+    private String codiceFiscale;
 
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
 
@@ -122,8 +122,8 @@ public class PatientDashboardController {
     /**
      * Chiamato dalla MainShell quando logga un paziente.
      */
-    public void setPatientData(String fullName, int id) {
-        this.patientId = id;
+    public void setPatientData(String fullName, String codiceFiscale) {
+        this.codiceFiscale = codiceFiscale;
         patientNameLabel.setText(fullName);
         loadMeasurements();   // carica dal DB e applica filtro
     }
@@ -132,10 +132,10 @@ public class PatientDashboardController {
      * Legge tutte le glicemie dal DAO e ricarica la tabella
      */
     private void loadMeasurements() {
-        if (patientId == null) return;
+        if (codiceFiscale == null) return;
 
         try {
-            List<Glicemia> lista = glicemiaDAO.findByPazienteId(patientId);
+            List<Glicemia> lista = glicemiaDAO.findByPazienteId(codiceFiscale);
             allMeasurements.setAll(lista);
             applyFilterAndRefresh();
             updateTodayTasks();
@@ -200,7 +200,7 @@ public class PatientDashboardController {
             Parent root = loader.load();
 
             AddGlicemiaController controller = loader.getController();
-            controller.initData(patientId, this::loadMeasurements);
+            controller.initData(codiceFiscale, this::loadMeasurements);
 
             Stage popup = new Stage();
             popup.initOwner(measurementsTable.getScene().getWindow());
@@ -240,7 +240,7 @@ public class PatientDashboardController {
         chkCena.setSelected(cenaDone);
     }
     private void updateTodayTherapyTask() {
-        if (patientId == null) {
+        if (codiceFiscale == null) {
             chkTerapiaAssunta.setSelected(false);
             chkTerapiaAssunta.setDisable(true);
             return;
@@ -248,7 +248,7 @@ public class PatientDashboardController {
 
         try {
             // 1) Recupera le terapie del paziente
-            List<Terapia> terapie = terapiaDAO.findByPazienteId(patientId);
+            List<Terapia> terapie = terapiaDAO.findByPazienteId(codiceFiscale);
 
             if (terapie.isEmpty()) {
                 // nessuna terapia → checkbox disabilitata
@@ -282,7 +282,7 @@ public class PatientDashboardController {
 
             for (TerapiaFarmaco tf : farmaci) {
                 List<AssunzioneTerapia> assunzioni =
-                        assunzioneDAO.findByPazienteAndTerapiaFarmaco(patientId, tf.getId());
+                        assunzioneDAO.findByPazienteAndTerapiaFarmaco(codiceFiscale, tf.getId());
 
                 int qFarmacoOggi = assunzioni.stream()
                         .filter(a -> isSameDay(a.getDateStamp(), today))
