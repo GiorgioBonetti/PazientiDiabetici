@@ -7,7 +7,6 @@ import it.univr.diabete.dao.DiabetologoDAO;
 import it.univr.diabete.dao.impl.DiabetologoDAOImpl;
 import it.univr.diabete.model.Paziente;
 import it.univr.diabete.model.Diabetologo;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

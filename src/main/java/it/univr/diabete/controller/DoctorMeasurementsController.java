@@ -24,9 +24,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 
 public class DoctorMeasurementsController {
 
@@ -138,7 +135,7 @@ public class DoctorMeasurementsController {
         List<Glicemia> todayList = mis.stream()
                 .filter(g -> g.getDataOra().toLocalDate().equals(today))
                 .sorted(Comparator.comparing(Glicemia::getDataOra))
-                .collect(Collectors.toList());
+                .toList();
 
         // mappa MomentoNormalizzato -> ultima glicemia di quel momento
         Map<String, Glicemia> lastByMoment = new HashMap<>();
@@ -321,7 +318,7 @@ public class DoctorMeasurementsController {
         List<Glicemia> last = data.stream()
                 .sorted(Comparator.comparing(Glicemia::getDataOra))
                 .skip(Math.max(0, data.size() - 10))
-                .collect(Collectors.toList());
+                .toList();
 
         double width = CARD_WIDTH - 35;   // leggermente più largo
         double height = 35;               // altezza grafico

@@ -9,7 +9,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,8 +75,8 @@ public class PazienteDAOImpl implements PazienteDAO {
                Sesso,
                CodiceFiscale,
                Password,
-               fkDiabetologo,
-        FROM Paziente ORDER BY CodiceFiscale DESC 
+               fkDiabetologo
+        FROM Paziente ORDER BY CodiceFiscale DESC
         """;
 
         try (Connection conn = Database.getConnection();

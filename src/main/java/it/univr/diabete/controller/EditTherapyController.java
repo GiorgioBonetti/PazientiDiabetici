@@ -84,9 +84,7 @@ public class EditTherapyController {
         });
 
         // filtro live
-        searchFarmacoField.textProperty().addListener((obs, oldV, newV) -> {
-            filterFarmaciList(newV);
-        });
+        searchFarmacoField.textProperty().addListener((obs, oldV, newV) -> filterFarmaciList(newV));
 
         // click singolo sulla card → dialog dosi
         farmacoListView.setOnMouseClicked(event -> {

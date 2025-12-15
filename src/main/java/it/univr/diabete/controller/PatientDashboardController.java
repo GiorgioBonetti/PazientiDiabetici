@@ -120,7 +120,7 @@ public class PatientDashboardController {
     }
 
     /**
-     * Chiamato dalla MainShell quando logga un paziente.
+     * Chiamato dalla MainShell quando un paziente effettua il login.
      */
     public void setPatientData(String fullName, String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;

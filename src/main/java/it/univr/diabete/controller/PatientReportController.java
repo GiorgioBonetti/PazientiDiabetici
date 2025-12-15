@@ -18,7 +18,6 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 
@@ -51,16 +50,11 @@ public class PatientReportController {
     @FXML private Label maxLabel;
     @FXML private Label countLabel;
 
-    @FXML private Label therapyLabel;        // se non usato puoi anche toglierlo da FXML
     @FXML private Label therapyStatusLabel;
 
     @FXML private LineChart<String, Number> reportChart;
     @FXML private CategoryAxis xAxis;
     @FXML private NumberAxis yAxis;
-
-    @FXML private Button goMeasurementsButton;
-    @FXML private Button goTherapyButton;
-    @FXML private Button editPatientButton;
 
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
@@ -174,7 +168,7 @@ public class PatientReportController {
             case "Ultimi 7 giorni"  -> fromDateTime = today.minusDays(7).atStartOfDay();
             case "Ultimi 30 giorni" -> fromDateTime = today.minusDays(30).atStartOfDay();
             case "Ultimi 90 giorni" -> fromDateTime = today.minusDays(90).atStartOfDay();
-            case "Tutto"            -> fromDateTime = null;
+            // case "Tutto"         -> gia' settata come null
         }
 
         final LocalDateTime fromBoundary = fromDateTime;
@@ -262,17 +256,15 @@ public class PatientReportController {
             }
 
             String filter = periodFilter.getValue();
-            LocalDate today = LocalDate.now();
+            LocalDate endDate = LocalDate.now();
             LocalDate startDate;
 
             switch (filter) {
-                case "Ultimi 7 giorni"  -> startDate = today.minusDays(6);
-                case "Ultimi 30 giorni" -> startDate = today.minusDays(29);
-                case "Ultimi 90 giorni" -> startDate = today.minusDays(89);
+                case "Ultimi 7 giorni"  -> startDate = endDate.minusDays(6);
+                case "Ultimi 30 giorni" -> startDate = endDate.minusDays(29);
+                case "Ultimi 90 giorni" -> startDate = endDate.minusDays(89);
                 default                 -> startDate = null; // "Tutto"
             }
-
-            LocalDate endDate = today;
 
             Terapia selected = terapiePaziente.stream()
                     .filter(t -> intersectsPeriod(t, startDate, endDate))
@@ -397,7 +389,7 @@ public class PatientReportController {
 
         if (fine == null) {
             // terapia ancora in corso: basta che sia iniziata prima della fine
-            return inizio == null || !inizio.isAfter(end);
+            return !inizio.isAfter(end);
         }
 
         // intervallo [inizio, fine] interseca [start, end]

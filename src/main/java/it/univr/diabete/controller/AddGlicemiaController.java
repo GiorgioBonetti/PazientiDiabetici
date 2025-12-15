@@ -25,7 +25,6 @@ public class AddGlicemiaController {
 
     @FXML
     private void initialize() {
-        // ⚠️ Metti qui gli stessi valori che usi nel popup di EDIT
         momentoChoice.getItems().setAll(
                 "Mattino",
                 "Pranzo",

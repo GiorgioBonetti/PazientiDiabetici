@@ -104,8 +104,4 @@ public class Paziente {
     public void setIdDiabetologo(String idDiabetologo) {
         this.idDiabetologo = idDiabetologo;
     }
-
-    public String getFullName() {
-        return nome + " " + cognome;
-    }
 }

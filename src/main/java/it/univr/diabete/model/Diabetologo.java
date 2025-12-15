@@ -58,9 +58,4 @@ public class Diabetologo {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    // === ✨ Metodo che serve a LoginController ===
-    public String getFullName() {
-        return nome + " " + cognome;
-    }
 }

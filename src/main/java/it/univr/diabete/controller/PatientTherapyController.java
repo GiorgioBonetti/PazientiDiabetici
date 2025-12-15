@@ -37,7 +37,6 @@ import java.util.List;
 public class PatientTherapyController {
 
     @FXML private Button addTherapyButton;
-    @FXML private Button editTherapyButton;   // se lo usi altrove, per ora resta
     @FXML private Label  patientNameLabel;
     @FXML private VBox   therapyRoot;
 
@@ -53,7 +52,6 @@ public class PatientTherapyController {
     @FXML private HBox therapyCardsContainer;
 
     // card farmaci della terapia selezionata (sotto, scroll orizzontale)
-    @FXML private ScrollPane farmaciScroll;
     @FXML private HBox       farmaciCardsContainer;
     private VBox             selectedFarmacoCard;
 
@@ -189,11 +187,10 @@ public class PatientTherapyController {
                 lblInfo.setText("Nessun farmaco assegnato");
             } else {
                 TerapiaFarmaco tf = farmaci.get(0);
-                String nomeFarmaco = (tf.getFarmaco() != null)
+
+                String subtitle = (tf.getFarmaco() != null)
                         ? tf.getFarmaco().getNome()
                         : "Farmaco ID " + tf.getIdFarmaco();
-
-                String subtitle = nomeFarmaco;
                 if (farmaci.size() > 1) {
                     subtitle += " (+ " + (farmaci.size() - 1) + " altri)";
                 }
@@ -521,7 +518,7 @@ public class PatientTherapyController {
                 }
             }
 
-            if (terapiaDaSelezionare != null && cardDaSelezionare != null) {
+            if (terapiaDaSelezionare != null) {
                 // seleziono la terapia modificata
                 selezionaTerapia(terapiaDaSelezionare, cardDaSelezionare);
             } else {

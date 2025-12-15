@@ -5,7 +5,6 @@ import it.univr.diabete.database.Database;
 import it.univr.diabete.model.Glicemia;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
     @Override
     public List<Glicemia> findByPazienteId(String codiceFiscale) throws Exception {
 
-        String sql = "SELECT * FROM Glicemia WHERE IdPaziente = ? ORDER BY DateTime ASC";
+        String sql = "SELECT * FROM Glicemia WHERE IdPaziente = ? ORDER BY DateTime ";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

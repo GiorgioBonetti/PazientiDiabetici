@@ -32,15 +32,9 @@ public class MainShellController {
     private Label roleBadge;
 
     @FXML
-    private Label todayLabel;
-
-    @FXML
     private Button dashboardButton;
     @FXML
     private Button FarmacoButton;
-
-    @FXML
-    private Button patientsButton;
 
     @FXML
     private Button measurementsButton;
@@ -231,9 +225,11 @@ public class MainShellController {
                 );
                 Parent view = loader.load();
 
-                // se un domani vuoi filtrare per diabetologo:
-                // DoctorMeasurementsController ctrl = loader.getController();
-                // ctrl.setDoctorContext(idDiabetologoLoggato);
+                /*
+                se un domani vuoi filtrare per diabetologo:
+                DoctorMeasurementsController ctrl = loader.getController();
+                ctrl.setDoctorContext(idDiabetologoLoggato);
+                 */
 
                 contentArea.getChildren().setAll(view);
             }
@@ -365,12 +361,6 @@ public class MainShellController {
 
     public StackPane getContentArea() {
         return contentArea;
-    }
-    private void clearGlobalAlert() {
-        if (globalAlertLabel == null) return;
-        globalAlertLabel.setVisible(false);
-        globalAlertLabel.setManaged(false);
-        globalAlertLabel.setText("");
     }
 
     /** Alert verde (successo) nel top bar */

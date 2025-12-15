@@ -22,7 +22,7 @@ public class FarmacoFormController {
         errorLabel.setManaged(false);
     }
 
-    /** init(null) per "nuovo", init(farmaco) per "modifica". */
+    /** Init(null) per "nuovo", init(farmaco) per "modifica". */
     public void init(Farmaco existing, String title) {
         this.farmaco = existing;
         if (title != null && !title.isBlank()) {
@@ -43,7 +43,7 @@ public class FarmacoFormController {
         String marca = marcaField.getText() != null ? marcaField.getText().trim() : "";
 
         if (nome.isEmpty()) {
-            showError("Inserisci il nome del farmaco.");
+            showError();
             return;
         }
 
@@ -64,8 +64,8 @@ public class FarmacoFormController {
         close();
     }
 
-    private void showError(String msg) {
-        errorLabel.setText(msg);
+    private void showError() {
+        errorLabel.setText("Inserisci il nome del farmaco.");
         errorLabel.setVisible(true);
         errorLabel.setManaged(true);
     }

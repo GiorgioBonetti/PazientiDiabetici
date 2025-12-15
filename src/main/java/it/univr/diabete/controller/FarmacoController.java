@@ -22,7 +22,6 @@ public class FarmacoController {
     @FXML private TextField searchField;
     @FXML private Button editButton;
     @FXML private Button deleteButton;
-    @FXML private Button addButton;
 
     private final FarmacoDAO farmacoDAO = new FarmacoDAOImpl();
 

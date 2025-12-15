@@ -34,11 +34,6 @@ public class PatientMeasurementsController {
 
     // 🔹 AGGIUNGI QUESTO: collega al bottone "Nuova misurazione" nel FXML
     @FXML
-    private Button goReportButton;
-
-    @FXML
-    private Button goTherapyButton;
-    @FXML
     private Button addGlycemiaButton;
 
     @FXML
@@ -210,13 +205,8 @@ public class PatientMeasurementsController {
         int min = sorted.stream().mapToInt(Glicemia::getValore).min().orElse(0);
         int max = sorted.stream().mapToInt(Glicemia::getValore).max().orElse(0);
 
-        if (min == max) {
-            yAxis.setLowerBound(min - 10);
-            yAxis.setUpperBound(max + 10);
-        } else {
-            yAxis.setLowerBound(min - 10);
-            yAxis.setUpperBound(max + 10);
-        }
+        yAxis.setLowerBound(min - 10);
+        yAxis.setUpperBound(max + 10);
 
         yAxis.setTickUnit(Math.max(5, (yAxis.getUpperBound() - yAxis.getLowerBound()) / 6));
     }

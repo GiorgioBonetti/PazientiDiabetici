@@ -58,16 +58,14 @@ public class AddTherapyController {
         // collega ListView ai farmaci
         farmacoListView.setItems(allFarmaci);
 
-        // 👉 card stile paziente + spazio tra i box
+        // card stile paziente + spazio tra i box
         farmacoListView.setCellFactory(lv -> createFarmacoCardCell());
 
         // carica farmaci dal DB
         loadFarmaciFromDb();
 
         // filtro live sulla search
-        searchFarmacoField.textProperty().addListener((obs, oldV, newV) -> {
-            filterFarmaciList(newV);
-        });
+        searchFarmacoField.textProperty().addListener((obs, oldV, newV) -> filterFarmaciList(newV));
 
         // click singolo su un farmaco -> popup dosi (continua a funzionare)
         farmacoListView.setOnMouseClicked(event -> {
@@ -79,9 +77,7 @@ public class AddTherapyController {
             }
         });
 
-        selectedFarmaci.addListener((javafx.collections.ListChangeListener<FarmacoInTerapia>) c -> {
-            refreshSelectedFarmaciChips();
-        });
+        selectedFarmaci.addListener((javafx.collections.ListChangeListener<FarmacoInTerapia>) c -> refreshSelectedFarmaciChips());
         selectedFarmaciScroll.vvalueProperty().addListener((obs, oldV, newV) -> {
             if (newV.doubleValue() != 0.0) {
                 selectedFarmaciScroll.setVvalue(0.0);

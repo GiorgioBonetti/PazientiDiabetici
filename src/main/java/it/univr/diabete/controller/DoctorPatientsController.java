@@ -13,7 +13,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -158,20 +157,14 @@ public class DoctorPatientsController {
         root.getChildren().addAll(textBox, spacer, actions);
 
         /* CLICK SINGOLO PER APRIRE DETTAGLI */
-        root.setOnMouseClicked(e -> {
-            openPatientDetail(p);
-        });
+        root.setOnMouseClicked(e -> openPatientDetail(p));
 
         /* CAMBIA CURSORE A MANINA QUANDO PASSI SOPRA LA CARD */
         root.setOnMouseEntered(e -> root.setStyle("-fx-cursor: hand;"));
         root.setOnMouseExited(e -> root.setStyle("-fx-cursor: default;"));
-        root.setOnMouseEntered(e -> {
-            root.setStyle("-fx-cursor: hand; -fx-background-color: #F4F5FA; -fx-border-color: #D0D0D0;");
-        });
+        root.setOnMouseEntered(e -> root.setStyle("-fx-cursor: hand; -fx-background-color: #F4F5FA; -fx-border-color: #D0D0D0;"));
 
-        root.setOnMouseExited(e -> {
-            root.setStyle("-fx-cursor: default; -fx-background-color: transparent; -fx-border-color: transparent;");
-        });
+        root.setOnMouseExited(e -> root.setStyle("-fx-cursor: default; -fx-background-color: transparent; -fx-border-color: transparent;"));
         return root;
     }
 

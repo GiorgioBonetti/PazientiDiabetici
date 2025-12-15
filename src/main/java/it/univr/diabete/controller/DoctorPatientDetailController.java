@@ -11,8 +11,6 @@ import java.time.LocalDate;
 
 public class DoctorPatientDetailController {
     @FXML
-    private Label saveMessageLabel;
-    @FXML
     private Label patientNameLabel;
 
     @FXML
@@ -59,11 +57,7 @@ public class DoctorPatientDetailController {
         telefonoField.setText(paziente.getNumeroTelefono());
 
         LocalDate dob = paziente.getDataNascita();
-        if (dob != null) {
-            dataNascitaPicker.setValue(dob);
-        } else {
-            dataNascitaPicker.setValue(null);
-        }
+        dataNascitaPicker.setValue(dob);
 
         sessoChoice.setValue(paziente.getSesso());
         codiceFiscaleField.setText(paziente.getCodiceFiscale());
