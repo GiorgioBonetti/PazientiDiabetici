@@ -1,0 +1,57 @@
+# .gitignore per progetto Java + Maven + IntelliJ (PazientiDiabetici)
+# Ignora file generati dalla build, file IDE e file temporanei di sistema
+
+# Cartella di output di Maven
+/target/
+
+# IntelliJ IDEA
+/.idea/
+*.iml
+
+# Maven wrapper (se presente)
+.mvn/
+
+# File di classe e artefatti di build
+*.class
+*.jar
+*.war
+*.ear
+
+# File di progetto IDE vari
+/.classpath
+/.project
+/.settings/
+
+# Output di compilazione (altre convenzioni)
+out/
+
+# File di log e temp
+*.log
+tmp/
+*.tmp
+*.swp
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Copertura/test reports
+coverage/
+jacoco.exec
+
+# Risorse generate (se presenti)
+/generated-sources/
+/generated-resources/
+
+# Cartelle dell'editor
+.vscode/
+
+# Proprietà locali
+local.properties
+
+# Evita di tracciare file sensibili o di configurazione locale
+secret.properties
+
+# Fine del .gitignore
+
