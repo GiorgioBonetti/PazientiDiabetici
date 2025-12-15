@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 public class LoginController {
@@ -32,11 +33,19 @@ public class LoginController {
     @FXML
     private Label loginErrorLabel;
 
-    // Nome completo dell’utente loggato (es. “Luigi Bianchi”)
-    private String loggedUserName = "";
+    @FXML
+    private Button loginButton;
 
     @FXML
-    private void handleLogin(ActionEvent event) {
+    private void initialize() {
+        // rende il pulsante "default" così che Invio lo attivi
+        if (loginButton != null) {
+            loginButton.setDefaultButton(true);
+        }
+    }
+
+    @FXML
+    private void handleLogin() {
         String email = emailField.getText();
         String password = passwordField.getText();
 
@@ -47,11 +56,11 @@ public class LoginController {
 
         try {
             Paziente paziente = pazienteDAO.findByEmailAndPassword(email, password);
-            Diabetologo diabetologo = null;
+            Diabetologo diabetologo;
 
             String role;
             String displayName;
-            String userId = null;  // 👈 id dell’utente loggato (paziente O diabetologo)
+            String userId;  // 👈 id dell’utente loggato (paziente O diabetologo)
 
             if (paziente != null) {
                 role = "Paziente";
