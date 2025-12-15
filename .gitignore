@@ -4,10 +4,6 @@
 # Cartella di output di Maven
 /target/
 
-# IntelliJ IDEA
-/.idea/
-*.iml
-
 # Maven wrapper (se presente)
 .mvn/
 
