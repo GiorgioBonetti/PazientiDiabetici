@@ -1,6 +1,3 @@
-# .gitignore per progetto Java + Maven + IntelliJ (PazientiDiabetici)
-# Ignora file generati dalla build, file IDE e file temporanei di sistema
-
 # Cartella di output di Maven
 /target/
 
@@ -49,5 +46,21 @@ local.properties
 # Evita di tracciare file sensibili o di configurazione locale
 secret.properties
 
-# Fine del .gitignore
+# Ignora i file e le cartelle specifiche dell'ambiente locale / workspace
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/httpRequests/
+.idea/mavenHomeManager.xml
+.idea/dataSources/
+.idea/dataSources.local.xml
 
+# File di cache/editor o dipendenze locali
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+
+# Moduli IntelliJ
+*.iml
+
+# Fine del .gitignore
