@@ -175,11 +175,8 @@ public class PatientTherapyController {
         Label lblInfo = new Label();
         lblInfo.getStyleClass().add("page-subtitle");
 
-        if (t.getNome() != null && !t.getNome().isBlank()) {
-            lblNome.setText(t.getNome());
-        } else {
-            lblNome.setText("Terapia senza nome");
-        }
+        lblNome.setText("versione: " + t.getVersione());
+         // info farmaco principale + conteggio altri farmaci
 
         try {
             List<TerapiaFarmaco> farmaci = terapiaFarmacoDAO.findByTerapiaId(t.getId());

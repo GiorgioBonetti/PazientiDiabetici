@@ -2,7 +2,6 @@ package it.univr.diabete.model;
 
 public class Diabetologo {
 
-    private int id;
     private String nome;
     private String cognome;
     private String email;
@@ -11,20 +10,11 @@ public class Diabetologo {
     public Diabetologo() {
     }
 
-    public Diabetologo(int id, String nome, String cognome, String email, String password) {
-        this.id = id;
+    public Diabetologo(String nome, String cognome, String email, String password) {
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
         this.password = password;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getNome() {

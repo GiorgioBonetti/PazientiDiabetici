@@ -1,6 +1,10 @@
 package it.univr.diabete.controller;
 
+import it.univr.diabete.dao.TerapiaDAO;
+import it.univr.diabete.dao.impl.TerapiaDAOImpl;
 import it.univr.diabete.database.Database;
+import it.univr.diabete.model.Diabetologo;
+import it.univr.diabete.model.Terapia;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -10,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 
+import javax.xml.stream.events.Comment;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -183,11 +188,13 @@ public class AddTherapyController {
             return;
         }
 
-        try (Connection conn = Database.getConnection()) {
+        try ( Connection conn = Database.getConnection())
+        {
+
             conn.setAutoCommit(false);
 
             // 1️⃣ inserisco la Terapia
-            int idTerapia = insertTerapia(conn, nomeTerapia, dataInizio, dataFine, codiceFiscale);
+            int idTerapia = insertTerapia(conn, dataInizio, dataFine, codiceFiscale);
 
             // 2️⃣ una riga in TerapiaFarmaco per ogni farmaco selezionato
             for (FarmacoInTerapia fit : selectedFarmaci) {
@@ -361,48 +368,61 @@ public class AddTherapyController {
     }
 
     private int insertTerapia(Connection conn,
-                              String nomeTerapia,
                               LocalDate dataInizio,
                               LocalDate dataFine,
-                              String codiceFiscale) throws SQLException {
+                              String codiceFiscale) throws Exception {
 
-        String sql = """
-            INSERT INTO Terapia (Nome, DataInizio, DataFine, IdDiabetologo, fkPaziente)
-            VALUES (?, ?, ?, ?, ?)
-            """;
+        Terapia t = new Terapia(dataInizio, dataFine, "gio@gmail.com", codiceFiscale);
+
+       String sql = """
+                INSERT INTO Terapia
+                    (versione, DataInizio, DataFine, fkDiabetologo, fkPaziente)
+                VALUES (?, ?, ?, ?, ?)
+                """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, nomeTerapia);
+            // 1) Nome terapia
+            ps.setInt(1, 1);
 
-            if (dataInizio != null) {
-                ps.setDate(2, Date.valueOf(dataInizio));
+            // 2) Data inizio
+            if (t.getDataInizio() != null) {
+                ps.setDate(2, Date.valueOf(t.getDataInizio()));
             } else {
                 ps.setNull(2, Types.DATE);
             }
 
-            if (dataFine != null) {
-                ps.setDate(3, Date.valueOf(dataFine));
+            // 3) Data fine
+            if (t.getDataFine() != null) {
+                ps.setDate(3, Date.valueOf(t.getDataFine()));
             } else {
                 ps.setNull(3, Types.DATE);
             }
 
-            ps.setInt(4, 1);          // TODO: Id diabetologo loggato
-            ps.setString(5,  codiceFiscale);
+            // 4) Id diabetologo
+            ps.setString(4, t.getFkDiabetologo());
+
+            // 5) Id paziente
+            ps.setString(5, t.getFkPaziente());
 
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    t.setId(rs.getInt(1));
                 }
             }
         }
-
-        throw new SQLException("Impossibile ottenere l'Id della terapia appena inserita.");
+        //ritorno l'id della terapia appena inserita
+        if (t.getId() != 0) {
+            return t.getId();
+        } else {
+            throw new SQLException("Impossibile ottenere l'Id della terapia appena inserita.");
+        }
     }
 
-    private void insertTerapiaFarmaco(Connection conn,
+    private void insertTerapiaFarmaco(
+            Connection conn,
                                       int idTerapia,
                                       int idFarmaco,
                                       int assunzioniGiornaliere,
@@ -413,6 +433,7 @@ public class AddTherapyController {
                 (IdTerapia, IdFarmaco, AssunzioniGiornaliere, QuantitaAssunzione)
                 VALUES (?, ?, ?, ?)
                 """;
+
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idTerapia);

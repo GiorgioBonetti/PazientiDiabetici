@@ -14,13 +14,17 @@ public class TerapiaDAOImpl implements TerapiaDAO {
     public List<Terapia> findByPazienteId(String codiceFiscale) throws Exception {
         String sql = """
                 SELECT t.Id,
-                       t.Nome,
+                       t.versione,
                        t.DataInizio,
                        t.DataFine,
-                       t.IdDiabetologo,
-                       t.IdPaziente
+                       t.fkDiabetologo,
+                       t.fkPaziente
                 FROM Terapia t
-                WHERE t.IdPaziente = ?
+                WHERE t.fkPaziente = ? 
+                and t.versione = (select max(t2.versione) 
+                                    from Terapia t2 
+                                    where t2.fkPaziente = t.fkPaziente 
+                                    and t2.Id = t.Id)
                 ORDER BY t.DataInizio DESC
                 """;
 
@@ -35,7 +39,7 @@ public class TerapiaDAOImpl implements TerapiaDAO {
                 while (rs.next()) {
                     Terapia t = new Terapia();
                     t.setId(rs.getInt("Id"));
-                    t.setNome(rs.getString("Nome"));
+                    t.setVersione(rs.getInt("versione"));
 
                     Date dInizio = rs.getDate("DataInizio");
                     if (dInizio != null) {
@@ -47,8 +51,8 @@ public class TerapiaDAOImpl implements TerapiaDAO {
                         t.setDataFine(dFine.toLocalDate());
                     }
 
-                    t.setIdDiabetologo(rs.getInt("IdDiabetologo"));
-                    t.setIdPaziente(rs.getInt("IdPaziente"));
+                    t.setFkDiabetologo(rs.getString("fkDiabetologo"));
+                    t.setFkPaziente(rs.getString("fkPaziente"));
 
                     result.add(t);
                 }
@@ -62,7 +66,7 @@ public class TerapiaDAOImpl implements TerapiaDAO {
     public void insert(Terapia t) throws Exception {
         String sql = """
                 INSERT INTO Terapia
-                    (Nome, DataInizio, DataFine, IdDiabetologo, IdPaziente)
+                    (versione, DataInizio, DataFine, fkDiabetologo, fkPaziente)
                 VALUES (?, ?, ?, ?, ?)
                 """;
 
@@ -70,7 +74,7 @@ public class TerapiaDAOImpl implements TerapiaDAO {
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             // 1) Nome terapia
-            ps.setString(1, t.getNome());
+            ps.setInt(1, 1);
 
             // 2) Data inizio
             if (t.getDataInizio() != null) {
@@ -87,10 +91,10 @@ public class TerapiaDAOImpl implements TerapiaDAO {
             }
 
             // 4) Id diabetologo
-            ps.setInt(4, t.getIdDiabetologo());
+            ps.setString(4, t.getFkDiabetologo());
 
             // 5) Id paziente
-            ps.setInt(5, t.getIdPaziente());
+            ps.setString(5, t.getFkPaziente());
 
             ps.executeUpdate();
 
@@ -105,20 +109,16 @@ public class TerapiaDAOImpl implements TerapiaDAO {
     @Override
     public void update(Terapia t) throws Exception {
         String sql = """
-                UPDATE Terapia
-                SET Nome = ?,
-                    DataInizio = ?,
-                    DataFine = ?,
-                    IdDiabetologo = ?,
-                    IdPaziente = ?
-                WHERE Id = ?
+                INSERT INTO Terapia
+                    (versione, DataInizio, DataFine, fkDiabetologo, fkPaziente)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             // 1) Nome terapia
-            ps.setString(1, t.getNome());
+            ps.setInt(1, t.getVersione() + 1);
 
             // 2) Data inizio
             if (t.getDataInizio() != null) {
@@ -135,13 +135,10 @@ public class TerapiaDAOImpl implements TerapiaDAO {
             }
 
             // 4) Id diabetologo
-            ps.setInt(4, t.getIdDiabetologo());
+            ps.setString(4, t.getFkDiabetologo());
 
             // 5) Id paziente
-            ps.setInt(5, t.getIdPaziente());
-
-            // 6) Id della terapia da aggiornare
-            ps.setInt(6, t.getId());
+            ps.setString(5, t.getFkPaziente());
 
             ps.executeUpdate();
         }

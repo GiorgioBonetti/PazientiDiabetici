@@ -7,14 +7,12 @@ import java.util.List;
 public class Terapia {
 
     private int id;
+    private int versione;
     private LocalDate dataInizio;
     private LocalDate dataFine;
-    private int idDiabetologo;
-    private int idPaziente;
-    private String nome;   // nome della terapia
+    private String fkDiabetologo;
+    private String fkPaziente;
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
 
     // nuova parte: una terapia contiene più farmaci
     private List<TerapiaFarmaco> farmaci = new ArrayList<>();
@@ -22,17 +20,29 @@ public class Terapia {
     public Terapia() { }
 
     public Terapia(int id, LocalDate dataInizio, LocalDate dataFine,
-                   int idDiabetologo, int idPaziente) {
+                   String idDiabetologo, String idPaziente) {
         this.id = id;
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
-        this.idDiabetologo = idDiabetologo;
-        this.idPaziente = idPaziente;
+        this.fkDiabetologo = idDiabetologo;
+        this.fkPaziente = idPaziente;
+    }
+
+    public Terapia(LocalDate dataInizio, LocalDate dataFine,
+                   String idDiabetologo, String idPaziente) {
+        this.id = id;
+        this.dataInizio = dataInizio;
+        this.dataFine = dataFine;
+        this.fkDiabetologo = idDiabetologo;
+        this.fkPaziente = idPaziente;
     }
 
     // getter & setter base
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    public int getVersione() { return versione; }
+    public void setVersione(int versione) { this.versione = versione; }
 
     public LocalDate getDataInizio() { return dataInizio; }
     public void setDataInizio(LocalDate dataInizio) { this.dataInizio = dataInizio; }
@@ -40,11 +50,11 @@ public class Terapia {
     public LocalDate getDataFine() { return dataFine; }
     public void setDataFine(LocalDate dataFine) { this.dataFine = dataFine; }
 
-    public int getIdDiabetologo() { return idDiabetologo; }
-    public void setIdDiabetologo(int idDiabetologo) { this.idDiabetologo = idDiabetologo; }
+    public String getFkDiabetologo() { return fkDiabetologo; }
+    public void setFkDiabetologo(String fkDiabetologo) { this.fkDiabetologo = fkDiabetologo; }
 
-    public int getIdPaziente() { return idPaziente; }
-    public void setIdPaziente(int idPaziente) { this.idPaziente = idPaziente; }
+    public String getFkPaziente() { return fkPaziente; }
+    public void setFkPaziente(String fkPaziente) { this.fkPaziente = fkPaziente; }
 
     public List<TerapiaFarmaco> getFarmaci() {
         return farmaci;

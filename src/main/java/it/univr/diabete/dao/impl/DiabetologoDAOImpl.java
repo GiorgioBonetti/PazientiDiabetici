@@ -13,7 +13,7 @@ public class DiabetologoDAOImpl implements DiabetologoDAO {
     @Override
     public Diabetologo findByEmailAndPassword(String email, String password) throws Exception {
         String sql = """
-            SELECT Id, Nome, Cognome, eMail, Password
+            SELECT Nome, Cognome, eMail, Password
             FROM Diabetologo
             WHERE eMail = ? AND Password = ?
             """;
@@ -27,7 +27,6 @@ public class DiabetologoDAOImpl implements DiabetologoDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new Diabetologo(
-                            rs.getInt("Id"),
                             rs.getString("Nome"),
                             rs.getString("Cognome"),
                             rs.getString("eMail"),

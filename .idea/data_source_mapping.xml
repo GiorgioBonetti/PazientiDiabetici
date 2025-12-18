@@ -2,5 +2,7 @@
 <project version="4">
   <component name="DataSourcePerFileMappings">
     <file url="file://$PROJECT_DIR$/src/main/java/it/univr/diabete/dao/impl/AssunzioneTerapiaDAOImpl.java" value="2407999b-db51-479d-b939-8328eefd6da1" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/2407999b-db51-479d-b939-8328eefd6da1/console.sql" value="2407999b-db51-479d-b939-8328eefd6da1" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/2407999b-db51-479d-b939-8328eefd6da1/console_1.sql" value="2407999b-db51-479d-b939-8328eefd6da1" />
   </component>
 </project>

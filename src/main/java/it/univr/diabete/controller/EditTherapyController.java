@@ -111,8 +111,6 @@ public class EditTherapyController {
         this.terapiaOriginale = terapia;
         this.onUpdatedCallback = onUpdatedCallback;
 
-        nomeTerapiaField.setText(terapia.getNome());
-
         dataInizioPicker.setValue(terapia.getDataInizio());
         dataFinePicker.setValue(terapia.getDataFine());
 
