@@ -13,7 +13,7 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
     @Override
     public List<Glicemia> findByPazienteId(String codiceFiscale) throws Exception {
 
-        String sql = "SELECT * FROM Glicemia WHERE IdPaziente = ? ORDER BY DateTime ";
+        String sql = "SELECT * FROM Glicemia WHERE fkPaziente = ? ORDER BY datestamp ";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -65,7 +65,7 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
     @Override
     public void insert(Glicemia g) throws Exception {
 
-        String sql = "INSERT INTO Glicemia (fkPaziente, Valore, DateStamp, ParteGiorno) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Glicemia (fkPaziente, Valore, datestamp, ParteGiorno) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
