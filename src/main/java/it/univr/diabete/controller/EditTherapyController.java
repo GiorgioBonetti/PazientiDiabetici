@@ -36,25 +36,25 @@ public class EditTherapyController {
 
     /**
      * Rappresenta un farmaco nella terapia mentre editiamo.
-     * idTerapiaFarmaco = id della riga in tabella TerapiaFarmaco (null se nuovo).
+     * fkTerapia = id della riga in tabella TerapiaFarmaco (null se nuovo).
      */
     private static class FarmacoInTerapia {
-        Integer idTerapiaFarmaco;     // può essere null per farmaci nuovi
+        Integer fkTerapia;     // può essere null per farmaci nuovi
         int idFarmaco;
         String nome;
         int assunzioniGiornaliere;
-        int quantitaAssunzione;
+        int quantita;
 
-        FarmacoInTerapia(Integer idTerapiaFarmaco,
+        FarmacoInTerapia(Integer fkTerapia,
                          int idFarmaco,
                          String nome,
                          int assunzioniGiornaliere,
-                         int quantitaAssunzione) {
-            this.idTerapiaFarmaco = idTerapiaFarmaco;
+                         int quantita) {
+            this.fkTerapia = fkTerapia;
             this.idFarmaco = idFarmaco;
             this.nome = nome;
             this.assunzioniGiornaliere = assunzioniGiornaliere;
-            this.quantitaAssunzione = quantitaAssunzione;
+            this.quantita = quantita;
         }
     }
 
@@ -151,29 +151,31 @@ public class EditTherapyController {
             conn.setAutoCommit(false);
 
             // 1️⃣ aggiorno la terapia (nome + date)
-            updateTerapia(conn, terapiaOriginale.getId(), nomeTerapia, dataInizio, dataFine);
+            updateTerapia(conn, terapiaOriginale.getId(), dataInizio, dataFine);
 
             // 2️⃣ per ogni farmaco visibile nelle pilloline:
-            //     - se esiste già (idTerapiaFarmaco != null) → UPDATE
+            //     - se esiste già (fkTerapia != null) → UPDATE
             //     - se nuovo → INSERT
             for (FarmacoInTerapia fit : selectedFarmaci) {
-                if (fit.idTerapiaFarmaco != null) {
+                if (fit.fkTerapia != null) {
                     updateTerapiaFarmaco(conn,
-                            fit.idTerapiaFarmaco,
+                            fit.fkTerapia,
+                            fit.idFarmaco,
                             fit.assunzioniGiornaliere,
-                            fit.quantitaAssunzione);
+                            fit.quantita);
                 } else {
                     insertTerapiaFarmaco(conn,
                             terapiaOriginale.getId(),
+                            fit.fkTerapia,
                             fit.idFarmaco,
                             fit.assunzioniGiornaliere,
-                            fit.quantitaAssunzione);
+                            fit.quantita);
                 }
             }
 
             // 3️⃣ elimino SOLO i farmaci che hai tolto con la X
-            for (Integer idTf : farmaciDaCancellare) {
-                deleteTerapiaFarmacoForTerapia(conn, idTf);
+            for (Integer farmaco : farmaciDaCancellare) {
+                deleteTerapiaFarmacoForTerapia(conn, farmaco, terapiaOriginale.getId());
             }
 
             conn.commit();
@@ -210,14 +212,14 @@ public class EditTherapyController {
 
     private void loadFarmaciFromDb() {
         allFarmaci.clear();
-        String sql = "SELECT Nome FROM Farmaco ORDER BY Nome";
+        String sql = "SELECT nome FROM Farmaco ORDER BY nome";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                allFarmaci.add(rs.getString("Nome"));
+                allFarmaci.add(rs.getString("nome"));
             }
 
         } catch (SQLException e) {
@@ -302,15 +304,14 @@ public class EditTherapyController {
         farmaciDaCancellare.clear(); // reset
 
         String sql = """
-                SELECT tf.Id       AS IdTF,
-                       tf.IdFarmaco,
-                       f.Nome,
-                       tf.AssunzioniGiornaliere,
-                       tf.QuantitaAssunzione
-                FROM TerapiaFarmaco tf
-                JOIN Farmaco f ON tf.IdFarmaco = f.Id
-                WHERE tf.IdTerapia = ?
-                ORDER BY tf.Id
+                SELECT tf.fkFarmaco,
+                       f.nome,
+                       tf.assunzioniGiornaliere,
+                       tf.quantita
+                FROM FarmacoTerapia tf
+                JOIN Farmaco f ON tf.fkFarmaco = f.id
+                WHERE tf.fkTerapia = ?
+                ORDER BY tf.fkTerapia;
                 """;
 
         try (Connection conn = Database.getConnection();
@@ -320,14 +321,14 @@ public class EditTherapyController {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    int idTF     = rs.getInt("IdTF");
-                    int idFarm   = rs.getInt("IdFarmaco");
-                    String nome  = rs.getString("Nome");
-                    int ass      = rs.getInt("AssunzioniGiornaliere");
-                    int quant    = rs.getInt("QuantitaAssunzione");
+                    int fkTerapia = rs.getInt("fkTerapia");
+                    int fKFarm = rs.getInt("fkFarmaco");
+                    String nome  = rs.getString("nome");
+                    int ass      = rs.getInt("assunzioniGiornaliere");
+                    int quant    = rs.getInt("quantita");
 
                     selectedFarmaci.add(
-                            new FarmacoInTerapia(idTF, idFarm, nome, ass, quant)
+                            new FarmacoInTerapia(fkTerapia, fKFarm, nome, ass, quant)
                     );
                 }
             }
@@ -365,7 +366,7 @@ public class EditTherapyController {
             try (Connection conn = Database.getConnection()) {
                 int idFarmaco = ensureFarmaco(conn, nomeFarmaco);
 
-                // se già presente, lo sostituisco ma mantengo l'eventuale idTerapiaFarmaco
+                // se già presente, lo sostituisco ma mantengo l'eventuale fkTerapia
                 FarmacoInTerapia esistente = null;
                 for (FarmacoInTerapia f : selectedFarmaci) {
                     if (f.idFarmaco == idFarmaco) {
@@ -373,7 +374,7 @@ public class EditTherapyController {
                         break;
                     }
                 }
-                Integer idTF = (esistente != null) ? esistente.idTerapiaFarmaco : null;
+                Integer idTF = (esistente != null) ? esistente.fkTerapia : null;
                 if (esistente != null) {
                     selectedFarmaci.remove(esistente);
                 }
@@ -396,7 +397,7 @@ public class EditTherapyController {
 
         for (FarmacoInTerapia fit : selectedFarmaci) {
             Label nameLabel = new Label(
-                    fit.nome + " (" + fit.assunzioniGiornaliere + "x, " + fit.quantitaAssunzione + " mg)"
+                    fit.nome + " (" + fit.assunzioniGiornaliere + "x, " + fit.quantita + " mg)"
             );
             nameLabel.getStyleClass().add("chip-label");
 
@@ -404,8 +405,8 @@ public class EditTherapyController {
             removeBtn.getStyleClass().add("btn-ghost");
             removeBtn.setOnAction(e -> {
                 // se era un farmaco già esistente in DB, segno che va cancellato
-                if (fit.idTerapiaFarmaco != null) {
-                    farmaciDaCancellare.add(fit.idTerapiaFarmaco);
+                if (fit.fkTerapia != null) {
+                    farmaciDaCancellare.add(fit.fkTerapia);
                 }
                 selectedFarmaci.remove(fit);
             });
@@ -423,9 +424,9 @@ public class EditTherapyController {
 
     private int ensureFarmaco(Connection conn, String nome) throws SQLException {
         String selectSql = """
-                SELECT Id
+                SELECT id
                 FROM Farmaco
-                WHERE Nome = ?
+                WHERE nome = ?
                 LIMIT 1
                 """;
 
@@ -439,8 +440,8 @@ public class EditTherapyController {
         }
 
         String insertSql = """
-                INSERT INTO Farmaco (Nome, Marca)
-                VALUES (?, NULL)
+                INSERT INTO Farmaco (nome, marca, dosaggio)
+                VALUES (?, ?, ?)
                 """;
 
         try (PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
@@ -459,29 +460,26 @@ public class EditTherapyController {
 
     private void updateTerapia(Connection conn,
                                int idTerapia,
-                               String nomeTerapia,
                                LocalDate dataInizio,
                                LocalDate dataFine) throws SQLException {
 
         String sql = """
             UPDATE Terapia
-            SET Nome = ?,
-                DataInizio = ?,
-                DataFine = ?
-            WHERE Id = ?
+            SET dataInizio = ?,
+                dataFine = ?
+            WHERE id = ?
             """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, nomeTerapia);
-            ps.setDate(2, Date.valueOf(dataInizio));
+            ps.setDate(1, Date.valueOf(dataInizio));
 
             if (dataFine != null)
-                ps.setDate(3, Date.valueOf(dataFine));
+                ps.setDate(2, Date.valueOf(dataFine));
             else
-                ps.setNull(3, Types.DATE);
+                ps.setNull(2, Types.DATE);
 
-            ps.setInt(4, idTerapia);
+            ps.setInt(3, idTerapia);
 
             ps.executeUpdate();
         }
@@ -489,21 +487,23 @@ public class EditTherapyController {
 
     /** Aggiorna dosaggio/frequenza di un record già esistente in TerapiaFarmaco. */
     private void updateTerapiaFarmaco(Connection conn,
-                                      int idTerapiaFarmaco,
+                                      int fkTerapia,
+                                      int fkFarmaco,
                                       int assunzioniGiornaliere,
-                                      int quantitaAssunzione) throws SQLException {
+                                      int quantita) throws SQLException {
 
         String sql = """
-                UPDATE TerapiaFarmaco
-                SET AssunzioniGiornaliere = ?,
-                    QuantitaAssunzione = ?
-                WHERE Id = ?
+                UPDATE FarmacoTerapia
+                SET assunzioniGiornaliere = ?,
+                    quantita = ?
+                WHERE fkTerapia = ? AND fkFarmaco = ?
                 """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, assunzioniGiornaliere);
-            ps.setInt(2, quantitaAssunzione);
-            ps.setInt(3, idTerapiaFarmaco);
+            ps.setInt(2, quantita);
+            ps.setInt(3, fkTerapia);
+            ps.setInt(4, fkFarmaco);
             ps.executeUpdate();
         }
     }
@@ -513,40 +513,44 @@ public class EditTherapyController {
      * collegate solo a quel farmaco.
      */
     private void deleteTerapiaFarmacoForTerapia(Connection conn,
-                                                int idTerapiaFarmaco) throws SQLException {
+                                                int fkTerapia, int fkFarmaco) throws SQLException {
 
         // 1️⃣ prima elimino tutte le assunzioni collegate
-        String sqlAss = "DELETE FROM AssunzioneTerapia WHERE IdTerapiaFarmaco = ?";
+        String sqlAss = "DELETE FROM Assunzione WHERE fkTerapia = ? AND fkFarmaco = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlAss)) {
-            ps.setInt(1, idTerapiaFarmaco);
+            ps.setInt(1, fkTerapia);
+            ps.setInt(2, fkFarmaco);
             ps.executeUpdate();
         }
 
         // 2️⃣ poi elimino il record di TerapiaFarmaco
-        String sqlTf = "DELETE FROM TerapiaFarmaco WHERE Id = ?";
+        String sqlTf = "DELETE FROM FarmacoTerapia WHERE fkTerapia = ? AND fkFarmaco = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlTf)) {
-            ps.setInt(1, idTerapiaFarmaco);
+            ps.setInt(1, fkTerapia);
+            ps.setInt(2, fkFarmaco);
             ps.executeUpdate();
         }
     }
 
     private void insertTerapiaFarmaco(Connection conn,
-                                      int idTerapia,
-                                      int idFarmaco,
+                                      int fkTerapia,
+                                      int fkFarmaco,
                                       int assunzioniGiornaliere,
-                                      int quantitaAssunzione) throws SQLException {
+                                      int quantita,
+                                      int fkVersioneTerapia) throws SQLException {
 
         String sql = """
-                INSERT INTO TerapiaFarmaco
-                (IdTerapia, IdFarmaco, AssunzioniGiornaliere, QuantitaAssunzione)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO FarmacoTerapia
+                (fkTerapia, fkFarmaco, assunzioniGiornaliere, quantita, fkVersioneTerapia)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idTerapia);
-            ps.setInt(2, idFarmaco);
+            ps.setInt(1, fkTerapia);
+            ps.setInt(2, fkFarmaco);
             ps.setInt(3, assunzioniGiornaliere);
-            ps.setInt(4, quantitaAssunzione);
+            ps.setInt(4, quantita);
+            ps.setInt(5, fkVersioneTerapia);
             ps.executeUpdate();
         }
     }

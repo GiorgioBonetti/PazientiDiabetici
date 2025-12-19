@@ -1,8 +1,8 @@
 package it.univr.diabete.controller;
 
-import it.univr.diabete.dao.AssunzioneTerapiaDAO;
-import it.univr.diabete.dao.impl.AssunzioneTerapiaDAOImpl;
-import it.univr.diabete.model.AssunzioneTerapia;
+import it.univr.diabete.dao.AssunzioneDAO;
+import it.univr.diabete.dao.impl.AssunzioneDAOImpl;
+import it.univr.diabete.model.Assunzione;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -18,12 +18,12 @@ public class EditAssunzioneController {
     @FXML private DatePicker dataPicker;
     @FXML private TextField oraField;
 
-    private AssunzioneTerapia assunzione;
+    private Assunzione assunzione;
     private Runnable reloadCallback;
 
-    private final AssunzioneTerapiaDAO dao = new AssunzioneTerapiaDAOImpl();
+    private final AssunzioneDAO dao = new AssunzioneDAOImpl();
 
-    public void initData(AssunzioneTerapia a, Runnable callback) {
+    public void initData(Assunzione a, Runnable callback) {
         this.assunzione = a;
         this.reloadCallback = callback;
 

@@ -13,9 +13,9 @@ public class DiabetologoDAOImpl implements DiabetologoDAO {
     @Override
     public Diabetologo findByEmailAndPassword(String email, String password) throws Exception {
         String sql = """
-            SELECT Nome, Cognome, eMail, Password
+            SELECT nome, cognome, email, password, numeroTelefono, sesso, laurea
             FROM Diabetologo
-            WHERE eMail = ? AND Password = ?
+            WHERE email = ? AND password = ?
             """;
 
         try (Connection conn = Database.getConnection();
@@ -27,10 +27,13 @@ public class DiabetologoDAOImpl implements DiabetologoDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new Diabetologo(
-                            rs.getString("Nome"),
-                            rs.getString("Cognome"),
-                            rs.getString("eMail"),
-                            rs.getString("Password")
+                            rs.getString("nome"),
+                            rs.getString("cognome"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("numeroTelefono"),
+                            rs.getString("sesso"),
+                            rs.getString("laurea")
                     );
                 }
                 return null;

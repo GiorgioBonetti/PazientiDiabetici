@@ -44,7 +44,7 @@
                 </HBox>
                 <Label text="Momento" styleClass="dialog-field-label"/>
                 <ComboBox fx:id="momentoChoice"
-                          promptText="Seleziona momento"
+                          promptText="Seleziona parteGiorno"
                           styleClass="field-control"
                           prefWidth="180"/>
                 <!-- Azioni -->

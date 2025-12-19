@@ -99,8 +99,8 @@ public class PatientMeasurementsController {
         // colonne tabella
         colMeasDateTime.setCellValueFactory(cell -> {
             Glicemia g = cell.getValue();
-            String text = (g.getDataOra() != null)
-                    ? g.getDataOra().format(formatter)
+            String text = (g.getDateStamp() != null)
+                    ? g.getDateStamp().format(formatter)
                     : "";
             return new SimpleStringProperty(text);
         });
@@ -110,7 +110,7 @@ public class PatientMeasurementsController {
         );
 
         colMeasMoment.setCellValueFactory(c ->
-                new SimpleStringProperty(c.getValue().getMomento())
+                new SimpleStringProperty(c.getValue().getParteGiorno())
         );
 
         // opzioni filtro
@@ -167,9 +167,9 @@ public class PatientMeasurementsController {
         LocalDateTime now = LocalDateTime.now();
 
         List<Glicemia> filtered = allMeasurements.stream()
-                .filter(g -> g.getDataOra() != null)
+                .filter(g -> g.getDateStamp() != null)
                 .filter(g -> {
-                    LocalDateTime dt = g.getDataOra();
+                    LocalDateTime dt = g.getDateStamp();
                     return switch (filterValue) {
                         case "Oggi" -> dt.toLocalDate().isEqual(now.toLocalDate());
                         case "Ultimi 7 giorni" -> !dt.isBefore(now.minusDays(7));
@@ -177,7 +177,7 @@ public class PatientMeasurementsController {
                         default -> true;
                     };
                 })
-                .sorted(Comparator.comparing(Glicemia::getDataOra).reversed())
+                .sorted(Comparator.comparing(Glicemia::getDateStamp).reversed())
                 .collect(Collectors.toList());
 
         measurementsTable.getItems().setAll(filtered);
@@ -190,13 +190,13 @@ public class PatientMeasurementsController {
         if (data.isEmpty()) return;
 
         List<Glicemia> sorted = data.stream()
-                .sorted(Comparator.comparing(Glicemia::getDataOra))
+                .sorted(Comparator.comparing(Glicemia::getDateStamp))
                 .toList();
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
         for (Glicemia g : sorted) {
-            String label = g.getDataOra().format(formatter);
+            String label = g.getDateStamp().format(formatter);
             series.getData().add(new XYChart.Data<>(label, g.getValore()));
         }
 

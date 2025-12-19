@@ -15,26 +15,26 @@ public class Terapia {
 
 
     // nuova parte: una terapia contiene più farmaci
-    private List<TerapiaFarmaco> farmaci = new ArrayList<>();
+    private List<FarmacoTerapia> farmaci = new ArrayList<>();
 
     public Terapia() { }
 
     public Terapia(int id, LocalDate dataInizio, LocalDate dataFine,
-                   String idDiabetologo, String idPaziente) {
+                   String fkDiabetologo, String fkPaziente) {
         this.id = id;
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
-        this.fkDiabetologo = idDiabetologo;
-        this.fkPaziente = idPaziente;
+        this.fkDiabetologo = fkDiabetologo;
+        this.fkPaziente = fkPaziente;
     }
 
     public Terapia(LocalDate dataInizio, LocalDate dataFine,
-                   String idDiabetologo, String idPaziente) {
+                   String fkDiabetologo, String fkPaziente) {
         this.id = id;
         this.dataInizio = dataInizio;
         this.dataFine = dataFine;
-        this.fkDiabetologo = idDiabetologo;
-        this.fkPaziente = idPaziente;
+        this.fkDiabetologo = fkDiabetologo;
+        this.fkPaziente = fkPaziente;
     }
 
     // getter & setter base
@@ -56,11 +56,10 @@ public class Terapia {
     public String getFkPaziente() { return fkPaziente; }
     public void setFkPaziente(String fkPaziente) { this.fkPaziente = fkPaziente; }
 
-    public List<TerapiaFarmaco> getFarmaci() {
+    public List<FarmacoTerapia> getFarmaci() {
         return farmaci;
     }
-
-    public void setFarmaci(List<TerapiaFarmaco> farmaci) {
+    public void setFarmaci(List<FarmacoTerapia> farmaci) {
         this.farmaci = farmaci;
     }
 }

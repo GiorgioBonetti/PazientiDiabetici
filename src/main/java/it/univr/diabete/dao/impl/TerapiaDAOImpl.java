@@ -13,19 +13,19 @@ public class TerapiaDAOImpl implements TerapiaDAO {
     @Override
     public List<Terapia> findByPazienteId(String codiceFiscale) throws Exception {
         String sql = """
-                SELECT t.Id,
+                SELECT t.id,
                        t.versione,
-                       t.DataInizio,
-                       t.DataFine,
+                       t.dataInizio,
+                       t.dataFine,
                        t.fkDiabetologo,
                        t.fkPaziente
                 FROM Terapia t
-                WHERE t.fkPaziente = ? 
-                and t.versione = (select max(t2.versione) 
-                                    from Terapia t2 
-                                    where t2.fkPaziente = t.fkPaziente 
-                                    and t2.Id = t.Id)
-                ORDER BY t.DataInizio DESC
+                WHERE t.fkPaziente = ?
+                and t.versione = (select max(t2.versione)
+                                    from Terapia t2
+                                    where t2.fkPaziente = t.fkPaziente
+                                    and t2.id = t.id)
+                ORDER BY t.dataInizio DESC
                 """;
 
         List<Terapia> result = new ArrayList<>();
@@ -38,15 +38,15 @@ public class TerapiaDAOImpl implements TerapiaDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Terapia t = new Terapia();
-                    t.setId(rs.getInt("Id"));
+                    t.setId(rs.getInt("id"));
                     t.setVersione(rs.getInt("versione"));
 
-                    Date dInizio = rs.getDate("DataInizio");
+                    Date dInizio = rs.getDate("dataInizio");
                     if (dInizio != null) {
                         t.setDataInizio(dInizio.toLocalDate());
                     }
 
-                    Date dFine = rs.getDate("DataFine");
+                    Date dFine = rs.getDate("dataFine");
                     if (dFine != null) {
                         t.setDataFine(dFine.toLocalDate());
                     }
@@ -66,7 +66,7 @@ public class TerapiaDAOImpl implements TerapiaDAO {
     public void insert(Terapia t) throws Exception {
         String sql = """
                 INSERT INTO Terapia
-                    (versione, DataInizio, DataFine, fkDiabetologo, fkPaziente)
+                    (versione, dataInizio, dataFine, fkDiabetologo, fkPaziente)
                 VALUES (?, ?, ?, ?, ?)
                 """;
 
@@ -110,7 +110,7 @@ public class TerapiaDAOImpl implements TerapiaDAO {
     public void update(Terapia t) throws Exception {
         String sql = """
                 INSERT INTO Terapia
-                    (versione, DataInizio, DataFine, fkDiabetologo, fkPaziente)
+                    (versione, dataInizio, dataFine, fkDiabetologo, fkPaziente)
                 VALUES (?, ?, ?, ?, ?)
                 """;
 

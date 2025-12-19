@@ -70,9 +70,9 @@ public class AddGlicemiaController {
             // --- crea e salva la misurazione ---
             Glicemia g = new Glicemia();
             g.setValore(valore);
-            g.setMomento(momento);           // <-- nuovo campo
-            g.setIdPaziente(codiceFiscale);
-            g.setDataOra(LocalDateTime.now());
+            g.setParteGiorno(momento);           // <-- nuovo campo
+            g.setFkPaziente(codiceFiscale);
+            g.setDateStamp(LocalDateTime.now());
 
             glicemiaDAO.insert(g);
 

@@ -12,13 +12,13 @@ public class Paziente {
     private String sesso;
     private String codiceFiscale;
     private String password;
-    private String idDiabetologo;
+    private String fkDiabetologo;
 
     public Paziente() {}
 
     public Paziente(String nome, String cognome, LocalDate dataNascita,
                     String numeroTelefono, String email, String sesso,
-                    String codiceFiscale, String password, String idDiabetologo) {
+                    String codiceFiscale, String password, String fkDiabetologo) {
 
         this.nome = nome;
         this.cognome = cognome;
@@ -28,7 +28,7 @@ public class Paziente {
         this.sesso = sesso;
         this.codiceFiscale = codiceFiscale;
         this.password = password;
-        this.idDiabetologo = idDiabetologo;
+        this.fkDiabetologo = fkDiabetologo;
     }
 
     // GETTER E SETTER
@@ -36,7 +36,6 @@ public class Paziente {
     public String getNome() {
         return nome;
     }
-
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -44,7 +43,6 @@ public class Paziente {
     public String getCognome() {
         return cognome;
     }
-
     public void setCognome(String cognome) {
         this.cognome = cognome;
     }
@@ -52,7 +50,6 @@ public class Paziente {
     public LocalDate getDataNascita() {
         return dataNascita;
     }
-
     public void setDataNascita(LocalDate dataNascita) {
         this.dataNascita = dataNascita;
     }
@@ -60,7 +57,6 @@ public class Paziente {
     public String getNumeroTelefono() {
         return numeroTelefono;
     }
-
     public void setNumeroTelefono(String numeroTelefono) {
         this.numeroTelefono = numeroTelefono;
     }
@@ -68,7 +64,6 @@ public class Paziente {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -76,7 +71,6 @@ public class Paziente {
     public String getSesso() {
         return sesso;
     }
-
     public void setSesso(String sesso) {
         this.sesso = sesso;
     }
@@ -84,7 +78,6 @@ public class Paziente {
     public String getCodiceFiscale() {
         return codiceFiscale;
     }
-
     public void setCodiceFiscale(String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
     }
@@ -92,16 +85,12 @@ public class Paziente {
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getIdDiabetologo() {
-        return idDiabetologo;
+    public String getFkDiabetologo() {
+        return fkDiabetologo;
     }
-
-    public void setIdDiabetologo(String idDiabetologo) {
-        this.idDiabetologo = idDiabetologo;
-    }
+    public void setFkDiabetologo(String fkDiabetologo) { this.fkDiabetologo = fkDiabetologo; }
 }

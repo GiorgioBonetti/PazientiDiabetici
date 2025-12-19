@@ -12,7 +12,7 @@ public class FarmacoDAOImpl implements FarmacoDAO {
 
     @Override
     public List<Farmaco> findAll() throws Exception {
-        String sql = "SELECT Id, Nome, Marca FROM Farmaco ORDER BY Nome";
+        String sql = "SELECT id, nome, marca, dosaggio FROM Farmaco ORDER BY nome";
 
         List<Farmaco> result = new ArrayList<>();
 
@@ -22,9 +22,10 @@ public class FarmacoDAOImpl implements FarmacoDAO {
 
             while (rs.next()) {
                 Farmaco f = new Farmaco(
-                        rs.getInt("Id"),
-                        rs.getString("Nome"),
-                        rs.getString("Marca")
+                        rs.getInt("id"),
+                        rs.getString("nome"),
+                        rs.getString("marca"),
+                        rs.getDouble("dosaggio")
                 );
                 result.add(f);
             }
@@ -35,7 +36,7 @@ public class FarmacoDAOImpl implements FarmacoDAO {
 
     @Override
     public Farmaco findById(int id) throws Exception {
-        String sql = "SELECT Id, Nome, Marca FROM Farmaco WHERE Id = ?";
+        String sql = "SELECT id, nome, marca, dosaggio FROM Farmaco WHERE id = ?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -45,9 +46,10 @@ public class FarmacoDAOImpl implements FarmacoDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new Farmaco(
-                            rs.getInt("Id"),
-                            rs.getString("Nome"),
-                            rs.getString("Marca")
+                            rs.getInt("id"),
+                            rs.getString("nome"),
+                            rs.getString("marca"),
+                            rs.getDouble("dosaggio")
                     );
                 }
             }
@@ -59,8 +61,8 @@ public class FarmacoDAOImpl implements FarmacoDAO {
     @Override
     public void insert(Farmaco f) throws Exception {
         String sql = """
-                INSERT INTO Farmaco (Nome, Marca)
-                VALUES (?, ?)
+                INSERT INTO Farmaco (nome, marca, dosaggio)
+                VALUES (?, ?, ?)
                 """;
 
         try (Connection conn = Database.getConnection();
@@ -68,6 +70,7 @@ public class FarmacoDAOImpl implements FarmacoDAO {
 
             ps.setString(1, f.getNome());
             ps.setString(2, f.getMarca());
+            ps.setDouble(3, f.getDosaggio());
 
             ps.executeUpdate();
 
@@ -83,8 +86,8 @@ public class FarmacoDAOImpl implements FarmacoDAO {
     public void update(Farmaco f) throws Exception {
         String sql = """
                 UPDATE Farmaco
-                SET Nome = ?, Marca = ?
-                WHERE Id = ?
+                SET nome = ?, marca = ?, dosaggio = ?
+                WHERE id = ?
                 """;
 
         try (Connection conn = Database.getConnection();
@@ -92,7 +95,8 @@ public class FarmacoDAOImpl implements FarmacoDAO {
 
             ps.setString(1, f.getNome());
             ps.setString(2, f.getMarca());
-            ps.setInt(3, f.getId());
+            ps.setDouble(3, f.getDosaggio());
+            ps.setInt(4, f.getId());
 
             ps.executeUpdate();
         }
@@ -100,7 +104,7 @@ public class FarmacoDAOImpl implements FarmacoDAO {
 
     @Override
     public void delete(int id) throws Exception {
-        String sql = "DELETE FROM Farmaco WHERE Id = ?";
+        String sql = "DELETE FROM Farmaco WHERE id = ?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

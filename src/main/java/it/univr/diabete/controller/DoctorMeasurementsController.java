@@ -93,7 +93,7 @@ public class DoctorMeasurementsController {
 
             // raggruppo per IdPaziente
             glicemiePerPaziente = tutte.stream()
-                    .collect(Collectors.groupingBy(Glicemia::getIdPaziente));
+                    .collect(Collectors.groupingBy(Glicemia::getFkPaziente));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,14 +133,14 @@ public class DoctorMeasurementsController {
         List<Glicemia> mis = glicemiePerPaziente.getOrDefault(p.getCodiceFiscale(), List.of());
 
         List<Glicemia> todayList = mis.stream()
-                .filter(g -> g.getDataOra().toLocalDate().equals(today))
-                .sorted(Comparator.comparing(Glicemia::getDataOra))
+                .filter(g -> g.getDateStamp().toLocalDate().equals(today))
+                .sorted(Comparator.comparing(Glicemia::getDateStamp))
                 .toList();
 
         // mappa MomentoNormalizzato -> ultima glicemia di quel momento
         Map<String, Glicemia> lastByMoment = new HashMap<>();
         for (Glicemia g : todayList) {
-            String norm = normalizeMoment(g.getMomento());
+            String norm = normalizeMoment(g.getParteGiorno());
             if (norm != null) {
                 lastByMoment.put(norm, g); // siccome sono in ordine, l’ultima vince
             }
@@ -316,7 +316,7 @@ public class DoctorMeasurementsController {
         }
 
         List<Glicemia> last = data.stream()
-                .sorted(Comparator.comparing(Glicemia::getDataOra))
+                .sorted(Comparator.comparing(Glicemia::getDateStamp))
                 .skip(Math.max(0, data.size() - 10))
                 .toList();
 

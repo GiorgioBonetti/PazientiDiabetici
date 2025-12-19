@@ -1,13 +1,13 @@
 package it.univr.diabete.controller;
 
 import it.univr.diabete.MainApp;
-import it.univr.diabete.dao.AssunzioneTerapiaDAO;
+import it.univr.diabete.dao.AssunzioneDAO;
 import it.univr.diabete.dao.GlicemiaDAO;
 import it.univr.diabete.dao.TerapiaDAO;
-import it.univr.diabete.dao.impl.AssunzioneTerapiaDAOImpl;
+import it.univr.diabete.dao.impl.AssunzioneDAOImpl;
 import it.univr.diabete.dao.impl.GlicemiaDAOImpl;
 import it.univr.diabete.dao.impl.TerapiaDAOImpl;
-import it.univr.diabete.model.AssunzioneTerapia;
+import it.univr.diabete.model.Assunzione;
 import it.univr.diabete.model.Glicemia;
 import it.univr.diabete.model.Terapia;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -24,9 +24,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import it.univr.diabete.dao.TerapiaFarmacoDAO;
-import it.univr.diabete.dao.impl.TerapiaFarmacoDAOImpl;
-import it.univr.diabete.model.TerapiaFarmaco;
+import it.univr.diabete.dao.FarmacoTerapiaDAO;
+import it.univr.diabete.dao.impl.FarmacoTerapiaDAOImpl;
+import it.univr.diabete.model.FarmacoTerapia;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -65,9 +65,9 @@ public class PatientDashboardController {
 
     // DAO per terapia / assunzioni (se non li hai già qui)
     private final TerapiaDAO terapiaDAO = new TerapiaDAOImpl();
-    private final AssunzioneTerapiaDAO assunzioneDAO = new AssunzioneTerapiaDAOImpl();
+    private final AssunzioneDAO assunzioneDAO = new AssunzioneDAOImpl();
     // DAO per terapia / assunzioni
-     private final TerapiaFarmacoDAO terapiaFarmacoDAO = new TerapiaFarmacoDAOImpl(); // 👈 nuovo
+     private final FarmacoTerapiaDAO farmacoTerapiaDAO = new FarmacoTerapiaDAOImpl(); // 👈 nuovo
     @FXML
     private ChoiceBox<String> measurementFilter;
 
@@ -88,7 +88,7 @@ public class PatientDashboardController {
         // --- colonne tabella ---
         colMeasDate.setCellValueFactory(cell -> {
             Glicemia g = cell.getValue();
-            LocalDateTime dt = g.getDataOra();  // <-- se nel model hai getDataOra(), cambia qui
+            LocalDateTime dt = g.getDateStamp();  // <-- se nel model hai getDateStamp(), cambia qui
             String text = (dt != null) ? dt.toString() : "";
             return new SimpleStringProperty(text);
         });
@@ -97,7 +97,7 @@ public class PatientDashboardController {
                 new SimpleIntegerProperty(cell.getValue().getValore()).asObject()
         );
         colDashMoment.setCellValueFactory(c ->
-                new SimpleStringProperty(c.getValue().getMomento())
+                new SimpleStringProperty(c.getValue().getParteGiorno())
         );
 
         // collega la lista alla tabella
@@ -163,9 +163,9 @@ public class PatientDashboardController {
         LocalDateTime now = LocalDateTime.now();
 
         List<Glicemia> filtered = allMeasurements.stream()
-                .filter(g -> g.getDataOra() != null) // o getDataOra()
+                .filter(g -> g.getDateStamp() != null) // o getDateStamp()
                 .filter(g -> {
-                    LocalDateTime dt = g.getDataOra();
+                    LocalDateTime dt = g.getDateStamp();
                     return switch (filterValue) {
                         case "Oggi" -> dt.toLocalDate().isEqual(now.toLocalDate());
                         case "Ultimi 7 giorni" -> !dt.isBefore(now.minusDays(7));
@@ -174,7 +174,7 @@ public class PatientDashboardController {
                     };
                 })
                 // opzionale: le più recenti per prime
-                .sorted(Comparator.comparing(Glicemia::getDataOra).reversed())
+                .sorted(Comparator.comparing(Glicemia::getDateStamp).reversed())
                 .collect(Collectors.toList());
 
         measurementsTable.getItems().setAll(filtered);
@@ -224,16 +224,16 @@ public class PatientDashboardController {
         List<Glicemia> lista = measurementsTable.getItems(); // o allMeasurements
 
         boolean mattinoDone = lista.stream()
-                .anyMatch(g -> isSameDay(g.getDataOra(), today)
-                        && "Mattino".equalsIgnoreCase(g.getMomento()));
+                .anyMatch(g -> isSameDay(g.getDateStamp(), today)
+                        && "Mattino".equalsIgnoreCase(g.getParteGiorno()));
 
         boolean pranzoDone = lista.stream()
-                .anyMatch(g -> isSameDay(g.getDataOra(), today)
-                        && "Pranzo".equalsIgnoreCase(g.getMomento()));
+                .anyMatch(g -> isSameDay(g.getDateStamp(), today)
+                        && "Pranzo".equalsIgnoreCase(g.getParteGiorno()));
 
         boolean cenaDone = lista.stream()
-                .anyMatch(g -> isSameDay(g.getDataOra(), today)
-                        && "Cena".equalsIgnoreCase(g.getMomento()));
+                .anyMatch(g -> isSameDay(g.getDateStamp(), today)
+                        && "Cena".equalsIgnoreCase(g.getParteGiorno()));
 
         chkMattino.setSelected(mattinoDone);
         chkPranzo.setSelected(pranzoDone);
@@ -261,7 +261,7 @@ public class PatientDashboardController {
             Terapia terapiaCorrente = terapie.get(0);
 
             // 3) Recupero i farmaci associati a questa terapia
-            List<TerapiaFarmaco> farmaci = terapiaFarmacoDAO.findByTerapiaId(terapiaCorrente.getId());
+            List<FarmacoTerapia> farmaci = farmacoTerapiaDAO.findByTerapiaId(terapiaCorrente.getId());
 
             if (farmaci.isEmpty()) {
                 // terapia senza farmaci → non ha senso parlare di "assunzione completata"
@@ -274,19 +274,19 @@ public class PatientDashboardController {
 
             // 4) Target giornaliero atteso: somma di (quantità per assunzione * assunzioni/giorno) per ogni farmaco
             int targetGiornalieroTotale = farmaci.stream()
-                    .mapToInt(tf -> tf.getQuantitaAssunzione() * tf.getAssunzioniGiornaliere())
+                    .mapToInt(tf -> tf.getQuantita() * tf.getAssunzioniGiornaliere())
                     .sum();
 
             // 5) Quantità effettivamente assunta oggi su tutti i farmaci
             int quantitaAssuntaOggiTotale = 0;
 
-            for (TerapiaFarmaco tf : farmaci) {
-                List<AssunzioneTerapia> assunzioni =
-                        assunzioneDAO.findByPazienteAndTerapiaFarmaco(codiceFiscale, tf.getId());
+            for (FarmacoTerapia tf : farmaci) {
+                List<Assunzione> assunzioni =
+                        assunzioneDAO.findByPazienteAndTerapiaAndFarmaco(codiceFiscale, tf.getFkFarmaco(), terapiaCorrente.getId());
 
                 int qFarmacoOggi = assunzioni.stream()
                         .filter(a -> isSameDay(a.getDateStamp(), today))
-                        .mapToInt(AssunzioneTerapia::getQuantitaAssunta)
+                        .mapToInt(Assunzione::getQuantitaAssunta)
                         .sum();
 
                 quantitaAssuntaOggiTotale += qFarmacoOggi;

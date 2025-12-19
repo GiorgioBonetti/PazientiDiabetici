@@ -4,15 +4,15 @@ import it.univr.diabete.MainApp;
 import it.univr.diabete.dao.GlicemiaDAO;
 import it.univr.diabete.dao.PazienteDAO;
 import it.univr.diabete.dao.TerapiaDAO;
-import it.univr.diabete.dao.TerapiaFarmacoDAO;
+import it.univr.diabete.dao.FarmacoTerapiaDAO;
 import it.univr.diabete.dao.impl.GlicemiaDAOImpl;
 import it.univr.diabete.dao.impl.PazienteDAOImpl;
 import it.univr.diabete.dao.impl.TerapiaDAOImpl;
-import it.univr.diabete.dao.impl.TerapiaFarmacoDAOImpl;
+import it.univr.diabete.dao.impl.FarmacoTerapiaDAOImpl;
 import it.univr.diabete.model.Glicemia;
 import it.univr.diabete.model.Paziente;
 import it.univr.diabete.model.Terapia;
-import it.univr.diabete.model.TerapiaFarmaco;
+import it.univr.diabete.model.FarmacoTerapia;
 import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -59,7 +59,7 @@ public class PatientReportController {
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
     private final TerapiaDAO terapiaDAO = new TerapiaDAOImpl();
-    private final TerapiaFarmacoDAO terapiaFarmacoDAO = new TerapiaFarmacoDAOImpl();
+    private final FarmacoTerapiaDAO farmacoTerapiaDAO = new FarmacoTerapiaDAOImpl();
 
     private List<Glicemia> allMeasurements = new ArrayList<>();
     private List<Terapia> terapiePaziente = new ArrayList<>();
@@ -129,7 +129,7 @@ public class PatientReportController {
     private void loadAllMeasurements() {
         try {
             allMeasurements = glicemiaDAO.findByPazienteId(CodiceFiscale);
-            allMeasurements.sort(Comparator.comparing(Glicemia::getDataOra));
+            allMeasurements.sort(Comparator.comparing(Glicemia::getDateStamp));
         } catch (Exception e) {
             e.printStackTrace();
             allMeasurements = new ArrayList<>();
@@ -174,15 +174,15 @@ public class PatientReportController {
         final LocalDateTime fromBoundary = fromDateTime;
 
         List<Glicemia> filtered = allMeasurements.stream()
-                .filter(g -> fromBoundary == null || !g.getDataOra().isBefore(fromBoundary))
-                .sorted(Comparator.comparing(Glicemia::getDataOra))
+                .filter(g -> fromBoundary == null || !g.getDateStamp().isBefore(fromBoundary))
+                .sorted(Comparator.comparing(Glicemia::getDateStamp))
                 .toList();
 
         if (fromBoundary == null || filtered.isEmpty()) {
             periodLabel.setText(filter);
         } else {
-            LocalDate start = filtered.get(0).getDataOra().toLocalDate();
-            LocalDate end   = filtered.get(filtered.size() - 1).getDataOra().toLocalDate();
+            LocalDate start = filtered.get(0).getDateStamp().toLocalDate();
+            LocalDate end   = filtered.get(filtered.size() - 1).getDateStamp().toLocalDate();
             periodLabel.setText("Periodo: " + start + " - " + end);
         }
 
@@ -220,9 +220,9 @@ public class PatientReportController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
         data.stream()
-                .sorted(Comparator.comparing(Glicemia::getDataOra))
+                .sorted(Comparator.comparing(Glicemia::getDateStamp))
                 .forEach(g -> {
-                    String label = g.getDataOra().format(chartFormatter);
+                    String label = g.getDateStamp().format(chartFormatter);
                     series.getData().add(new XYChart.Data<>(label, g.getValore()));
                 });
 
@@ -341,7 +341,7 @@ public class PatientReportController {
         }
 
         // Recupero i farmaci della terapia
-        List<TerapiaFarmaco> farmaci = terapiaFarmacoDAO.findByTerapiaId(terapia.getId());
+        List<FarmacoTerapia> farmaci = farmacoTerapiaDAO.findByTerapiaId(terapia.getId());
 
         if (farmaci.isEmpty()) {
             therapyDrugLabel.setText("Terapia senza farmaci");
@@ -350,12 +350,12 @@ public class PatientReportController {
             return;
         }
 
-        TerapiaFarmaco tf = farmaci.get(0); // per ora mostriamo il primo
+        FarmacoTerapia tf = farmaci.get(0); // per ora mostriamo il primo
         String nomeFarmaco;
         if (tf.getFarmaco() != null) {
             nomeFarmaco = tf.getFarmaco().getNome();
         } else {
-            nomeFarmaco = "Farmaco ID " + tf.getIdFarmaco();
+            nomeFarmaco = "Farmaco ID " + tf.getFkFarmaco();
         }
 
         if (farmaci.size() > 1) {
@@ -364,7 +364,7 @@ public class PatientReportController {
             therapyDrugLabel.setText(nomeFarmaco);
         }
 
-        therapyDoseLabel.setText(tf.getQuantitaAssunzione() + " unità");
+        therapyDoseLabel.setText(tf.getQuantita() + " unità");
         therapyFreqLabel.setText(tf.getAssunzioniGiornaliere() + " volte al giorno");
     }
 
@@ -412,9 +412,9 @@ public class PatientReportController {
             List<Glicemia> all = glicemiaDAO.findByPazienteId(CodiceFiscale);
 
             List<Glicemia> last30 = all.stream()
-                    .filter(g -> g.getDataOra() != null &&
-                            !g.getDataOra().toLocalDate().isBefore(from))
-                    .sorted(Comparator.comparing(Glicemia::getDataOra))
+                    .filter(g -> g.getDateStamp() != null &&
+                            !g.getDateStamp().toLocalDate().isBefore(from))
+                    .sorted(Comparator.comparing(Glicemia::getDateStamp))
                     .toList();
 
             updateKpi(last30);

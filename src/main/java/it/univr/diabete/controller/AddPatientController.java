@@ -43,7 +43,7 @@ public class AddPatientController {
             p.setSesso(sessoChoice.getValue());
             p.setDataNascita(dataNascitaPicker.getValue());
             p.setPassword(passwordField.getText());
-            p.setIdDiabetologo(diabetologoId);
+            p.setFkDiabetologo(diabetologoId);
 
             pazienteDAO.insert(p);  // 🔥 CREA IL PAZIENTE
 

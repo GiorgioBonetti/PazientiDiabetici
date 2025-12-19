@@ -1,15 +1,15 @@
 package it.univr.diabete.controller;
 
 import it.univr.diabete.MainApp;
-import it.univr.diabete.dao.AssunzioneTerapiaDAO;
+import it.univr.diabete.dao.AssunzioneDAO;
 import it.univr.diabete.dao.TerapiaDAO;
-import it.univr.diabete.dao.TerapiaFarmacoDAO;
-import it.univr.diabete.dao.impl.AssunzioneTerapiaDAOImpl;
+import it.univr.diabete.dao.FarmacoTerapiaDAO;
+import it.univr.diabete.dao.impl.AssunzioneDAOImpl;
 import it.univr.diabete.dao.impl.TerapiaDAOImpl;
-import it.univr.diabete.dao.impl.TerapiaFarmacoDAOImpl;
-import it.univr.diabete.model.AssunzioneTerapia;
+import it.univr.diabete.dao.impl.FarmacoTerapiaDAOImpl;
+import it.univr.diabete.model.Assunzione;
 import it.univr.diabete.model.Terapia;
-import it.univr.diabete.model.TerapiaFarmaco;
+import it.univr.diabete.model.FarmacoTerapia;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -43,10 +43,10 @@ public class PatientTherapyController {
     // filtro assunzioni + tabella
     @FXML private ChoiceBox<String> assunzioniFilter;
     @FXML private Button            addAssunzioneButton;
-    @FXML private TableView<AssunzioneTerapia> assunzioniTable;
-    @FXML private TableColumn<AssunzioneTerapia, String>  colData;
-    @FXML private TableColumn<AssunzioneTerapia, Integer> colQuantita;
-    private TableColumn<AssunzioneTerapia, Void> colEdit;
+    @FXML private TableView<Assunzione> assunzioniTable;
+    @FXML private TableColumn<Assunzione, String>  colData;
+    @FXML private TableColumn<Assunzione, Integer> colQuantita;
+    private TableColumn<Assunzione, Void> colEdit;
 
     // card terapie (sopra)
     @FXML private HBox therapyCardsContainer;
@@ -56,11 +56,11 @@ public class PatientTherapyController {
     private VBox             selectedFarmacoCard;
 
     private final TerapiaDAO          terapiaDAO          = new TerapiaDAOImpl();
-    private final AssunzioneTerapiaDAO assunzioneDAO      = new AssunzioneTerapiaDAOImpl();
-    private final TerapiaFarmacoDAO   terapiaFarmacoDAO   = new TerapiaFarmacoDAOImpl();
+    private final AssunzioneDAO assunzioneDAO      = new AssunzioneDAOImpl();
+    private final FarmacoTerapiaDAO farmacoTerapiaDAO = new FarmacoTerapiaDAOImpl();
 
     private Terapia       terapiaCorrente;
-    private TerapiaFarmaco terapiaFarmacoCorrente;
+    private FarmacoTerapia farmacoTerapiaCorrente;
     private String codiceFiscale;
 
     private final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -121,7 +121,7 @@ public class PatientTherapyController {
 
             therapyCardsContainer.getChildren().clear();
             terapiaCorrente = null;
-            terapiaFarmacoCorrente = null;
+            farmacoTerapiaCorrente = null;
             selectedCard = null;
             selectedFarmacoCard = null;
             assunzioniTable.getItems().clear();
@@ -151,7 +151,7 @@ public class PatientTherapyController {
 
     private void clearDettaglioTerapia() {
         farmaciCardsContainer.getChildren().clear();
-        terapiaFarmacoCorrente = null;
+        farmacoTerapiaCorrente = null;
         addAssunzioneButton.setDisable(true);
         addAssunzioneButton.setStyle("-fx-opacity: 0.4;");
     }
@@ -179,15 +179,15 @@ public class PatientTherapyController {
          // info farmaco principale + conteggio altri farmaci
 
         try {
-            List<TerapiaFarmaco> farmaci = terapiaFarmacoDAO.findByTerapiaId(t.getId());
+            List<FarmacoTerapia> farmaci = farmacoTerapiaDAO.findByTerapiaId(t.getId());
             if (farmaci.isEmpty()) {
                 lblInfo.setText("Nessun farmaco assegnato");
             } else {
-                TerapiaFarmaco tf = farmaci.get(0);
+                FarmacoTerapia tf = farmaci.get(0);
 
                 String subtitle = (tf.getFarmaco() != null)
                         ? tf.getFarmaco().getNome()
-                        : "Farmaco ID " + tf.getIdFarmaco();
+                        : "Farmaco ID " + tf.getFkFarmaco();
                 if (farmaci.size() > 1) {
                     subtitle += " (+ " + (farmaci.size() - 1) + " altri)";
                 }
@@ -260,7 +260,7 @@ public class PatientTherapyController {
         }
 
         try {
-            List<TerapiaFarmaco> farmaci = terapiaFarmacoDAO.findByTerapiaId(t.getId());
+            List<FarmacoTerapia> farmaci = farmacoTerapiaDAO.findByTerapiaId(t.getId());
 
             farmaciCardsContainer.getChildren().clear();
             selectedFarmacoCard = null;
@@ -273,7 +273,7 @@ public class PatientTherapyController {
 
             // crea card per ogni farmaco
             for (int i = 0; i < farmaci.size(); i++) {
-                TerapiaFarmaco tf = farmaci.get(i);
+                FarmacoTerapia tf = farmaci.get(i);
                 VBox cardFarmaco = creaCardFarmaco(t, tf);
                 farmaciCardsContainer.getChildren().add(cardFarmaco);
 
@@ -291,7 +291,7 @@ public class PatientTherapyController {
 
     // ─────────────────── CARD FARMACO (sotto) ───────────────────
 
-    private VBox creaCardFarmaco(Terapia terapia, TerapiaFarmaco tf) {
+    private VBox creaCardFarmaco(Terapia terapia, FarmacoTerapia tf) {
         VBox card = new VBox(4);
         card.getStyleClass().add("drug-card");
         card.setPadding(new Insets(8, 12, 10, 12));
@@ -302,12 +302,12 @@ public class PatientTherapyController {
 
         String nomeFarmaco = (tf.getFarmaco() != null)
                 ? tf.getFarmaco().getNome()
-                : "Farmaco ID " + tf.getIdFarmaco();
+                : "Farmaco ID " + tf.getFkFarmaco();
 
         Label lblNome = new Label(nomeFarmaco);
         lblNome.getStyleClass().add("drug-card-title");
 
-        Label lblDose = new Label("Dosaggio: " + tf.getQuantitaAssunzione() + " mg");
+        Label lblDose = new Label("Dosaggio: " + tf.getQuantita() + " mg");
         lblDose.getStyleClass().add("drug-card-line");
 
         Label lblFreq = new Label("Assunzioni: " + tf.getAssunzioniGiornaliere() + " x/giorno");
@@ -336,11 +336,11 @@ public class PatientTherapyController {
     }
 
     private void selezionaFarmaco(Terapia terapia,
-                                  TerapiaFarmaco tf,
+                                  FarmacoTerapia tf,
                                   VBox card) {
 
         this.terapiaCorrente = terapia;
-        this.terapiaFarmacoCorrente = tf;
+        this.farmacoTerapiaCorrente = tf;
 
         // stile card farmaco selezionata
         if (selectedFarmacoCard != null) {
@@ -362,14 +362,14 @@ public class PatientTherapyController {
 
         boolean nonIniziata = t.getDataInizio() != null && today.isBefore(t.getDataInizio());
         boolean scaduta    = t.getDataFine()   != null && today.isAfter(t.getDataFine());
-        boolean disable    = nonIniziata || scaduta || (terapiaFarmacoCorrente == null);
+        boolean disable    = nonIniziata || scaduta || (farmacoTerapiaCorrente == null);
 
         addAssunzioneButton.setDisable(disable);
         addAssunzioneButton.setStyle(disable ? "-fx-opacity: 0.4;" : "-fx-opacity: 1;");
     }
 
     private void loadAssunzioni() {
-        if (terapiaCorrente == null || terapiaFarmacoCorrente == null) {
+        if (terapiaCorrente == null || farmacoTerapiaCorrente == null) {
             assunzioniTable.getItems().clear();
             return;
         }
@@ -378,14 +378,14 @@ public class PatientTherapyController {
 
     @FXML
     private void handleAddAssunzione() {
-        if (terapiaCorrente == null || terapiaFarmacoCorrente == null) return;
+        if (terapiaCorrente == null || farmacoTerapiaCorrente == null) return;
 
         try {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/AddAssunzioneView.fxml"));
             Parent root = loader.load();
 
             AddAssunzioneController controller = loader.getController();
-            controller.initData(codiceFiscale, terapiaFarmacoCorrente.getId(), this::loadAssunzioni);
+            controller.initData(codiceFiscale, farmacoTerapiaCorrente.getFkFarmaco(), this::loadAssunzioni);
 
             Stage popup = new Stage();
             popup.initOwner(assunzioniTable.getScene().getWindow());
@@ -400,16 +400,16 @@ public class PatientTherapyController {
     }
 
     private void applyAssunzioniFilter() {
-        if (terapiaCorrente == null || terapiaFarmacoCorrente == null) return;
+        if (terapiaCorrente == null || farmacoTerapiaCorrente == null) return;
 
         String    filter = assunzioniFilter.getValue();
         LocalDate today  = LocalDate.now();
 
         try {
-            List<AssunzioneTerapia> lista =
-                    assunzioneDAO.findByPazienteAndTerapiaFarmaco(codiceFiscale, terapiaFarmacoCorrente.getId());
+            List<Assunzione> lista =
+                    assunzioneDAO.findByPazienteAndTerapiaAndFarmaco(codiceFiscale, farmacoTerapiaCorrente.getFkTerapia(), farmacoTerapiaCorrente.getFkFarmaco());
 
-            List<AssunzioneTerapia> filtrate = lista.stream()
+            List<Assunzione> filtrate = lista.stream()
                     .filter(a -> {
                         LocalDate data = a.getDateStamp().toLocalDate();
                         return switch (filter) {
@@ -448,7 +448,7 @@ public class PatientTherapyController {
                 editBtn.setGraphic(icon);
 
                 editBtn.setOnAction(event -> {
-                    AssunzioneTerapia a = getTableView().getItems().get(getIndex());
+                    Assunzione a = getTableView().getItems().get(getIndex());
                     if (a != null) {
                         openEditAssunzionePopup(a);
                     }
@@ -465,7 +465,7 @@ public class PatientTherapyController {
         assunzioniTable.getColumns().add(colEdit);
     }
 
-    private void openEditAssunzionePopup(AssunzioneTerapia a) {
+    private void openEditAssunzionePopup(Assunzione a) {
         try {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/EditAssunzioneView.fxml"));
             Parent root = loader.load();
@@ -489,7 +489,7 @@ public class PatientTherapyController {
 
             therapyCardsContainer.getChildren().clear();
             terapiaCorrente = null;
-            terapiaFarmacoCorrente = null;
+            farmacoTerapiaCorrente = null;
             selectedCard = null;
             assunzioniTable.getItems().clear();
 

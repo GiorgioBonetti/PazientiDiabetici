@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 
 public class Glicemia {
     private int id;
-    private String idPaziente;
+    private String fkPaziente;
     private int valore;
-    private LocalDateTime dataOra;
-    private String momento;   // ⬅ AGGIUNTO
+    private LocalDateTime dateStamp;
+    private String parteGiorno;
 
     public Glicemia() {}
 
@@ -18,11 +18,11 @@ public class Glicemia {
         this.id = id;
     }
 
-    public String getIdPaziente() {
-        return idPaziente;
+    public String getFkPaziente() {
+        return fkPaziente;
     }
-    public void setIdPaziente(String idPaziente) {
-        this.idPaziente = idPaziente;
+    public void setFkPaziente(String fkPaziente) {
+        this.fkPaziente = fkPaziente;
     }
 
     public int getValore() {
@@ -32,18 +32,17 @@ public class Glicemia {
         this.valore = valore;
     }
 
-    public LocalDateTime getDataOra() {
-        return dataOra;
+    public LocalDateTime getDateStamp() {
+        return dateStamp;
     }
-    public void setDataOra(LocalDateTime dataOra) {
-        this.dataOra = dataOra;
+    public void setDateStamp(LocalDateTime dateStamp) {
+        this.dateStamp = dateStamp;
     }
 
-    // ⬅⬅⬅ MOMENTO (NUOVO)
-    public String getMomento() {
-        return momento;
+    public String getParteGiorno() {
+        return parteGiorno;
     }
-    public void setMomento(String momento) {
-        this.momento = momento;
+    public void setParteGiorno(String parteGiorno) {
+        this.parteGiorno = parteGiorno;
     }
 }

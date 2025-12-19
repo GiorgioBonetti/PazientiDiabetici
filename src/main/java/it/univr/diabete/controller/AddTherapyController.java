@@ -1,9 +1,6 @@
 package it.univr.diabete.controller;
 
-import it.univr.diabete.dao.TerapiaDAO;
-import it.univr.diabete.dao.impl.TerapiaDAOImpl;
 import it.univr.diabete.database.Database;
-import it.univr.diabete.model.Diabetologo;
 import it.univr.diabete.model.Terapia;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,8 +10,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
-
-import javax.xml.stream.events.Comment;
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -36,14 +31,14 @@ public class AddTherapyController {
 
     // Farmaci selezionati per questa terapia
     private static class FarmacoInTerapia {
-        int idFarmaco;
+        int fkFarmaco;
         String nome;
         int assunzioniGiornaliere;
         int quantitaAssunzione;
 
-        FarmacoInTerapia(int idFarmaco, String nome,
+        FarmacoInTerapia(int fkFarmaco, String nome,
                          int assunzioniGiornaliere, int quantitaAssunzione) {
-            this.idFarmaco = idFarmaco;
+            this.fkFarmaco = fkFarmaco;
             this.nome = nome;
             this.assunzioniGiornaliere = assunzioniGiornaliere;
             this.quantitaAssunzione = quantitaAssunzione;
@@ -194,13 +189,13 @@ public class AddTherapyController {
             conn.setAutoCommit(false);
 
             // 1️⃣ inserisco la Terapia
-            int idTerapia = insertTerapia(conn, dataInizio, dataFine, codiceFiscale);
+            int fkTerapia = insertTerapia(conn, dataInizio, dataFine, codiceFiscale);
 
-            // 2️⃣ una riga in TerapiaFarmaco per ogni farmaco selezionato
+            // 2️⃣ una riga in FarmacoTerapia per ogni farmaco selezionato
             for (FarmacoInTerapia fit : selectedFarmaci) {
-                insertTerapiaFarmaco(conn,
-                        idTerapia,
-                        fit.idFarmaco,
+                insertFarmacoTerapia(conn,
+                        fkTerapia,
+                        fit.fkFarmaco,
                         fit.assunzioniGiornaliere,
                         fit.quantitaAssunzione);
             }
@@ -239,14 +234,14 @@ public class AddTherapyController {
 
     private void loadFarmaciFromDb() {
         allFarmaci.clear();
-        String sql = "SELECT Nome FROM Farmaco ORDER BY Nome";
+        String sql = "SELECT nome FROM Farmaco ORDER BY nome";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                allFarmaci.add(rs.getString("Nome"));
+                allFarmaci.add(rs.getString("nome"));
             }
 
         } catch (SQLException e) {
@@ -292,10 +287,10 @@ public class AddTherapyController {
             int quantita = ctrl.getUnita();
 
             try (Connection conn = Database.getConnection()) {
-                int idFarmaco = ensureFarmaco(conn, nomeFarmaco);
+                int fkFarmaco = ensureFarmaco(conn, nomeFarmaco);
 
                 selectedFarmaci.add(
-                        new FarmacoInTerapia(idFarmaco, nomeFarmaco, assunzioni, quantita)
+                        new FarmacoInTerapia(fkFarmaco, nomeFarmaco, assunzioni, quantita)
                 );
 
             } catch (SQLException e) {
@@ -333,9 +328,9 @@ public class AddTherapyController {
 
     private int ensureFarmaco(Connection conn, String nome) throws SQLException {
         String selectSql = """
-                SELECT Id
+                SELECT id
                 FROM Farmaco
-                WHERE Nome = ?
+                WHERE nome = ?
                 LIMIT 1
                 """;
 
@@ -343,13 +338,13 @@ public class AddTherapyController {
             ps.setString(1, nome);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt("Id");
+                    return rs.getInt("id");
                 }
             }
         }
 
         String insertSql = """
-                INSERT INTO Farmaco (Nome, Marca)
+                INSERT INTO Farmaco (nome, marca)
                 VALUES (?, NULL)
                 """;
 
@@ -376,13 +371,13 @@ public class AddTherapyController {
 
        String sql = """
                 INSERT INTO Terapia
-                    (versione, DataInizio, DataFine, fkDiabetologo, fkPaziente)
+                    (versione, dataInizio, dataFine, fkDiabetologo, fkPaziente)
                 VALUES (?, ?, ?, ?, ?)
                 """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // 1) Nome terapia
+            // 1) nome terapia
             ps.setInt(1, 1);
 
             // 2) Data inizio
@@ -421,23 +416,22 @@ public class AddTherapyController {
         }
     }
 
-    private void insertTerapiaFarmaco(
+    private void insertFarmacoTerapia(
             Connection conn,
-                                      int idTerapia,
-                                      int idFarmaco,
+                                      int fkTerapia,
+                                      int fkFarmaco,
                                       int assunzioniGiornaliere,
                                       int quantitaAssunzione) throws SQLException {
 
         String sql = """
-                INSERT INTO TerapiaFarmaco
-                (IdTerapia, IdFarmaco, AssunzioniGiornaliere, QuantitaAssunzione)
+                INSERT INTO FarmacoTerapia
+                (fkTerapia, fkFarmaco, assunzioniGiornaliere, QuantitaAssunzione)
                 VALUES (?, ?, ?, ?)
                 """;
 
-
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idTerapia);
-            ps.setInt(2, idFarmaco);
+            ps.setInt(1, fkTerapia);
+            ps.setInt(2, fkFarmaco);
             ps.setInt(3, assunzioniGiornaliere);
             ps.setInt(4, quantitaAssunzione);
             ps.executeUpdate();

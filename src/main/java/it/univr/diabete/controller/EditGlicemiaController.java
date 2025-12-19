@@ -25,18 +25,18 @@ public class EditGlicemiaController {
         this.glicemia = g;
         this.refreshCallback = refresh;
 
-        dateLabel.setText("Registrata il: " + g.getDataOra().format(df));
+        dateLabel.setText("Registrata il: " + g.getDateStamp().format(df));
         valueField.setText(String.valueOf(g.getValore()));
 
         momentChoice.getItems().addAll("Mattino", "Pranzo", "Cena");
-        momentChoice.setValue(g.getMomento());
+        momentChoice.setValue(g.getParteGiorno());
     }
 
     @FXML
     private void handleSave() {
         try {
             glicemia.setValore(Integer.parseInt(valueField.getText()));
-            glicemia.setMomento(momentChoice.getValue());
+            glicemia.setParteGiorno(momentChoice.getValue());
 
             glicemiaDAO.update(glicemia);  // UPDATE nel DB
 

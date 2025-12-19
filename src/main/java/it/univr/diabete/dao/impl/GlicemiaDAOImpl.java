@@ -13,7 +13,7 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
     @Override
     public List<Glicemia> findByPazienteId(String codiceFiscale) throws Exception {
 
-        String sql = "SELECT * FROM Glicemia WHERE fkPaziente = ? ORDER BY datestamp ";
+        String sql = "SELECT * FROM Glicemia WHERE fkPaziente = ? ORDER BY dateStamp ";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -25,12 +25,12 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
 
             while (rs.next()) {
                 Glicemia g = new Glicemia();
-                g.setId(rs.getInt("Id"));
-                g.setIdPaziente(rs.getString("IdPaziente"));
-                g.setValore(rs.getInt("Valore"));
-                g.setMomento(rs.getString("Momento"));   // ⬅ AGGIUNTO
-                Timestamp ts = rs.getTimestamp("DateTime");
-                g.setDataOra(ts.toLocalDateTime());
+                g.setId(rs.getInt("id"));
+                g.setFkPaziente(rs.getString("fkPaziente"));
+                g.setValore(rs.getInt("valore"));
+                g.setParteGiorno(rs.getString("parteGiorno"));
+                Timestamp ts = rs.getTimestamp("dateStamp");
+                g.setDateStamp(ts.toLocalDateTime());
 
                 list.add(g);
             }
@@ -50,11 +50,11 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
 
             while (rs.next()) {
                 Glicemia g = new Glicemia();
-                g.setId(rs.getInt("Id"));
-                g.setIdPaziente(rs.getString("fkPaziente"));
-                g.setValore(rs.getInt("Valore"));
-                g.setDataOra(rs.getTimestamp("DateStamp").toLocalDateTime());
-                g.setMomento(rs.getString("ParteGiorno")); // se hai la colonna
+                g.setId(rs.getInt("id"));
+                g.setFkPaziente(rs.getString("fkPaziente"));
+                g.setValore(rs.getInt("valore"));
+                g.setDateStamp(rs.getTimestamp("dateStamp").toLocalDateTime());
+                g.setParteGiorno(rs.getString("parteGiorno"));
 
                 result.add(g);
             }
@@ -65,15 +65,15 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
     @Override
     public void insert(Glicemia g) throws Exception {
 
-        String sql = "INSERT INTO Glicemia (fkPaziente, Valore, datestamp, ParteGiorno) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Glicemia (fkPaziente, valore, dateStamp, parteGiorno) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, g.getIdPaziente());
+            ps.setString(1, g.getFkPaziente());
             ps.setInt(2, g.getValore());
-            ps.setTimestamp(3, Timestamp.valueOf(g.getDataOra()));
-            ps.setString(4, g.getMomento());
+            ps.setTimestamp(3, Timestamp.valueOf(g.getDateStamp()));
+            ps.setString(4, g.getParteGiorno());
 
             ps.executeUpdate();
         }
@@ -82,13 +82,13 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
     @Override
     public void update(Glicemia g) throws Exception {
 
-        String sql = "UPDATE Glicemia SET Valore=?, ParteGiorno=? WHERE Id=?";
+        String sql = "UPDATE Glicemia SET valore=?, parteGiorno=? WHERE id=?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, g.getValore());
-            ps.setString(2, g.getMomento());
+            ps.setString(2, g.getParteGiorno());
             ps.setInt(3, g.getId());
 
             ps.executeUpdate();
@@ -98,7 +98,7 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
     @Override
     public void delete(int id) throws Exception {
 
-        String sql = "DELETE FROM Glicemia WHERE Id=?";
+        String sql = "DELETE FROM Glicemia WHERE id=?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

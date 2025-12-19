@@ -1,8 +1,8 @@
 package it.univr.diabete.controller;
 
-import it.univr.diabete.dao.AssunzioneTerapiaDAO;
-import it.univr.diabete.dao.impl.AssunzioneTerapiaDAOImpl;
-import it.univr.diabete.model.AssunzioneTerapia;
+import it.univr.diabete.dao.AssunzioneDAO;
+import it.univr.diabete.dao.impl.AssunzioneDAOImpl;
+import it.univr.diabete.model.Assunzione;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -26,7 +26,7 @@ public class AddAssunzioneController {
 
     private Runnable onSave;
 
-    private final AssunzioneTerapiaDAO dao = new AssunzioneTerapiaDAOImpl();
+    private final AssunzioneDAO dao = new AssunzioneDAOImpl();
 
     /**
      * @param pazienteId        id del paziente
@@ -50,12 +50,11 @@ public class AddAssunzioneController {
                 return;
             }
 
-            AssunzioneTerapia a = new AssunzioneTerapia();
+            Assunzione a = new Assunzione();
             a.setQuantitaAssunta(q);
             a.setDateStamp(LocalDateTime.of(d, LocalTime.now()));
-            a.setIdPaziente(pazienteId);
-            // 👇 ora usiamo IdTerapiaFarmaco
-            a.setIdTerapiaFarmaco(terapiaFarmacoId);
+            a.setFkPaziente(pazienteId);
+            a.setFkTerapia(terapiaFarmacoId);
 
             dao.insert(a);
 
