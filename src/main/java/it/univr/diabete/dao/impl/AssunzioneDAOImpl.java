@@ -54,12 +54,10 @@ public class AssunzioneDAOImpl implements AssunzioneDAO {
 
     @Override
     public void insert(Assunzione a) throws Exception {
-
         String sql = """
-                INSERT INTO Assunzione
-                (fkPaziente, fkFarmaco, fkTerapia, dateStamp, quantitaAssunta)
-                VALUES (?, ?, ?, ?, ?)
-                """;
+        INSERT INTO Assunzione (fkPaziente, fkTerapia, fkFarmaco, dateStamp, quantitaAssunta)
+        VALUES (?, ?, ?, ?, ?)
+    """;
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

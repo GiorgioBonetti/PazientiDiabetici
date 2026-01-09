@@ -51,26 +51,30 @@ public class PatientTherapyController {
     // card terapie (sopra)
     @FXML private HBox therapyCardsContainer;
 
-    // card farmaci della terapia selezionata (sotto, scroll orizzontale)
-    @FXML private HBox       farmaciCardsContainer;
-    private VBox             selectedFarmacoCard;
+    // card farmaci della terapia selezionata (sotto)
+    @FXML private HBox farmaciCardsContainer;
+    private VBox selectedFarmacoCard;
 
-    private final TerapiaDAO          terapiaDAO          = new TerapiaDAOImpl();
-    private final AssunzioneDAO assunzioneDAO      = new AssunzioneDAOImpl();
+    private final TerapiaDAO terapiaDAO = new TerapiaDAOImpl();
+    private final AssunzioneDAO assunzioneDAO = new AssunzioneDAOImpl();
     private final FarmacoTerapiaDAO farmacoTerapiaDAO = new FarmacoTerapiaDAOImpl();
 
-    private Terapia       terapiaCorrente;
+    private Terapia terapiaCorrente;
     private FarmacoTerapia farmacoTerapiaCorrente;
+
     private String codiceFiscale;
 
+    // ✅ nuova: email del diabetologo loggato (serve per INSERT Terapia)
+    private String fkDiabetologoLoggato;
+
     private final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    private VBox selectedCard;   // card terapia selezionata
+    private VBox selectedCard;
 
     // ─────────────────── NAVIGATION ───────────────────
 
     @FXML
     private void handleGoToMeasurements() {
-        if (codiceFiscale.isEmpty()) return;
+        if (codiceFiscale == null || codiceFiscale.isBlank()) return;
         MainShellController shell = MainApp.getMainShellController();
         if (shell != null) {
             shell.openPatientMeasurements(patientNameLabel.getText(), codiceFiscale);
@@ -79,7 +83,7 @@ public class PatientTherapyController {
 
     @FXML
     private void handleGoToReport() {
-        if (codiceFiscale.isEmpty()) return;
+        if (codiceFiscale == null || codiceFiscale.isBlank()) return;
         MainShellController shell = MainApp.getMainShellController();
         if (shell != null) {
             shell.openPatientReport(patientNameLabel.getText(), codiceFiscale);
@@ -106,10 +110,24 @@ public class PatientTherapyController {
         assunzioniFilter.setOnAction(e -> applyAssunzioniFilter());
     }
 
-    // chiamato dal MainShellController
+    /**
+     * Chiamato dal MainShellController.
+     * Qui mi salvo anche l'ID del diabetologo loggato (se sono in modalità diabetologo).
+     */
     public void setPatientContext(String nomeCompleto, String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
         patientNameLabel.setText(nomeCompleto);
+
+        // ✅ recupero diabetologo loggato dal MainShell
+        // Se l'app è loggata come Diabetologo, loggedUserId = email diabetologo
+        // Se l'app è loggata come Paziente, loggedUserId = CF (quindi NON va usato come fkDiabetologo)
+        MainShellController shell = MainApp.getMainShellController();
+        if (shell != null && "Diabetologo".equalsIgnoreCase(shell.getRole())) {
+            this.fkDiabetologoLoggato = shell.getLoggedUserId();
+        } else {
+            this.fkDiabetologoLoggato = null;
+        }
+
         loadTerapie();
     }
 
@@ -138,7 +156,6 @@ public class PatientTherapyController {
                 VBox card = creaCardTerapia(t);
                 therapyCardsContainer.getChildren().add(card);
 
-                // prima terapia selezionata di default
                 if (terapiaCorrente == null) {
                     selezionaTerapia(t, card);
                 }
@@ -156,7 +173,7 @@ public class PatientTherapyController {
         addAssunzioneButton.setStyle("-fx-opacity: 0.4;");
     }
 
-    // ─────────────────── CARD TERAPIA (sopra) ───────────────────
+    // ─────────────────── CARD TERAPIA ───────────────────
 
     private VBox creaCardTerapia(Terapia t) {
         VBox card = new VBox(4);
@@ -175,8 +192,7 @@ public class PatientTherapyController {
         Label lblInfo = new Label();
         lblInfo.getStyleClass().add("page-subtitle");
 
-        lblNome.setText("versione: " + t.getVersione());
-         // info farmaco principale + conteggio altri farmaci
+        lblNome.setText(t.getNome());
 
         try {
             List<FarmacoTerapia> farmaci = farmacoTerapiaDAO.findByTerapiaId(t.getId());
@@ -250,7 +266,6 @@ public class PatientTherapyController {
     private void selezionaTerapia(Terapia t, VBox card) {
         this.terapiaCorrente = t;
 
-        // stile card terapia selezionata
         if (selectedCard != null) {
             selectedCard.getStyleClass().remove("therapy-card-selected");
         }
@@ -271,13 +286,11 @@ public class PatientTherapyController {
                 return;
             }
 
-            // crea card per ogni farmaco
             for (int i = 0; i < farmaci.size(); i++) {
                 FarmacoTerapia tf = farmaci.get(i);
                 VBox cardFarmaco = creaCardFarmaco(t, tf);
                 farmaciCardsContainer.getChildren().add(cardFarmaco);
 
-                // seleziono il primo farmaco di default
                 if (i == 0) {
                     selezionaFarmaco(t, tf, cardFarmaco);
                 }
@@ -289,7 +302,7 @@ public class PatientTherapyController {
         }
     }
 
-    // ─────────────────── CARD FARMACO (sotto) ───────────────────
+    // ─────────────────── CARD FARMACO ───────────────────
 
     private VBox creaCardFarmaco(Terapia terapia, FarmacoTerapia tf) {
         VBox card = new VBox(4);
@@ -313,13 +326,10 @@ public class PatientTherapyController {
         Label lblFreq = new Label("Assunzioni: " + tf.getAssunzioniGiornaliere() + " x/giorno");
         lblFreq.getStyleClass().add("drug-card-line");
 
-
-        // (opzionale) periodo terapia, uguale per tutti i farmaci della terapia
         if (terapia.getDataInizio() != null) {
             String periodoText;
             if (terapia.getDataFine() != null) {
-                periodoText = "Periodo: dal " + terapia.getDataInizio() +
-                        " al " + terapia.getDataFine();
+                periodoText = terapia.getDataInizio() + " al " + terapia.getDataFine();
             } else {
                 periodoText = "Periodo: dal " + terapia.getDataInizio();
             }
@@ -335,14 +345,10 @@ public class PatientTherapyController {
         return card;
     }
 
-    private void selezionaFarmaco(Terapia terapia,
-                                  FarmacoTerapia tf,
-                                  VBox card) {
-
+    private void selezionaFarmaco(Terapia terapia, FarmacoTerapia tf, VBox card) {
         this.terapiaCorrente = terapia;
         this.farmacoTerapiaCorrente = tf;
 
-        // stile card farmaco selezionata
         if (selectedFarmacoCard != null) {
             selectedFarmacoCard.getStyleClass().remove("drug-card-selected");
         }
@@ -385,8 +391,12 @@ public class PatientTherapyController {
             Parent root = loader.load();
 
             AddAssunzioneController controller = loader.getController();
-            controller.initData(codiceFiscale, farmacoTerapiaCorrente.getFkFarmaco(), this::loadAssunzioni);
-
+            controller.initData(
+                    codiceFiscale,
+                    terapiaCorrente.getId(),                 // ✅ fkTerapia vero
+                    farmacoTerapiaCorrente.getFkFarmaco(),   // ✅ fkFarmaco
+                    this::loadAssunzioni
+            );
             Stage popup = new Stage();
             popup.initOwner(assunzioniTable.getScene().getWindow());
             popup.initModality(Modality.WINDOW_MODAL);
@@ -402,12 +412,15 @@ public class PatientTherapyController {
     private void applyAssunzioniFilter() {
         if (terapiaCorrente == null || farmacoTerapiaCorrente == null) return;
 
-        String    filter = assunzioniFilter.getValue();
-        LocalDate today  = LocalDate.now();
+        String filter = assunzioniFilter.getValue();
+        LocalDate today = LocalDate.now();
 
         try {
-            List<Assunzione> lista =
-                    assunzioneDAO.findByPazienteAndTerapiaAndFarmaco(codiceFiscale, farmacoTerapiaCorrente.getFkTerapia(), farmacoTerapiaCorrente.getFkFarmaco());
+            List<Assunzione> lista = assunzioneDAO.findByPazienteAndTerapiaAndFarmaco(
+                    codiceFiscale,
+                    farmacoTerapiaCorrente.getFkTerapia(),
+                    farmacoTerapiaCorrente.getFkFarmaco()
+            );
 
             List<Assunzione> filtrate = lista.stream()
                     .filter(a -> {
@@ -428,7 +441,7 @@ public class PatientTherapyController {
         }
     }
 
-    // ─────────────────── COLONNA EDIT ASSUNZIONI ───────────────────
+    // ─────────────────── COLONNA EDIT ───────────────────
 
     private void addEditColumn() {
         colEdit = new TableColumn<>("");
@@ -483,6 +496,7 @@ public class PatientTherapyController {
             e.printStackTrace();
         }
     }
+
     private void reloadTerapieAndSelect(int terapiaIdDaSelezionare) {
         try {
             List<Terapia> lista = terapiaDAO.findByPazienteId(codiceFiscale);
@@ -492,7 +506,6 @@ public class PatientTherapyController {
             farmacoTerapiaCorrente = null;
             selectedCard = null;
             assunzioniTable.getItems().clear();
-
 
             if (lista.isEmpty()) {
                 Label empty = new Label("Nessuna terapia assegnata");
@@ -508,7 +521,6 @@ public class PatientTherapyController {
                 VBox card = creaCardTerapia(t);
                 therapyCardsContainer.getChildren().add(card);
 
-                // se è la terapia che abbiamo appena modificato, la segno
                 if (t.getId() == terapiaIdDaSelezionare) {
                     terapiaDaSelezionare = t;
                     cardDaSelezionare = card;
@@ -516,10 +528,8 @@ public class PatientTherapyController {
             }
 
             if (terapiaDaSelezionare != null) {
-                // seleziono la terapia modificata
                 selezionaTerapia(terapiaDaSelezionare, cardDaSelezionare);
             } else {
-                // fallback: seleziono la prima
                 Terapia first = lista.get(0);
                 VBox firstCard = (VBox) therapyCardsContainer.getChildren().get(0);
                 selezionaTerapia(first, firstCard);
@@ -529,6 +539,7 @@ public class PatientTherapyController {
             e.printStackTrace();
         }
     }
+
     // ─────────────────── VISIBILITÀ TOOL EDIT ───────────────────
 
     public void hideEditingTools() {
@@ -542,13 +553,11 @@ public class PatientTherapyController {
     }
 
     public void hideEditingToolsPat() {
-        // nascondo il pulsante "Nuova terapia"
         if (addTherapyButton != null) {
             addTherapyButton.setVisible(false);
             addTherapyButton.setManaged(false);
         }
 
-        // nascondo TUTTE le matite nelle card terapia
         for (Node node : therapyCardsContainer.lookupAll("#editTherapyButton")) {
             node.setVisible(false);
             node.setManaged(false);
@@ -559,14 +568,24 @@ public class PatientTherapyController {
 
     @FXML
     private void handleAddTherapy() {
-        if (codiceFiscale.isEmpty()) return;
+        if (codiceFiscale == null || codiceFiscale.isBlank()) return;
+
+        // ✅ qui deve esserci un diabetologo loggato, altrimenti non posso creare terapia
+        if (fkDiabetologoLoggato == null || fkDiabetologoLoggato.isBlank()) {
+            // se vuoi: mostra alert globale
+            MainShellController shell = MainApp.getMainShellController();
+            if (shell != null) shell.showGlobalError("Solo il diabetologo può creare una terapia.");
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/AddTherapyView.fxml"));
             Parent root = loader.load();
 
             AddTherapyController ctrl = loader.getController();
-            ctrl.initData(codiceFiscale, this::loadTerapie);
+
+            // ✅ CAMBIO: passiamo anche fkDiabetologo (email del loggato)
+            ctrl.initData(codiceFiscale, fkDiabetologoLoggato, this::loadTerapie);
 
             Stage popup = new Stage();
             popup.initOwner(therapyRoot.getScene().getWindow());
@@ -586,8 +605,6 @@ public class PatientTherapyController {
             Parent root = loader.load();
 
             EditTherapyController ctrl = loader.getController();
-
-            // 👇 callback: dopo il salvataggio ricarico e seleziono QUESTA terapia
             ctrl.init(t, () -> reloadTerapieAndSelect(t.getId()));
 
             Stage popup = new Stage();

@@ -6,7 +6,6 @@ public class FarmacoTerapia {
     private int fkFarmaco;
     private int assunzioniGiornaliere;
     private int quantita;
-    private int fkVersioneTerapia;
 
     // opzionale: riferimento diretto al Farmaco
     private Farmaco farmaco;
@@ -20,7 +19,6 @@ public class FarmacoTerapia {
         this.fkFarmaco = fkFarmaco;
         this.assunzioniGiornaliere = assunzioniGiornaliere;
         this.quantita = quantita;
-        this.fkVersioneTerapia = fkVersioneTerapia;
     }
 
     // getter & setter
@@ -49,9 +47,6 @@ public class FarmacoTerapia {
     public void setQuantita(int quantita) {
         this.quantita = quantita;
     }
-
-    public int getFkVersioneTerapia() { return fkVersioneTerapia; }
-    public void setFkVersioneTerapia(int fkVersioneTerapia) { this.fkVersioneTerapia = fkVersioneTerapia; }
 
     public Farmaco getFarmaco() { return farmaco; }
     public void setFarmaco(Farmaco farmaco) { this.farmaco = farmaco; }

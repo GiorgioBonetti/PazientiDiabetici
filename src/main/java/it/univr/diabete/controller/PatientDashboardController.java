@@ -225,15 +225,15 @@ public class PatientDashboardController {
 
         boolean mattinoDone = lista.stream()
                 .anyMatch(g -> isSameDay(g.getDateStamp(), today)
-                        && "Mattino".equalsIgnoreCase(g.getParteGiorno()));
+                        && "Mattina".equalsIgnoreCase(g.getParteGiorno()));
 
         boolean pranzoDone = lista.stream()
                 .anyMatch(g -> isSameDay(g.getDateStamp(), today)
-                        && "Pranzo".equalsIgnoreCase(g.getParteGiorno()));
+                        && "Pomeriggio".equalsIgnoreCase(g.getParteGiorno()));
 
         boolean cenaDone = lista.stream()
                 .anyMatch(g -> isSameDay(g.getDateStamp(), today)
-                        && "Cena".equalsIgnoreCase(g.getParteGiorno()));
+                        && "Sera".equalsIgnoreCase(g.getParteGiorno()));
 
         chkMattino.setSelected(mattinoDone);
         chkPranzo.setSelected(pranzoDone);

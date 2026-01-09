@@ -26,9 +26,9 @@ public class AddGlicemiaController {
     @FXML
     private void initialize() {
         momentoChoice.getItems().setAll(
-                "Mattino",
-                "Pranzo",
-                "Cena"
+                "Mattina",
+                "Pomeriggio",
+                "Sera"
         );
         momentoChoice.getSelectionModel().selectFirst();
     }

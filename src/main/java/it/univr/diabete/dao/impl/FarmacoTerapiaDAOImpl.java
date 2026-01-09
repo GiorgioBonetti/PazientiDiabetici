@@ -14,17 +14,17 @@ public class FarmacoTerapiaDAOImpl implements FarmacoTerapiaDAO {
     @Override
     public List<FarmacoTerapia> findByTerapiaId(int terapiaId) throws Exception {
         String sql = """
-                SELECT tf.fkTerapia,
-                       tf.fkFarmaco,
-                       tf.assunzioniGiornaliere,
-                       tf.quantita,
-                       tf.fkVersioneTerapia,
-                       f.Nome AS FarmacoNome,
-                       f.Marca AS FarmacoMarca
-                FROM FarmacoTerapia tf
-                JOIN Farmaco f ON f.id = tf.fkFarmaco
-                WHERE tf.fkTerapia = ?
-                """;
+            SELECT tf.fkTerapia,
+                   tf.fkFarmaco,
+                   tf.assunzioniGiornaliere,
+                   tf.quantita,
+                   f.id      AS farmacoId,
+                   f.nome    AS farmacoNome,
+                   f.marca   AS farmacoMarca
+            FROM FarmacoTerapia tf
+            JOIN Farmaco f ON f.id = tf.fkFarmaco
+            WHERE tf.fkTerapia = ?
+            """;
 
         List<FarmacoTerapia> result = new ArrayList<>();
 
@@ -40,14 +40,11 @@ public class FarmacoTerapiaDAOImpl implements FarmacoTerapiaDAO {
                     tf.setFkFarmaco(rs.getInt("fkFarmaco"));
                     tf.setAssunzioniGiornaliere(rs.getInt("assunzioniGiornaliere"));
                     tf.setQuantita(rs.getInt("quantita"));
-                    tf.setFkVersioneTerapia(rs.getInt("fkVersioneTerapia"));
-
 
                     Farmaco f = new Farmaco(
-                            rs.getInt("id"),
-                            rs.getString("nome"),
-                            rs.getString("marca"),
-                            rs.getDouble("dosaggio")
+                            rs.getInt("farmacoId"),
+                            rs.getString("farmacoNome"),
+                            rs.getString("farmacoMarca")
                     );
                     tf.setFarmaco(f);
 
@@ -74,7 +71,6 @@ public class FarmacoTerapiaDAOImpl implements FarmacoTerapiaDAO {
             ps.setInt(2, tf.getFkFarmaco());
             ps.setInt(3, tf.getAssunzioniGiornaliere());
             ps.setInt(4, tf.getQuantita());
-            ps.setInt(5, tf.getFkVersioneTerapia());
 
             ps.executeUpdate();
         }
@@ -83,20 +79,19 @@ public class FarmacoTerapiaDAOImpl implements FarmacoTerapiaDAO {
     @Override
     public void update(FarmacoTerapia tf) throws Exception {
         String sql = """
-                UPDATE FarmacoTerapia
-                SET assunzioniGiornaliere = ?,
-                    quantita = ?
-                WHERE fkTerapia = ? AND fkFarmaco = ? AND fkVersioneTerapia = ?
-                """;
+            UPDATE FarmacoTerapia
+            SET assunzioniGiornaliere = ?,
+                quantita = ?
+            WHERE fkTerapia = ? AND fkFarmaco = ? AND fkVersioneTerapia = ?
+            """;
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, tf.getFkTerapia());
-            ps.setInt(2, tf.getFkFarmaco());
-            ps.setInt(3, tf.getAssunzioniGiornaliere());
-            ps.setInt(4, tf.getQuantita());
-            ps.setInt(5, tf.getFkVersioneTerapia());
+            ps.setInt(1, tf.getAssunzioniGiornaliere());
+            ps.setInt(2, tf.getQuantita());
+            ps.setInt(3, tf.getFkTerapia());
+            ps.setInt(4, tf.getFkFarmaco());
 
             ps.executeUpdate();
         }
@@ -108,8 +103,9 @@ public class FarmacoTerapiaDAOImpl implements FarmacoTerapiaDAO {
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, fkTerapia);
-            ps.setInt(2, fkFarmaco);
+
+            ps.setInt(1, fkFarmaco);
+            ps.setInt(2, fkTerapia);
             ps.setInt(3, fkVersioneTerapia);
 
             ps.executeUpdate();

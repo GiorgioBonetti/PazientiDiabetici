@@ -1,15 +1,18 @@
 package it.univr.diabete.controller;
 
 import it.univr.diabete.database.Database;
-import it.univr.diabete.model.Terapia;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
+
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -23,21 +26,20 @@ public class AddTherapyController {
     @FXML private Label errorLabel;
     @FXML private ScrollPane selectedFarmaciScroll;
     @FXML private TextField nomeTerapiaField;
+
     private String codiceFiscale;
+    private String fkDiabetologo;       // email diabetologo loggato
     private Runnable onSavedCallback;
 
-    // Tutti i nomi farmaco dal DB
     private final ObservableList<String> allFarmaci = FXCollections.observableArrayList();
 
-    // Farmaci selezionati per questa terapia
     private static class FarmacoInTerapia {
         int fkFarmaco;
         String nome;
         int assunzioniGiornaliere;
         int quantitaAssunzione;
 
-        FarmacoInTerapia(int fkFarmaco, String nome,
-                         int assunzioniGiornaliere, int quantitaAssunzione) {
+        FarmacoInTerapia(int fkFarmaco, String nome, int assunzioniGiornaliere, int quantitaAssunzione) {
             this.fkFarmaco = fkFarmaco;
             this.nome = nome;
             this.assunzioniGiornaliere = assunzioniGiornaliere;
@@ -45,8 +47,7 @@ public class AddTherapyController {
         }
     }
 
-    private final ObservableList<FarmacoInTerapia> selectedFarmaci =
-            FXCollections.observableArrayList();
+    private final ObservableList<FarmacoInTerapia> selectedFarmaci = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
@@ -55,83 +56,67 @@ public class AddTherapyController {
 
         dataInizioPicker.setValue(LocalDate.now());
 
-        // collega ListView ai farmaci
         farmacoListView.setItems(allFarmaci);
-
-        // card stile paziente + spazio tra i box
         farmacoListView.setCellFactory(lv -> createFarmacoCardCell());
 
-        // carica farmaci dal DB
         loadFarmaciFromDb();
 
-        // filtro live sulla search
         searchFarmacoField.textProperty().addListener((obs, oldV, newV) -> filterFarmaciList(newV));
 
-        // click singolo su un farmaco -> popup dosi (continua a funzionare)
         farmacoListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
                 String nome = farmacoListView.getSelectionModel().getSelectedItem();
-                if (nome != null) {
-                    onFarmacoSelected(nome);
-                }
+                if (nome != null) onFarmacoSelected(nome);
             }
         });
 
         selectedFarmaci.addListener((javafx.collections.ListChangeListener<FarmacoInTerapia>) c -> refreshSelectedFarmaciChips());
         selectedFarmaciScroll.vvalueProperty().addListener((obs, oldV, newV) -> {
-            if (newV.doubleValue() != 0.0) {
-                selectedFarmaciScroll.setVvalue(0.0);
-            }
+            if (newV.doubleValue() != 0.0) selectedFarmaciScroll.setVvalue(0.0);
         });
-
     }
+
     private ListCell<String> createFarmacoCardCell() {
         return new ListCell<>() {
-
             private final VBox root = new VBox();
             private final Label nameLbl = new Label();
 
             {
-                // SPAZIO TRA I BOX 👇
-                setPadding(new Insets(2, 0, 2, 0)); // sopra/sotto = margine tra una card e l’altra
+                setPadding(new Insets(2, 0, 2, 0));
 
-                // stile della card bianca
                 root.setPadding(new Insets(10));
                 root.setStyle("""
-                -fx-background-color: white;
-                -fx-background-radius: 18;
-                -fx-border-radius: 18;
-                -fx-border-color: #e5e7eb;
-                -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 8, 0.2, 0, 2);
+                    -fx-background-color: white;
+                    -fx-background-radius: 18;
+                    -fx-border-radius: 18;
+                    -fx-border-color: #e5e7eb;
+                    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 8, 0.2, 0, 2);
                 """);
 
                 nameLbl.setStyle("-fx-font-size: 13px; -fx-text-fill: #111827;");
-
                 root.getChildren().add(nameLbl);
 
-                // hover carino
                 root.setOnMouseEntered(e -> root.setStyle("""
-                -fx-background-color: #f5f3ff;
-                -fx-background-radius: 18;
-                -fx-border-radius: 18;
-                -fx-cursor: hand;
-                -fx-border-color: #a855f7;
-                -fx-effect: dropshadow(gaussian, rgba(129,140,248,0.35), 12, 0.3, 0, 4);
+                    -fx-background-color: #f5f3ff;
+                    -fx-background-radius: 18;
+                    -fx-border-radius: 18;
+                    -fx-cursor: hand;
+                    -fx-border-color: #a855f7;
+                    -fx-effect: dropshadow(gaussian, rgba(129,140,248,0.35), 12, 0.3, 0, 4);
                 """));
 
                 root.setOnMouseExited(e -> root.setStyle("""
-                -fx-background-color: white;
-                -fx-background-radius: 18;
-                -fx-border-radius: 18;
-                -fx-border-color: #e5e7eb;
-                -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 8, 0.2, 0, 2);
+                    -fx-background-color: white;
+                    -fx-background-radius: 18;
+                    -fx-border-radius: 18;
+                    -fx-border-color: #e5e7eb;
+                    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 8, 0.2, 0, 2);
                 """));
             }
 
             @Override
             protected void updateItem(String nome, boolean empty) {
                 super.updateItem(nome, empty);
-
                 if (empty || nome == null) {
                     setGraphic(null);
                     setText(null);
@@ -144,24 +129,31 @@ public class AddTherapyController {
         };
     }
 
-    /** Chiamato dal PatientTherapyController quando apre il popup. */
-    public void initData(String codiceFiscale, Runnable onSavedCallback) {
+    /** Qui arrivano CF paziente + email diabetologo */
+    public void initData(String codiceFiscale, String fkDiabetologo, Runnable onSavedCallback) {
         this.codiceFiscale = codiceFiscale;
+        this.fkDiabetologo = fkDiabetologo;
         this.onSavedCallback = onSavedCallback;
     }
-
-    // ────────────────────── HANDLE SAVE / CANCEL ──────────────────────
 
     @FXML
     private void handleSave() {
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
-        String nomeTerapia = nomeTerapiaField.getText() != null
-                ? nomeTerapiaField.getText().trim()
-                : "";
 
+        String nomeTerapia = nomeTerapiaField.getText() != null ? nomeTerapiaField.getText().trim() : "";
         if (nomeTerapia.isEmpty()) {
             showError("Inserisci un nome per la terapia.");
+            return;
+        }
+
+        if (codiceFiscale == null || codiceFiscale.isBlank()) {
+            showError("Paziente non valido.");
+            return;
+        }
+
+        if (fkDiabetologo == null || fkDiabetologo.isBlank()) {
+            showError("Diabetologo non valido (fkDiabetologo mancante).");
             return;
         }
 
@@ -172,26 +164,20 @@ public class AddTherapyController {
             showError("Seleziona una data di inizio.");
             return;
         }
-
         if (dataFine != null && dataFine.isBefore(dataInizio)) {
             showError("La data di fine non può essere precedente alla data di inizio.");
             return;
         }
-
         if (selectedFarmaci.isEmpty()) {
             showError("Aggiungi almeno un farmaco alla terapia.");
             return;
         }
 
-        try ( Connection conn = Database.getConnection())
-        {
-
+        try (Connection conn = Database.getConnection()) {
             conn.setAutoCommit(false);
 
-            // 1️⃣ inserisco la Terapia
-            int fkTerapia = insertTerapia(conn, dataInizio, dataFine, codiceFiscale);
+            int fkTerapia = insertTerapia(conn, nomeTerapia, dataInizio, dataFine, fkDiabetologo, codiceFiscale);
 
-            // 2️⃣ una riga in FarmacoTerapia per ogni farmaco selezionato
             for (FarmacoInTerapia fit : selectedFarmaci) {
                 insertFarmacoTerapia(conn,
                         fkTerapia,
@@ -202,10 +188,7 @@ public class AddTherapyController {
 
             conn.commit();
 
-            if (onSavedCallback != null) {
-                onSavedCallback.run();   // ricarica lista terapie nella pagina
-            }
-
+            if (onSavedCallback != null) onSavedCallback.run();
             closeWindow();
 
         } catch (Exception e) {
@@ -230,8 +213,6 @@ public class AddTherapyController {
         errorLabel.setManaged(true);
     }
 
-    // ────────────────────── GESTIONE FARMACI (lista + search + pilloline) ──────────────────────
-
     private void loadFarmaciFromDb() {
         allFarmaci.clear();
         String sql = "SELECT nome FROM Farmaco ORDER BY nome";
@@ -240,9 +221,7 @@ public class AddTherapyController {
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()) {
-                allFarmaci.add(rs.getString("nome"));
-            }
+            while (rs.next()) allFarmaci.add(rs.getString("nome"));
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -254,34 +233,28 @@ public class AddTherapyController {
             farmacoListView.setItems(allFarmaci);
             return;
         }
-
         String lower = filter.toLowerCase();
-        ObservableList<String> filtered = allFarmaci.filtered(
-                name -> name.toLowerCase().contains(lower)
-        );
+        ObservableList<String> filtered = allFarmaci.filtered(name -> name.toLowerCase().contains(lower));
         farmacoListView.setItems(filtered);
     }
 
     private void onFarmacoSelected(String nomeFarmaco) {
         try {
-            javafx.fxml.FXMLLoader loader =
-                    new javafx.fxml.FXMLLoader(
-                            it.univr.diabete.MainApp.class.getResource("/fxml/FarmacoDoseDialogView.fxml"));
-            javafx.scene.Parent root = loader.load();
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    it.univr.diabete.MainApp.class.getResource("/fxml/FarmacoDoseDialogView.fxml"));
+            Parent root = loader.load();
 
             FarmacoDoseDialogController ctrl = loader.getController();
             ctrl.init(nomeFarmaco);
 
             Stage popup = new Stage();
             popup.initOwner(searchFarmacoField.getScene().getWindow());
-            popup.initModality(javafx.stage.Modality.WINDOW_MODAL);
+            popup.initModality(Modality.WINDOW_MODAL);
             popup.setTitle("Imposta dosi");
-            popup.setScene(new javafx.scene.Scene(root));
+            popup.setScene(new Scene(root));
             popup.showAndWait();
 
-            if (!ctrl.isConfirmed()) {
-                return; // utente ha annullato
-            }
+            if (!ctrl.isConfirmed()) return;
 
             int assunzioni = ctrl.getAssunzioni();
             int quantita = ctrl.getUnita();
@@ -289,12 +262,14 @@ public class AddTherapyController {
             try (Connection conn = Database.getConnection()) {
                 int fkFarmaco = ensureFarmaco(conn, nomeFarmaco);
 
-                selectedFarmaci.add(
-                        new FarmacoInTerapia(fkFarmaco, nomeFarmaco, assunzioni, quantita)
-                );
+                // se già presente, sovrascrivo dosi
+                FarmacoInTerapia esistente = null;
+                for (FarmacoInTerapia f : selectedFarmaci) {
+                    if (f.fkFarmaco == fkFarmaco) { esistente = f; break; }
+                }
+                if (esistente != null) selectedFarmaci.remove(esistente);
 
-            } catch (SQLException e) {
-                e.printStackTrace();
+                selectedFarmaci.add(new FarmacoInTerapia(fkFarmaco, nomeFarmaco, assunzioni, quantita));
             }
 
         } catch (Exception e) {
@@ -306,9 +281,7 @@ public class AddTherapyController {
         selectedFarmaciPane.getChildren().clear();
 
         for (FarmacoInTerapia fit : selectedFarmaci) {
-            Label nameLabel = new Label(
-                    fit.nome + " (" + fit.assunzioniGiornaliere + "x, " + fit.quantitaAssunzione + " mg.)"
-            );
+            Label nameLabel = new Label(fit.nome + " (" + fit.assunzioniGiornaliere + "x, " + fit.quantitaAssunzione + " mg.)");
             nameLabel.getStyleClass().add("chip-label");
 
             Button removeBtn = new Button("x");
@@ -324,8 +297,6 @@ public class AddTherapyController {
         }
     }
 
-    // ────────────────────── SQL HELPER ──────────────────────
-
     private int ensureFarmaco(Connection conn, String nome) throws SQLException {
         String selectSql = """
                 SELECT id
@@ -337,9 +308,7 @@ public class AddTherapyController {
         try (PreparedStatement ps = conn.prepareStatement(selectSql)) {
             ps.setString(1, nome);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("id");
-                }
+                if (rs.next()) return rs.getInt("id");
             }
         }
 
@@ -353,79 +322,58 @@ public class AddTherapyController {
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
+                if (rs.next()) return rs.getInt(1);
             }
         }
 
         throw new SQLException("Impossibile creare/recuperare il farmaco.");
     }
 
+    // ✅ INSERT Terapia SENZA versione, CON nome, e ultimaModifica = NOW()
     private int insertTerapia(Connection conn,
+                              String nome,
                               LocalDate dataInizio,
                               LocalDate dataFine,
-                              String codiceFiscale) throws Exception {
+                              String fkDiabetologo,
+                              String fkPaziente) throws SQLException {
 
-        Terapia t = new Terapia(dataInizio, dataFine, "gio@gmail.com", codiceFiscale);
-
-       String sql = """
+        String sql = """
                 INSERT INTO Terapia
-                    (versione, dataInizio, dataFine, fkDiabetologo, fkPaziente)
-                VALUES (?, ?, ?, ?, ?)
+                    (nome, dataInizio, dataFine, ultimaModifica, fkDiabetologo, fkPaziente)
+                VALUES (?, ?, ?, NOW(), ?, ?)
                 """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // 1) nome terapia
-            ps.setInt(1, 1);
+            ps.setString(1, nome);
+            ps.setDate(2, Date.valueOf(dataInizio));
 
-            // 2) Data inizio
-            if (t.getDataInizio() != null) {
-                ps.setDate(2, Date.valueOf(t.getDataInizio()));
-            } else {
-                ps.setNull(2, Types.DATE);
-            }
+            if (dataFine != null) ps.setDate(3, Date.valueOf(dataFine));
+            else ps.setNull(3, Types.DATE);
 
-            // 3) Data fine
-            if (t.getDataFine() != null) {
-                ps.setDate(3, Date.valueOf(t.getDataFine()));
-            } else {
-                ps.setNull(3, Types.DATE);
-            }
-
-            // 4) Id diabetologo
-            ps.setString(4, t.getFkDiabetologo());
-
-            // 5) Id paziente
-            ps.setString(5, t.getFkPaziente());
+            ps.setString(4, fkDiabetologo);
+            ps.setString(5, fkPaziente);
 
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    t.setId(rs.getInt(1));
-                }
+                if (rs.next()) return rs.getInt(1);
             }
         }
-        //ritorno l'id della terapia appena inserita
-        if (t.getId() != 0) {
-            return t.getId();
-        } else {
-            throw new SQLException("Impossibile ottenere l'Id della terapia appena inserita.");
-        }
+
+        throw new SQLException("Impossibile ottenere l'id della terapia appena inserita.");
     }
 
-    private void insertFarmacoTerapia(
-            Connection conn,
+    // ✅ INSERT FarmacoTerapia SENZA fkVersioneTerapia
+    private void insertFarmacoTerapia(Connection conn,
                                       int fkTerapia,
                                       int fkFarmaco,
                                       int assunzioniGiornaliere,
-                                      int quantitaAssunzione) throws SQLException {
+                                      int quantita) throws SQLException {
 
         String sql = """
                 INSERT INTO FarmacoTerapia
-                (fkTerapia, fkFarmaco, assunzioniGiornaliere, QuantitaAssunzione)
+                    (fkTerapia, fkFarmaco, assunzioniGiornaliere, quantita)
                 VALUES (?, ?, ?, ?)
                 """;
 
@@ -433,7 +381,7 @@ public class AddTherapyController {
             ps.setInt(1, fkTerapia);
             ps.setInt(2, fkFarmaco);
             ps.setInt(3, assunzioniGiornaliere);
-            ps.setInt(4, quantitaAssunzione);
+            ps.setInt(4, quantita);
             ps.executeUpdate();
         }
     }

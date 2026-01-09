@@ -14,42 +14,27 @@ import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.util.Duration;
+
 import java.io.IOException;
 
 public class MainShellController {
 
-    @FXML
-    private Label globalAlertLabel;
+    @FXML private Label globalAlertLabel;
 
     private SequentialTransition alertAnimation;
-    @FXML
-    private Label userInitialsLabel;
 
-    @FXML
-    private Label userRoleLabel;
+    @FXML private Label userInitialsLabel;
+    @FXML private Label userRoleLabel;
+    @FXML private Label roleBadge;
 
-    @FXML
-    private Label roleBadge;
+    @FXML private Button dashboardButton;
+    @FXML private Button FarmacoButton;
+    @FXML private Button measurementsButton;
+    @FXML private Button therapyButton;
+    @FXML private Button messagesButton;
+    @FXML private Button reportsButton;
 
-    @FXML
-    private Button dashboardButton;
-    @FXML
-    private Button FarmacoButton;
-
-    @FXML
-    private Button measurementsButton;
-
-    @FXML
-    private Button therapyButton;
-
-    @FXML
-    private Button messagesButton;
-
-    @FXML
-    private Button reportsButton;
-
-    @FXML
-    private StackPane contentArea;
+    @FXML private StackPane contentArea;
 
     /** Ruolo corrente (Paziente / Diabetologo) */
     private String role;
@@ -57,28 +42,37 @@ public class MainShellController {
     /** Nome completo (es. "Luigi Bianchi") */
     private String userName;
 
-    /** Id paziente (solo se role = Paziente, altrimenti null) */
+    /** Se role = Paziente, questo è il CF del paziente loggato. Altrimenti null. */
     private String codiceFiscale;
-    private String loggedUserId;
-    /**
-     * Versione "vecchia": solo ruolo + nome.
-     * La lasciamo per compatibilità, e dentro chiamiamo quella a 3 parametri con patientId = null.
-     */
 
+    /** ID utente loggato: per Paziente = CF, per Diabetologo = email */
+    private String loggedUserId;
+
+    // --- GETTERS UTILI (così basta hardcode) -------------------------
+    public String getRole() { return role; }
+    public String getUserName() { return userName; }
+    public String getCodiceFiscale() { return codiceFiscale; }
+    public String getLoggedUserId() { return loggedUserId; }
+
+    // compatibilità
     public void setUserData(String role, String userName) {
         setUserData(role, userName, null);
     }
+
     /**
-     * Versione completa: ruolo + nome + id paziente (se è un paziente).
+     * Versione completa:
+     * - role = "Paziente"  -> userId = codice fiscale
+     * - role = "Diabetologo" -> userId = email
      */
-    public void setUserData(String role, String userName, String codiceFiscale) {
+    public void setUserData(String role, String userName, String userId) {
         this.role = role;
         this.userName = userName;
-        this.loggedUserId = codiceFiscale;
+        this.loggedUserId = userId;
 
-        // se è paziente salvo anche l'id paziente
         if ("Paziente".equalsIgnoreCase(role)) {
-            this.codiceFiscale = codiceFiscale;
+            this.codiceFiscale = userId; // userId è CF
+        } else {
+            this.codiceFiscale = null;   // diabetologo non ha CF paziente
         }
 
         String initials = getInitials(userName);
@@ -90,10 +84,8 @@ public class MainShellController {
         loadDashboard();
     }
 
-
     private void configureSidebarForRole() {
         boolean isPatient = "Paziente".equalsIgnoreCase(role);
-
 
         if (isPatient) {
             dashboardButton.setText("Home");
@@ -101,6 +93,7 @@ public class MainShellController {
             therapyButton.setText("Terapia");
             messagesButton.setText("Messaggi");
             reportsButton.setText("Report");
+
             FarmacoButton.setVisible(false);
             FarmacoButton.setManaged(false);
         } else {
@@ -108,8 +101,10 @@ public class MainShellController {
             measurementsButton.setText("Misurazioni");
             FarmacoButton.setText("Farmaco");
             messagesButton.setText("Messaggi");
+
             reportsButton.setVisible(false);
             reportsButton.setManaged(false);
+
             therapyButton.setVisible(false);
             therapyButton.setManaged(false);
         }
@@ -157,9 +152,6 @@ public class MainShellController {
         this.role = role;
     }
 
-    /**
-     * Carica la dashboard corretta in base al ruolo.
-     */
     private void loadDashboard() {
         try {
             FXMLLoader loader;
@@ -176,10 +168,10 @@ public class MainShellController {
 
             if ("Paziente".equalsIgnoreCase(role)) {
                 PatientDashboardController controller = loader.getController();
-                controller.setPatientData(userName, codiceFiscale); // 👈 qui passeremo anche l’id
+                controller.setPatientData(userName, codiceFiscale);
             } else {
-
                 DoctorDashboardController ctrl = loader.getController();
+                // ✅ loggedUserId per diabetologo = email
                 ctrl.setDoctorContext(loggedUserId);
             }
 
@@ -196,16 +188,14 @@ public class MainShellController {
 
     @FXML
     private void handlePatientsNav() {
-        if ("Paziente".equalsIgnoreCase(role)) {
-            return;
-        }
+        if ("Paziente".equalsIgnoreCase(role)) return;
         loadDashboard();
     }
+
     @FXML
     private void handleMeasurementsNav() {
         try {
             if ("Paziente".equalsIgnoreCase(role)) {
-                // 💙 Vista misurazioni lato paziente
                 FXMLLoader loader = new FXMLLoader(
                         MainApp.class.getResource("/fxml/PatientMeasurementsView.fxml")
                 );
@@ -219,17 +209,10 @@ public class MainShellController {
                 contentArea.getChildren().setAll(view);
 
             } else {
-                // 💙 Vista misurazioni lato DIABETOLOGO (quella nuova con le card)
                 FXMLLoader loader = new FXMLLoader(
                         MainApp.class.getResource("/fxml/DoctorMeasurementsView.fxml")
                 );
                 Parent view = loader.load();
-
-                /*
-                se un domani vuoi filtrare per diabetologo:
-                DoctorMeasurementsController ctrl = loader.getController();
-                ctrl.setDoctorContext(idDiabetologoLoggato);
-                 */
 
                 contentArea.getChildren().setAll(view);
             }
@@ -237,6 +220,7 @@ public class MainShellController {
             e.printStackTrace();
         }
     }
+
     @FXML
     public void handleTherapyNav() {
         try {
@@ -247,21 +231,25 @@ public class MainShellController {
 
             PatientTherapyController controller = loader.getController();
             controller.setPatientContext(userName, codiceFiscale);
-            if (role.equals("Diabetologo")) {
+
+            if ("Diabetologo".equalsIgnoreCase(role)) {
                 controller.hideEditingTools();
-            }else{
+            } else {
                 controller.hideEditingToolsPat();
             }
+
             contentArea.getChildren().setAll(view);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void handleFarmacoNav() {
-        openFarmacoView(); // senza parametri
+        openFarmacoView();
     }
+
     private void openFarmacoView() {
         try {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/FarmacoView.fxml"));
@@ -280,7 +268,8 @@ public class MainShellController {
 
             PatientMeasurementsController ctrl = loader.getController();
             ctrl.setPatientContext(fullName, codiceFiscale);
-            if (role.equals("Diabetologo")) {
+
+            if ("Diabetologo".equalsIgnoreCase(role)) {
                 ctrl.hideEditingTools();
             }
             contentArea.getChildren().setAll(view);
@@ -288,6 +277,7 @@ public class MainShellController {
             e.printStackTrace();
         }
     }
+
     public void openPatientReport(String fullName, String codiceFiscale) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -310,9 +300,10 @@ public class MainShellController {
 
             PatientTherapyController ctrl = loader.getController();
             ctrl.setPatientContext(fullName, codiceFiscale);
-            if (role.equals("Diabetologo")) {
+
+            if ("Diabetologo".equalsIgnoreCase(role)) {
                 ctrl.hideEditingTools();
-            }else{
+            } else {
                 ctrl.hideEditingToolsPat();
             }
             contentArea.getChildren().setAll(view);
@@ -320,6 +311,7 @@ public class MainShellController {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void handleReportsNav() {
         try {
@@ -330,18 +322,15 @@ public class MainShellController {
                 Parent view = loader.load();
 
                 PatientReportController controller = loader.getController();
-                // suppongo che hai già userName e patientId salvati nel MainShellController
                 controller.setPatientContext(userName, codiceFiscale);
 
                 contentArea.getChildren().setAll(view);
-
-            } else {
-                // in futuro: report per diabetologo
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     public void openPatientDetail(Paziente paziente) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -351,7 +340,6 @@ public class MainShellController {
             DoctorPatientDetailController controller = loader.getController();
             controller.setPatient(paziente);
 
-            // Sostituisci "contentRoot" con il tuo BorderPane centrale
             contentArea.getChildren().setAll(view);
 
         } catch (IOException e) {
@@ -363,7 +351,6 @@ public class MainShellController {
         return contentArea;
     }
 
-    /** Alert verde (successo) nel top bar */
     public void showGlobalSuccess(String msg) {
         playAlert(msg, "#d1fae5", "#065f46");
     }
@@ -371,8 +358,8 @@ public class MainShellController {
     public void showGlobalError(String msg) {
         playAlert(msg, "#fee2e2", "#991b1b");
     }
+
     private void playAlert(String message, String bgColor, String textColor) {
-        // Se c'era un'animazione vecchia, la fermo
         if (alertAnimation != null) {
             alertAnimation.stop();
         }
@@ -387,7 +374,7 @@ public class MainShellController {
         );
         globalAlertLabel.setVisible(true);
         globalAlertLabel.setManaged(true);
-        globalAlertLabel.setOpacity(0);   // parto trasparente
+        globalAlertLabel.setOpacity(0);
 
         FadeTransition fadeIn = new FadeTransition(Duration.millis(200), globalAlertLabel);
         fadeIn.setFromValue(0);

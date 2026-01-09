@@ -19,25 +19,16 @@ import javafx.stage.Stage;
 
 public class LoginController {
 
-    // DAO usate per cercare utente nel DB
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
     private final DiabetologoDAO diabetologoDAO = new DiabetologoDAOImpl();
 
-    @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private Label loginErrorLabel;
-
-    @FXML
-    private Button loginButton;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private Label loginErrorLabel;
+    @FXML private Button loginButton;
 
     @FXML
     private void initialize() {
-        // rende il pulsante "default" così che Invio lo attivi
         if (loginButton != null) {
             loginButton.setDefaultButton(true);
         }
@@ -48,7 +39,7 @@ public class LoginController {
         String email = emailField.getText();
         String password = passwordField.getText();
 
-        if (email.isBlank() || password.isBlank()) {
+        if (email == null || password == null || email.isBlank() || password.isBlank()) {
             showError("Inserisci email e password.");
             return;
         }
@@ -59,35 +50,34 @@ public class LoginController {
 
             String role;
             String displayName;
-            String userId;  // 👈 id dell’utente loggato (paziente O diabetologo)
+            String userId; // per Paziente = CF, per Diabetologo = email
 
             if (paziente != null) {
                 role = "Paziente";
                 displayName = paziente.getNome() + " " + paziente.getCognome();
-                userId = paziente.getCodiceFiscale();          // 👈 id paziente
+                userId = paziente.getCodiceFiscale();
             } else {
                 diabetologo = diabetologoDAO.findByEmailAndPassword(email, password);
                 if (diabetologo != null) {
                     role = "Diabetologo";
                     displayName = diabetologo.getNome() + " " + diabetologo.getCognome();
-                    userId = diabetologo.getEmail();   // 👈 id diabetologo
+                    // NB: nel DB la colonna è eMail, nel model hai getEmail() -> ok
+                    userId = diabetologo.getEmail();
                 } else {
                     showError("Credenziali errate.");
                     return;
                 }
             }
 
-            // carica MainShell.fxml
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/MainShell.fxml"));
             Parent root = loader.load();
 
             MainShellController shellController = loader.getController();
             MainApp.setMainShellController(shellController);
 
-            // 👉 adesso usiamo SEMPRE la versione a 3 parametri
+            // ✅ fondamentale: userId = CF (paziente) oppure email (diabetologo)
             shellController.setUserData(role, displayName, userId);
 
-            // cambio scena
             Stage stage = (Stage) emailField.getScene().getWindow();
             Scene scene = new Scene(root);
             scene.getStylesheets().add(
@@ -103,30 +93,10 @@ public class LoginController {
         }
     }
 
-
     private void showError(String message) {
         loginErrorLabel.setText(message);
         loginErrorLabel.setVisible(true);
         loginErrorLabel.setManaged(true);
     }
 
-    /**
-     * Variante “solo ruolo” se ti serve da qualche parte.
-     *  - "Diabetologo" se trova l'utente nella tabella Diabetologo
-     *  - "Paziente"    se lo trova nella tabella Paziente
-     *  - null          se non trova niente
-     */
-    private String authenticateUser(String email, String password) throws Exception {
-        Paziente p = pazienteDAO.findByEmailAndPassword(email, password);
-        if (p != null) {
-            return "Paziente";
-        }
-
-        Diabetologo d = diabetologoDAO.findByEmailAndPassword(email, password);
-        if (d != null) {
-            return "Diabetologo";
-        }
-
-        return null;
-    }
 }

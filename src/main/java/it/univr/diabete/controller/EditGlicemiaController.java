@@ -28,7 +28,9 @@ public class EditGlicemiaController {
         dateLabel.setText("Registrata il: " + g.getDateStamp().format(df));
         valueField.setText(String.valueOf(g.getValore()));
 
-        momentChoice.getItems().addAll("Mattino", "Pranzo", "Cena");
+        momentChoice.getItems().addAll("Mattina",
+                "Pomeriggio",
+                "Sera");
         momentChoice.setValue(g.getParteGiorno());
     }
 

@@ -14,53 +14,46 @@ import java.time.LocalTime;
 
 public class AddAssunzioneController {
 
-    @FXML
-    private TextField quantitaField;
-
-    @FXML
-    private DatePicker dateField;
+    @FXML private TextField quantitaField;
+    @FXML private DatePicker dateField;
 
     private String pazienteId;
-    // 👇 adesso memorizziamo l'id della TerapiaFarmaco
-    private int terapiaFarmacoId;
+    private int fkTerapia;
+    private int fkFarmaco;
 
     private Runnable onSave;
 
     private final AssunzioneDAO dao = new AssunzioneDAOImpl();
 
-    /**
-     * @param pazienteId        id del paziente
-     * @param terapiaFarmacoId  id della riga TerapiaFarmaco
-     */
-    public void initData(String pazienteId, int terapiaFarmacoId, Runnable onSave) {
+    public void initData(String pazienteId, int fkTerapia, int fkFarmaco, Runnable onSave) {
         this.pazienteId = pazienteId;
-        this.terapiaFarmacoId = terapiaFarmacoId;
+        this.fkTerapia = fkTerapia;
+        this.fkFarmaco = fkFarmaco;
         this.onSave = onSave;
 
-        dateField.setValue(LocalDate.now()); // default oggi
-    }
+        dateField.setValue(LocalDate.now());
+
+          }
 
     @FXML
     private void handleConfirm() {
         try {
             int q = Integer.parseInt(quantitaField.getText());
             LocalDate d = dateField.getValue();
-            if (d == null) {
-                // se vuoi puoi mostrare un alert
-                return;
-            }
+            if (d == null) return;
 
             Assunzione a = new Assunzione();
             a.setQuantitaAssunta(q);
             a.setDateStamp(LocalDateTime.of(d, LocalTime.now()));
             a.setFkPaziente(pazienteId);
-            a.setFkTerapia(terapiaFarmacoId);
+            a.setFkTerapia(fkTerapia);
+            a.setFkFarmaco(fkFarmaco);
 
             dao.insert(a);
 
             if (onSave != null) onSave.run();
-
             close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
