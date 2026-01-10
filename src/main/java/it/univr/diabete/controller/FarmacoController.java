@@ -3,6 +3,7 @@ import it.univr.diabete.MainApp;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Modality;
 import it.univr.diabete.dao.FarmacoDAO;
 import it.univr.diabete.dao.impl.FarmacoDAOImpl;
@@ -37,6 +38,22 @@ public class FarmacoController {
 
         // tabella appoggiata alla lista completa
         farmacoTable.setItems(farmaciCompleti);
+
+        // selezione su click riga + stile via CSS (usa .rounded-table .table-row-cell:selected ...)
+        farmacoTable.setRowFactory(tv -> {
+            TableRow<Farmaco> row = new TableRow<>();
+
+            row.setOnMouseClicked(e -> {
+                if (row.isEmpty()) return;
+
+                if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 1) {
+                    tv.getSelectionModel().select(row.getItem());
+                    tv.requestFocus();
+                }
+            });
+
+            return row;
+        });
 
         // bottoni modifica/elimina disabilitati se nulla selezionato
         editButton.disableProperty().bind(

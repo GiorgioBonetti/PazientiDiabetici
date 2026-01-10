@@ -941,3 +941,15 @@
     -fx-font-size: 10px;
     -fx-text-fill: #9ca3af;
 }
+
+/* per colorare tutta la riga selezionata e mantenere il testo leggibile */
+.rounded-table .table-row-cell:selected {
+    -fx-background-color: #4f46e5; /* sostituire con il colore preferito */
+}
+
+/* evita che le singole celle sovrascrivano lo sfondo della riga */
+.rounded-table .table-row-cell:selected .table-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color; /* mantiene il colore del testo leggibile */
+    -fx-text-fill: #ffffff;
+}

@@ -1,67 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="therapyRoot"
-      xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.univr.diabete.controller.PatientTherapyController"
-      spacing="16"
-      style="-fx-padding: 8 16 16 16;">
+<VBox fx:id="therapyRoot" spacing="16" style="-fx-padding: 8 16 16 16;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.PatientTherapyController">
 
     <children>
 
         <!-- HEADER -->
         <VBox spacing="4">
             <children>
-                <HBox spacing="8" alignment="CENTER_LEFT">
+                <HBox alignment="CENTER_LEFT" spacing="8">
                     <children>
-                        <Label text="Terapia"
-                               styleClass="page-title"/>
-                        <Label fx:id="patientNameLabel"
-                               text="Luigi Bianchi"
-                               styleClass="page-title-accent"/>
+                        <Label styleClass="page-title" text="Terapia" />
+                        <Label fx:id="patientNameLabel" styleClass="page-title-accent" text="Luigi Bianchi" />
                     </children>
                 </HBox>
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                <Label text="Qui trovi tutte le terapie assegnate e puoi registrare le assunzioni."
-                       wrapText="true"
-                       styleClass="page-subtitle"/>
-                    <Button fx:id="addTherapyButton"
-                            text="+"
-                            onAction="#handleAddTherapy"
-                            styleClass="btn-primary"/>
-                    <Pane HBox.hgrow="ALWAYS"/>
-                <Button fx:id="goMeasurementsButton"
-                        text="Misurazioni"
-                        onAction="#handleGoToMeasurements"
-                        style="-fx-font-size: 12px"
-                        prefWidth="150"
-                        styleClass="btn-ghost"/>
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label styleClass="page-subtitle" text="Qui trovi tutte le terapie assegnate e puoi registrare le assunzioni." visible="false" wrapText="true" />
+                    <Pane HBox.hgrow="ALWAYS" />
+                    <Button fx:id="addTherapyButton" onAction="#handleAddTherapy" styleClass="btn-primary" text="Nuova terapia" />
+                <Button fx:id="goMeasurementsButton" onAction="#handleGoToMeasurements" prefWidth="150" style="-fx-font-size: 12px" styleClass="btn-ghost" text="Misurazioni" />
 
-                <Button fx:id="goReportButton"
-                        text="Report"
-                        prefWidth="150"
-                        style="-fx-font-size: 12px"
-                        onAction="#handleGoToReport"
-                        styleClass="btn-ghost"/>
+                <Button fx:id="goReportButton" onAction="#handleGoToReport" prefWidth="150" style="-fx-font-size: 12px" styleClass="btn-ghost" text="Report" />
                 </HBox>
             </children>
         </VBox>
 
         <!-- SCROLL ORIZZONTALE CON LE CARD TERAPIE -->
-        <ScrollPane hbarPolicy="ALWAYS"
-                    vbarPolicy="NEVER"
-                    fitToHeight="true"
-                    prefHeight="260"
-                    style="-fx-padding: 0; -fx-background-color: transparent;">
+        <ScrollPane fitToHeight="true" hbarPolicy="ALWAYS" prefHeight="260" style="-fx-padding: 0; -fx-background-color: transparent;" vbarPolicy="NEVER">
             <content>
-                <HBox fx:id="therapyCardsContainer"
-                      spacing="12"
-                      alignment="CENTER_LEFT"
-                      style="-fx-padding: 4 0 4 0;"/>
+                <HBox fx:id="therapyCardsContainer" alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 4 0 4 0;" />
             </content>
         </ScrollPane>
 
@@ -71,30 +40,19 @@
             <top>
                 <VBox spacing="8" style="-fx-padding: 12 16 8 16;">
                     <children>
-                        <Label text="Dettaglio terapia selezionata"
-                               styleClass="card-title"/>
+                        <Label styleClass="card-title" text="Dettaglio terapia selezionata" />
 
-                        <ScrollPane fx:id="farmaciScroll"
-                                    hbarPolicy="AS_NEEDED"
-                                    vbarPolicy="NEVER"
-                                    fitToHeight="true"
-                                    styleClass="chip-scroll">
+                        <ScrollPane fx:id="farmaciScroll" fitToHeight="true" hbarPolicy="AS_NEEDED" styleClass="chip-scroll" vbarPolicy="NEVER">
                             <content>
-                                <HBox fx:id="farmaciCardsContainer"
-                                      spacing="12"
-                                      style="-fx-padding: 8 8 8 8;"/>
+                                <HBox fx:id="farmaciCardsContainer" spacing="12" style="-fx-padding: 8 8 8 8;" />
                             </content>
                         </ScrollPane>
 
                         <HBox alignment="CENTER_RIGHT" spacing="10">
                             <children>
-                                <Pane HBox.hgrow="ALWAYS"/>
-                                <ChoiceBox fx:id="assunzioniFilter"
-                                           styleClass="btn-ghost"/>
-                                <Button fx:id="addAssunzioneButton"
-                                        text="Registra assunzione"
-                                        styleClass="btn-primary"
-                                        onAction="#handleAddAssunzione"/>
+                                <Pane HBox.hgrow="ALWAYS" />
+                                <ChoiceBox fx:id="assunzioniFilter" styleClass="btn-ghost" />
+                                <Button fx:id="addAssunzioneButton" onAction="#handleAddAssunzione" styleClass="btn-primary" text="Registra assunzione" />
                             </children>
                         </HBox>
                     </children>
@@ -105,19 +63,12 @@
             <center>
                 <VBox spacing="4" style="-fx-padding: 0 16 16 16;">
                     <children>
-                        <Label text="Assunzioni registrate"
-                               styleClass="card-subtitle"/>
+                        <Label styleClass="card-subtitle" text="Assunzioni registrate" />
 
-                        <TableView fx:id="assunzioniTable"
-                                   prefHeight="220"
-                                   styleClass="rounded-table">
+                        <TableView fx:id="assunzioniTable" prefHeight="220" styleClass="rounded-table">
                             <columns>
-                                <TableColumn fx:id="colData"
-                                             text="Data / ora"
-                                             prefWidth="200"/>
-                                <TableColumn fx:id="colQuantita"
-                                             text="Quantità"
-                                             prefWidth="120"/>
+                                <TableColumn fx:id="colData" prefWidth="200" text="Data / ora" />
+                                <TableColumn fx:id="colQuantita" prefWidth="120" text="Quantità" />
                             </columns>
                         </TableView>
                     </children>
