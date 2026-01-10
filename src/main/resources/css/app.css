@@ -589,13 +589,11 @@
     -fx-text-fill: #854d0e;
 }
 
-
-
 .edit-btn {
     -fx-cursor: hand;
     -fx-padding: 4;
     -fx-shape: "M12 2l2 2-8 8H4v-2z M3 13h2l8-8-2-2z";
-    -fx-background-color: #4f46e5; /* viola blu come la tua UI */
+    -fx-background-color: #4f46e5;
     -fx-min-width: 16px;
     -fx-min-height: 16px;
     -fx-max-width: 16px;
@@ -722,6 +720,28 @@
 }
 
 .icon-edit-btn:hover SVGPath {
+    -fx-fill: #6d28d9;
+}
+
+.icon-delete-btn {
+    -fx-background-color: #eef2ff;
+    -fx-border-color: #c4b5fd;
+    -fx-padding: 4;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-cursor: hand;
+}
+
+.icon-delete-btn:hover {
+    -fx-background-color: #eef2ff;
+    -fx-border-color: #c4b5fd;
+}
+
+.icon-delete-btn SVGPath {
+    -fx-fill: #4b5563;
+}
+
+.icon-delete-btn:hover SVGPath {
     -fx-fill: #6d28d9;
 }
 

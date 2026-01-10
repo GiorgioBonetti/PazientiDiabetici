@@ -47,6 +47,7 @@ public class PatientTherapyController {
     @FXML private TableColumn<Assunzione, String>  colData;
     @FXML private TableColumn<Assunzione, Integer> colQuantita;
     private TableColumn<Assunzione, Void> colEdit;
+    private TableColumn<Assunzione, Void> colDelete;
 
     // card terapie (sopra)
     @FXML private HBox therapyCardsContainer;
@@ -102,6 +103,7 @@ public class PatientTherapyController {
         );
 
         addEditColumn();
+        addDeleteColumn();
 
         assunzioniFilter.getItems().addAll(
                 "Tutte", "Oggi", "Ultimi 7 giorni", "Ultimi 30 giorni"
@@ -478,6 +480,44 @@ public class PatientTherapyController {
         assunzioniTable.getColumns().add(colEdit);
     }
 
+    // ─────────────────── COLONNA DELETE ───────────────────
+    private void addDeleteColumn() {
+        colDelete = new TableColumn<>("");
+        colDelete.setPrefWidth(40);
+
+        colDelete.setCellFactory(column -> new TableCell<>() {
+
+            private final Button deleteBtn;
+
+            {
+                deleteBtn = new Button();
+                deleteBtn.getStyleClass().add("icon-delete-btn");
+
+                SVGPath icon = new SVGPath();
+                // icona "cestino" semplice (puoi cambiarla)
+                icon.setContent("M6 7h10l-1 12H7L6 7zm2-3h6l1 2H7l1-2zm-3 2h14v2H5V6z");
+                icon.setScaleX(0.9);
+                icon.setScaleY(0.9);
+                deleteBtn.setGraphic(icon);
+
+                deleteBtn.setOnAction(event -> {
+                    Assunzione a = getTableView().getItems().get(getIndex());
+                    if (a != null) {
+                        handleDeleteAssunzione(a);
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : deleteBtn);
+            }
+        });
+
+        assunzioniTable.getColumns().add(colDelete);
+    }
+
     private void openEditAssunzionePopup(Assunzione a) {
         try {
             FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/EditAssunzioneView.fxml"));
@@ -550,6 +590,9 @@ public class PatientTherapyController {
         if (colEdit != null) {
             assunzioniTable.getColumns().remove(colEdit);
         }
+        if (colDelete != null) {
+            assunzioniTable.getColumns().remove(colDelete);
+        }
     }
 
     public void hideEditingToolsPat() {
@@ -612,6 +655,39 @@ public class PatientTherapyController {
             popup.setTitle("Modifica terapia");
             popup.setScene(new Scene(root));
             popup.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ─────────────────── DELETE ASSUNZIONE ───────────────────
+
+    private void handleDeleteAssunzione(Assunzione a) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    MainApp.class.getResource("/fxml/ConfirmDialogView.fxml")
+            );
+            Parent root = loader.load();
+
+            ConfirmDialogController ctrl = loader.getController();
+            ctrl.setTexts(
+                    "Conferma eliminazione",
+                    "Eliminare l’assunzione selezionata?\n"
+            );
+
+            Stage dialog = new Stage();
+            dialog.initOwner(assunzioniTable.getScene().getWindow());
+            dialog.initModality(Modality.WINDOW_MODAL);
+            dialog.setResizable(false);
+            dialog.setScene(new Scene(root));
+            dialog.setTitle("Conferma");
+            dialog.showAndWait();
+
+            if (ctrl.isConfirmed()) {
+                assunzioneDAO.delete(a.getId());
+                loadAssunzioni();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

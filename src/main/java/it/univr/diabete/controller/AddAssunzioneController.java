@@ -32,8 +32,7 @@ public class AddAssunzioneController {
         this.onSave = onSave;
 
         dateField.setValue(LocalDate.now());
-
-          }
+    }
 
     @FXML
     private void handleConfirm() {
@@ -41,6 +40,9 @@ public class AddAssunzioneController {
             int q = Integer.parseInt(quantitaField.getText());
             LocalDate d = dateField.getValue();
             if (d == null) return;
+
+            // controllo valore assunzione
+            if (q <= 0) return;
 
             Assunzione a = new Assunzione();
             a.setQuantitaAssunta(q);

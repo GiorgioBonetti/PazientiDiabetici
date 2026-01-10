@@ -236,7 +236,6 @@ public class PatientMeasurementsController {
         }
     }
 
-    /** Colonna con la matita ✏️ */
     private void addEditColumn() {
         colEdit = new TableColumn<>("");
         colEdit.setPrefWidth(40); // stretto
