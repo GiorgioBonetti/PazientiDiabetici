@@ -33,9 +33,7 @@
                             </children>
                         </VBox>
 
-                        <Label fx:id="roleBadge"
-                               text="DIABETOLOGO"
-                               styleClass="role-badge"/>
+                        <!-- role badge removed -->
 
                         <!-- 🔥 CENTRO: area che si espande e centra il banner -->
                         <StackPane HBox.hgrow="ALWAYS">
@@ -77,9 +75,6 @@
                                 <Label fx:id="userInitialsLabel"
                                        text="VS"
                                        styleClass="user-avatar-initials"/>
-                                <Label fx:id="userRoleLabel"
-                                       text="Diabetologo"
-                                       styleClass="user-avatar-role"/>
                             </children>
                         </HBox>
                     </children>
@@ -114,6 +109,7 @@
                                 styleClass="nav-item"/>
                         <Button fx:id="messagesButton"
                                 text="Messaggi"
+                                onAction="#handleMessagesNav"
                                 styleClass="nav-item"/>
                         <Button fx:id="reportsButton"
                                 text="Report"

@@ -4,13 +4,19 @@ import it.univr.diabete.MainApp;
 import it.univr.diabete.dao.GlicemiaDAO;
 import it.univr.diabete.dao.PazienteDAO;
 import it.univr.diabete.dao.TerapiaDAO;
+import it.univr.diabete.dao.SintomoDAO;
+import it.univr.diabete.dao.PatologiaDAO;
 import it.univr.diabete.dao.FarmacoTerapiaDAO;
 import it.univr.diabete.dao.impl.GlicemiaDAOImpl;
 import it.univr.diabete.dao.impl.PazienteDAOImpl;
+import it.univr.diabete.dao.impl.SintomoDAOImpl;
+import it.univr.diabete.dao.impl.PatologiaDAOImpl;
 import it.univr.diabete.dao.impl.TerapiaDAOImpl;
 import it.univr.diabete.dao.impl.FarmacoTerapiaDAOImpl;
 import it.univr.diabete.model.Glicemia;
 import it.univr.diabete.model.Paziente;
+import it.univr.diabete.model.Sintomo;
+import it.univr.diabete.model.Patologia;
 import it.univr.diabete.model.Terapia;
 import it.univr.diabete.model.FarmacoTerapia;
 import javafx.fxml.FXML;
@@ -35,7 +41,6 @@ public class PatientReportController {
     @FXML private Label periodLabel;
 
     @FXML private Label symptomsLabel;
-    @FXML private Label risksLabel;
     @FXML private Label pathologiesLabel;
 
     @FXML private Label therapyDrugLabel;
@@ -60,6 +65,8 @@ public class PatientReportController {
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
     private final TerapiaDAO terapiaDAO = new TerapiaDAOImpl();
     private final FarmacoTerapiaDAO farmacoTerapiaDAO = new FarmacoTerapiaDAOImpl();
+    private final SintomoDAO sintomoDAO = new SintomoDAOImpl();
+    private final PatologiaDAO patologiaDAO = new PatologiaDAOImpl();
 
     private List<Glicemia> allMeasurements = new ArrayList<>();
     private List<Terapia> terapiePaziente = new ArrayList<>();
@@ -69,6 +76,8 @@ public class PatientReportController {
             DateTimeFormatter.ofPattern("dd/MM");
     private final DateTimeFormatter periodFormatter =
             DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter symptomFormatter =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     // ───────────────────────────── NAV / AZIONI ─────────────────────────────
 
@@ -122,6 +131,7 @@ public class PatientReportController {
         setupPeriodFilter();
         applyPeriodAndRefresh();
         loadTherapyForPeriod();
+        loadClinicalProfile();
     }
 
     // ───────────────────────────── GLICEMIE / GRAFICO ───────────────────────
@@ -421,12 +431,53 @@ public class PatientReportController {
             updateChart(last30);
             loadTherapySummary();
 
-            symptomsLabel.setText("Funzionalità in sviluppo");
-            risksLabel.setText("Funzionalità in sviluppo");
-            pathologiesLabel.setText("Funzionalità in sviluppo");
+            loadClinicalProfile();
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void loadClinicalProfile() {
+        loadLatestSymptom();
+        loadPathologies();
+    }
+
+    private void loadLatestSymptom() {
+        try {
+            Sintomo s = sintomoDAO.findLatestByPaziente(CodiceFiscale);
+            if (s == null) {
+                symptomsLabel.setText("Nessun sintomo registrato");
+                return;
+            }
+            String text = s.getDescrizione() + " (intensita " + s.getIntensita() + ")";
+            if (s.getDateStamp() != null) {
+                text += " — " + symptomFormatter.format(s.getDateStamp());
+            }
+            if (s.getNoteAggiuntive() != null && !s.getNoteAggiuntive().isBlank()) {
+                text += "\n" + s.getNoteAggiuntive();
+            }
+            symptomsLabel.setText(text);
+        } catch (Exception e) {
+            e.printStackTrace();
+            symptomsLabel.setText("Nessun sintomo registrato");
+        }
+    }
+
+    private void loadPathologies() {
+        try {
+            List<Patologia> list = patologiaDAO.findByPaziente(CodiceFiscale);
+            if (list.isEmpty()) {
+                pathologiesLabel.setText("Nessuna patologia registrata");
+                return;
+            }
+            String text = list.stream()
+                    .map(Patologia::getNome)
+                    .collect(java.util.stream.Collectors.joining(", "));
+            pathologiesLabel.setText(text);
+        } catch (Exception e) {
+            e.printStackTrace();
+            pathologiesLabel.setText("Nessuna patologia registrata");
         }
     }
 }

@@ -143,19 +143,11 @@
                         <padding>
                             <Insets bottom="5" left="5" right="5" top="5" />
                         </padding>
-                        <!-- Sintomi -->
+                        <!-- Ultimo sintomo -->
                         <VBox spacing="4" styleClass="kpi-card">
                             <children>
-                                <Label styleClass="kpi-label" text="Sintomi recenti" />
+                                <Label styleClass="kpi-label" text="Ultimo sintomo registrato" />
                                 <Label fx:id="symptomsLabel" styleClass="page-subtitle" text="Nessun sintomo registrato" wrapText="true" />
-                            </children>
-                        </VBox>
-
-                        <!-- Fattori di rischio -->
-                        <VBox spacing="4" styleClass="kpi-card">
-                            <children>
-                                <Label styleClass="kpi-label" text="Fattori di rischio" />
-                                <Label fx:id="risksLabel" styleClass="page-subtitle" text="Nessun fattore indicato" wrapText="true" />
                             </children>
                         </VBox>
 

@@ -3,12 +3,18 @@ package it.univr.diabete.controller;
 import it.univr.diabete.MainApp;
 import it.univr.diabete.dao.AssunzioneDAO;
 import it.univr.diabete.dao.GlicemiaDAO;
+import it.univr.diabete.dao.PazienteDAO;
+import it.univr.diabete.dao.SintomoDAO;
 import it.univr.diabete.dao.TerapiaDAO;
 import it.univr.diabete.dao.impl.AssunzioneDAOImpl;
 import it.univr.diabete.dao.impl.GlicemiaDAOImpl;
+import it.univr.diabete.dao.impl.PazienteDAOImpl;
+import it.univr.diabete.dao.impl.SintomoDAOImpl;
 import it.univr.diabete.dao.impl.TerapiaDAOImpl;
 import it.univr.diabete.model.Assunzione;
 import it.univr.diabete.model.Glicemia;
+import it.univr.diabete.model.Paziente;
+import it.univr.diabete.model.Sintomo;
 import it.univr.diabete.model.Terapia;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,8 +26,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import it.univr.diabete.dao.FarmacoTerapiaDAO;
@@ -34,6 +43,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javafx.scene.control.CheckBox;
 import java.time.LocalDate;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 public class PatientDashboardController {
 
     @FXML
@@ -71,13 +86,25 @@ public class PatientDashboardController {
     @FXML
     private ChoiceBox<String> measurementFilter;
 
+    @FXML
+    private ListView<Sintomo> todaySymptomsListView;
+
+    @FXML
+    private Button addSymptomButton;
+
     private String codiceFiscale;
 
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
+    private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
+    private final SintomoDAO sintomoDAO = new SintomoDAOImpl();
 
     // tutti i record scaricati dal DB per questo paziente
     private final ObservableList<Glicemia> allMeasurements =
             FXCollections.observableArrayList();
+
+    private final ObservableList<Sintomo> todaySymptoms =
+            FXCollections.observableArrayList();
+
 
     private boolean isSameDay(LocalDateTime dt, LocalDate day) {
         return dt != null && dt.toLocalDate().isEqual(day);
@@ -117,6 +144,12 @@ public class PatientDashboardController {
             measurementFilter.getSelectionModel().selectedItemProperty()
                     .addListener((obs, oldV, newV) -> applyFilterAndRefresh());
         }
+
+        if (todaySymptomsListView != null) {
+            todaySymptomsListView.setItems(todaySymptoms);
+            todaySymptomsListView.setCellFactory(lv -> createSymptomCell());
+            todaySymptomsListView.setPlaceholder(new Label("Nessun sintomo registrato oggi."));
+        }
     }
 
     /**
@@ -125,7 +158,23 @@ public class PatientDashboardController {
     public void setPatientData(String fullName, String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
         patientNameLabel.setText(fullName);
+        refreshPatientName();
         loadMeasurements();   // carica dal DB e applica filtro
+        loadTodaySymptoms();
+    }
+
+    private void refreshPatientName() {
+        if (codiceFiscale == null) {
+            return;
+        }
+        try {
+            Paziente p = pazienteDAO.findById(codiceFiscale);
+            if (p != null) {
+                patientNameLabel.setText(p.getNome() + " " + p.getCognome());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -139,6 +188,18 @@ public class PatientDashboardController {
             allMeasurements.setAll(lista);
             applyFilterAndRefresh();
             updateTodayTasks();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadTodaySymptoms() {
+        if (codiceFiscale == null) {
+            return;
+        }
+        try {
+            List<Sintomo> list = sintomoDAO.findByPazienteAndDate(codiceFiscale, LocalDate.now());
+            todaySymptoms.setAll(list);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -206,6 +267,32 @@ public class PatientDashboardController {
             popup.initOwner(measurementsTable.getScene().getWindow());
             popup.initModality(Modality.WINDOW_MODAL);
             popup.setTitle("Registra glicemia");
+            popup.setScene(new Scene(root));
+            popup.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleAddSymptom() {
+        if (codiceFiscale == null) {
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    MainApp.class.getResource("/fxml/AddSymptomView.fxml")
+            );
+            Parent root = loader.load();
+
+            AddSymptomController controller = loader.getController();
+            controller.initData(codiceFiscale, this::loadTodaySymptoms);
+
+            Stage popup = new Stage();
+            popup.initOwner(addSymptomButton.getScene().getWindow());
+            popup.initModality(Modality.WINDOW_MODAL);
+            popup.setTitle("Nuovo sintomo");
             popup.setScene(new Scene(root));
             popup.showAndWait();
 
@@ -306,5 +393,73 @@ public class PatientDashboardController {
     private void updateTodayTasks() {
         updateTodayGlycemiaTasks();
         updateTodayTherapyTask();
+    }
+
+    private ListCell<Sintomo> createSymptomCell() {
+        return new ListCell<>() {
+            private final HBox root = new HBox(8);
+            private final VBox textBox = new VBox(2);
+            private final Label title = new Label();
+            private final Label badge = new Label();
+
+            {
+                root.getStyleClass().add("symptom-chip");
+                title.getStyleClass().add("symptom-title");
+                badge.getStyleClass().add("symptom-badge");
+
+                textBox.getChildren().addAll(title);
+
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                root.getChildren().addAll(textBox, spacer, badge);
+                root.setAlignment(Pos.CENTER_LEFT);
+                root.setPadding(new Insets(8));
+
+                root.setOnMouseClicked(e -> {
+                    Sintomo s = getItem();
+                    if (s != null) {
+                        openSymptomDetails(s);
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Sintomo s, boolean empty) {
+                super.updateItem(s, empty);
+                if (empty || s == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    title.setText(s.getDescrizione());
+                    badge.setText("Int " + s.getIntensita());
+                    setGraphic(root);
+                    setText(null);
+                }
+            }
+        };
+    }
+
+    private void openSymptomDetails(Sintomo s) {
+        if (s == null) {
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    MainApp.class.getResource("/fxml/SymptomDetailView.fxml")
+            );
+            Parent root = loader.load();
+
+            SymptomDetailController controller = loader.getController();
+            controller.setSymptom(s);
+
+            Stage popup = new Stage();
+            popup.initOwner(todaySymptomsListView.getScene().getWindow());
+            popup.initModality(Modality.WINDOW_MODAL);
+            popup.setTitle("Dettaglio sintomo");
+            popup.setScene(new Scene(root));
+            popup.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

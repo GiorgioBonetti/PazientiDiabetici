@@ -1,6 +1,8 @@
 package it.univr.diabete.controller;
 
 import it.univr.diabete.MainApp;
+import it.univr.diabete.dao.PazienteDAO;
+import it.univr.diabete.dao.impl.PazienteDAOImpl;
 import it.univr.diabete.model.Paziente;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,8 +26,7 @@ public class MainShellController {
     private SequentialTransition alertAnimation;
 
     @FXML private Label userInitialsLabel;
-    @FXML private Label userRoleLabel;
-    @FXML private Label roleBadge;
+    // role labels removed from UI
 
     @FXML private Button dashboardButton;
     @FXML private Button FarmacoButton;
@@ -47,6 +48,8 @@ public class MainShellController {
 
     /** ID utente loggato: per Paziente = CF, per Diabetologo = email */
     private String loggedUserId;
+
+    private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
 
     // --- GETTERS UTILI (così basta hardcode) -------------------------
     public String getRole() { return role; }
@@ -77,8 +80,6 @@ public class MainShellController {
 
         String initials = getInitials(userName);
         userInitialsLabel.setText(initials);
-        userRoleLabel.setText(role);
-        roleBadge.setText(role.toUpperCase());
 
         configureSidebarForRole();
         loadDashboard();
@@ -171,6 +172,7 @@ public class MainShellController {
             String fxml;
 
             if ("Paziente".equalsIgnoreCase(role)) {
+                refreshPatientContext();
                 fxml = "/fxml/PatientDashboardView.fxml";
             } else if ("Admin".equalsIgnoreCase(role)) {
                 fxml = "/fxml/AdminPatientsView.fxml";
@@ -211,6 +213,7 @@ public class MainShellController {
     private void handleMeasurementsNav() {
         try {
             if ("Paziente".equalsIgnoreCase(role)) {
+                refreshPatientContext();
                 FXMLLoader loader = new FXMLLoader(
                         MainApp.class.getResource("/fxml/PatientMeasurementsView.fxml")
                 );
@@ -245,6 +248,9 @@ public class MainShellController {
     @FXML
     public void handleTherapyNav() {
         try {
+            if ("Paziente".equalsIgnoreCase(role)) {
+                refreshPatientContext();
+            }
             FXMLLoader loader = new FXMLLoader(
                     MainApp.class.getResource("/fxml/PatientTherapyView.fxml")
             );
@@ -337,6 +343,7 @@ public class MainShellController {
     private void handleReportsNav() {
         try {
             if ("Paziente".equalsIgnoreCase(role)) {
+                refreshPatientContext();
                 FXMLLoader loader = new FXMLLoader(
                         MainApp.class.getResource("/fxml/PatientReportView.fxml")
                 );
@@ -345,6 +352,34 @@ public class MainShellController {
                 PatientReportController controller = loader.getController();
                 controller.setPatientContext(userName, codiceFiscale);
 
+                contentArea.getChildren().setAll(view);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleMessagesNav() {
+        try {
+            if ("Paziente".equalsIgnoreCase(role)) {
+                refreshPatientContext();
+                FXMLLoader loader = new FXMLLoader(
+                        MainApp.class.getResource("/fxml/PatientMessagesView.fxml")
+                );
+                Parent view = loader.load();
+                PatientMessagesController ctrl = loader.getController();
+                if (codiceFiscale != null) {
+                    ctrl.setPatientContext(codiceFiscale);
+                }
+                contentArea.getChildren().setAll(view);
+            } else if ("Diabetologo".equalsIgnoreCase(role)) {
+                FXMLLoader loader = new FXMLLoader(
+                        MainApp.class.getResource("/fxml/DoctorMessagesView.fxml")
+                );
+                Parent view = loader.load();
+                DoctorMessagesController ctrl = loader.getController();
+                ctrl.setDoctorContext(loggedUserId);
                 contentArea.getChildren().setAll(view);
             }
         } catch (IOException e) {
@@ -414,5 +449,21 @@ public class MainShellController {
 
         alertAnimation = new SequentialTransition(fadeIn, stay, fadeOut);
         alertAnimation.play();
+    }
+
+    private void refreshPatientContext() {
+        if (!"Paziente".equalsIgnoreCase(role) || codiceFiscale == null) {
+            return;
+        }
+        try {
+            Paziente p = pazienteDAO.findById(codiceFiscale);
+            if (p == null) {
+                return;
+            }
+            this.userName = p.getNome() + " " + p.getCognome();
+            userInitialsLabel.setText(getInitials(userName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

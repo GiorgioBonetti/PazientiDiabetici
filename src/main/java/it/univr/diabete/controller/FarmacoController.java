@@ -1,28 +1,34 @@
 package it.univr.diabete.controller;
 import it.univr.diabete.MainApp;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.input.MouseButton;
-import javafx.stage.Modality;
 import it.univr.diabete.dao.FarmacoDAO;
 import it.univr.diabete.dao.impl.FarmacoDAOImpl;
 import it.univr.diabete.model.Farmaco;
-import javafx.beans.property.SimpleStringProperty;
+import it.univr.diabete.ui.ConfirmDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class FarmacoController {
 
-    @FXML private TableView<Farmaco> farmacoTable;
-    @FXML private TableColumn<Farmaco, String> colNome;
-    @FXML private TableColumn<Farmaco, String> colMarca;
+    @FXML private ListView<Farmaco> farmacoListView;
     @FXML private TextField searchField;
-    @FXML private Button editButton;
-    @FXML private Button deleteButton;
+    @FXML private Button newButton;
 
     private final FarmacoDAO farmacoDAO = new FarmacoDAOImpl();
 
@@ -32,36 +38,8 @@ public class FarmacoController {
 
     @FXML
     private void initialize() {
-        // colonne
-        colNome.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getNome()));
-        colMarca.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getMarca()));
-
-        // tabella appoggiata alla lista completa
-        farmacoTable.setItems(farmaciCompleti);
-
-        // selezione su click riga + stile via CSS (usa .rounded-table .table-row-cell:selected ...)
-        farmacoTable.setRowFactory(tv -> {
-            TableRow<Farmaco> row = new TableRow<>();
-
-            row.setOnMouseClicked(e -> {
-                if (row.isEmpty()) return;
-
-                if (e.getButton() == MouseButton.PRIMARY && e.getClickCount() == 1) {
-                    tv.getSelectionModel().select(row.getItem());
-                    tv.requestFocus();
-                }
-            });
-
-            return row;
-        });
-
-        // bottoni modifica/elimina disabilitati se nulla selezionato
-        editButton.disableProperty().bind(
-                farmacoTable.getSelectionModel().selectedItemProperty().isNull()
-        );
-        deleteButton.disableProperty().bind(
-                farmacoTable.getSelectionModel().selectedItemProperty().isNull()
-        );
+        farmacoListView.setItems(farmaciCompleti);
+        farmacoListView.setCellFactory(lv -> createFarmacoCardCell());
 
         // filtro ricerca live
         searchField.textProperty().addListener((obs, oldV, newV) -> applyFilter(newV));
@@ -85,7 +63,7 @@ public class FarmacoController {
     /** Applica il filtro sulla lista completa e aggiorna la tabella. */
     private void applyFilter(String filter) {
         if (filter == null || filter.isBlank()) {
-            farmacoTable.setItems(farmaciCompleti);
+            farmacoListView.setItems(farmaciCompleti);
             return;
         }
 
@@ -96,7 +74,7 @@ public class FarmacoController {
                         (f.getMarca() != null && f.getMarca().toLowerCase().contains(lower))
         );
 
-        farmacoTable.setItems(filtrati);
+        farmacoListView.setItems(filtrati);
     }
 
     @FXML
@@ -110,7 +88,7 @@ public class FarmacoController {
             formCtrl.init(null, "Nuovo farmaco");
 
             Stage dialog = new Stage();
-            dialog.initOwner(farmacoTable.getScene().getWindow());
+            dialog.initOwner(farmacoListView.getScene().getWindow());
             dialog.initModality(Modality.WINDOW_MODAL);
             dialog.setTitle("Nuovo farmaco");
             dialog.setScene(new Scene(root));
@@ -127,21 +105,18 @@ public class FarmacoController {
         }
     }
 
-    @FXML
-    private void handleEdit() {
-        Farmaco sel = farmacoTable.getSelectionModel().getSelectedItem();
-        if (sel == null) return;
-
+    private void openEdit(Farmaco farmaco) {
+        if (farmaco == null) return;
         try {
             FXMLLoader loader = new FXMLLoader(
                     MainApp.class.getResource("/fxml/FarmacoFormView.fxml"));
             Parent root = loader.load();
 
             FarmacoFormController formCtrl = loader.getController();
-            formCtrl.init(sel, "Modifica farmaco");
+            formCtrl.init(farmaco, "Modifica farmaco");
 
             Stage dialog = new Stage();
-            dialog.initOwner(farmacoTable.getScene().getWindow());
+            dialog.initOwner(farmacoListView.getScene().getWindow());
             dialog.initModality(Modality.WINDOW_MODAL);
             dialog.setTitle("Modifica farmaco");
             dialog.setScene(new Scene(root));
@@ -158,27 +133,78 @@ public class FarmacoController {
         }
     }
 
-    // ───────────── DELETE ─────────────
-    @FXML
-    private void handleDelete() {
-        Farmaco sel = farmacoTable.getSelectionModel().getSelectedItem();
-        if (sel == null) return;
-
-        boolean confermato = it.univr.diabete.ui.ConfirmDialog.show(
+    private void deleteFarmaco(Farmaco farmaco) {
+        if (farmaco == null) return;
+        boolean confermato = ConfirmDialog.show(
                 "Elimina farmaco",
-                "Vuoi davvero eliminare il farmaco \"" + sel.getNome() + "\"?",
+                "Vuoi davvero eliminare il farmaco \"" + farmaco.getNome() + "\"?",
                 "L'operazione non è reversibile."
         );
 
         if (!confermato) {
-            return; // ❌ utente ha premuto ANNULLA → non fare nulla
+            return;
         }
 
         try {
-            farmacoDAO.delete(sel.getId());
-            loadFarmaci();  // 🔄 aggiorna la tabella
+            farmacoDAO.delete(farmaco.getId());
+            loadFarmaci();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private ListCell<Farmaco> createFarmacoCardCell() {
+        return new ListCell<>() {
+            private final HBox root = new HBox();
+            private final VBox textBox = new VBox(4);
+            private final Label nameLbl = new Label();
+            private final Label brandLbl = new Label();
+            private final HBox actions = new HBox(6);
+            private final Button deleteBtn = new Button("Elimina");
+
+            {
+                root.getStyleClass().add("patient-card");
+                root.setAlignment(Pos.CENTER_LEFT);
+
+                nameLbl.getStyleClass().add("patient-card-name");
+                brandLbl.getStyleClass().add("patient-card-sub");
+                textBox.getStyleClass().add("patient-card-main");
+                textBox.getChildren().addAll(nameLbl, brandLbl);
+
+                deleteBtn.getStyleClass().add("btn-ghost");
+                actions.getStyleClass().add("patient-card-actions");
+                actions.getChildren().add(deleteBtn);
+
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                root.getChildren().addAll(textBox, spacer, actions);
+
+                root.setOnMouseClicked(e -> {
+                    Farmaco f = getItem();
+                    if (f != null) {
+                        openEdit(f);
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Farmaco f, boolean empty) {
+                super.updateItem(f, empty);
+                if (empty || f == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    nameLbl.setText(f.getNome());
+                    brandLbl.setText(f.getMarca() != null ? f.getMarca() : "—");
+                    deleteBtn.setOnAction(e -> {
+                        e.consume();
+                        deleteFarmaco(f);
+                    });
+                    deleteBtn.setOnMouseClicked(e -> e.consume());
+                    setGraphic(root);
+                    setText(null);
+                }
+            }
+        };
     }
 }

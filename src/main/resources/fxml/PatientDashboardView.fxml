@@ -115,42 +115,32 @@
                 </children>
             </VBox>
 
-            <!-- Colonna destra: visite + messaggi -->
-            <VBox spacing="12" prefWidth="300">
+            <!-- Colonna destra: sintomi -->
+            <VBox spacing="12" prefWidth="360">
                 <children>
-                    <!-- Prossime visite -->
-                    <BorderPane styleClass="card">
+                    <BorderPane styleClass="card" prefHeight="270" maxHeight="270">
                         <top>
                             <HBox spacing="8"
                                   alignment="CENTER_LEFT"
                                   styleClass="card-header">
                                 <children>
-                                    <Label text="Prossime visite" styleClass="card-title"/>
-                                </children>
-                            </HBox>
-                        </top>
-                        <center>
-                            <ListView styleClass="card-body" fx:id="nextVisitsList" prefHeight="140"/>
-                        </center>
-                    </BorderPane>
-
-                    <!-- Messaggi -->
-                    <BorderPane styleClass="card">
-                        <top>
-                            <HBox spacing="8"
-                                  alignment="CENTER_LEFT"
-                                  styleClass="card-header">
-                                <children>
-                                    <Label text="Messaggi" styleClass="card-title"/>
+                                    <Label text="Sintomi di oggi" styleClass="card-title"/>
                                     <Pane HBox.hgrow="ALWAYS"/>
-                                    <Button fx:id="openChatButton"
-                                            text="Apri chat"
-                                            styleClass="btn-ghost"/>
+                                    <Button fx:id="addSymptomButton"
+                                            text="+ Aggiungi sintomo"
+                                            styleClass="btn-ghost"
+                                            onAction="#handleAddSymptom"/>
                                 </children>
                             </HBox>
                         </top>
                         <center>
-                            <ListView styleClass="card-body" fx:id="messagesPreviewList" prefHeight="140"/>
+                            <HBox spacing="12" style="-fx-padding: 12;">
+                                <children>
+                                    <ListView fx:id="todaySymptomsListView"
+                                              HBox.hgrow="ALWAYS"
+                                              styleClass="symptom-list"/>
+                                </children>
+                            </HBox>
                         </center>
                     </BorderPane>
                 </children>

@@ -32,54 +32,21 @@
                            promptText="Cerca per nome o marca..."
                            prefWidth="260"
                            styleClass="rounded-field"/>
+
+                <Button fx:id="newButton"
+                        text="Nuovo farmaco"
+                        onAction="#handleAdd"
+                        styleClass="btn-primary"/>
             </children>
         </HBox>
 
-        <!-- CARD CON TABELLA -->
+        <!-- CARD CON LISTA -->
         <BorderPane styleClass="card">
-
             <center>
-                <VBox spacing="8" style="-fx-padding: 12 16 16 16;">
-                    <children>
-                        <TableView fx:id="farmacoTable"
-                                   prefHeight="420"
-                                   styleClass="rounded-table">
-                            <columns>
-                                <TableColumn fx:id="colNome"
-                                             text="Nome"
-                                             prefWidth="260"/>
-                                <TableColumn fx:id="colMarca"
-                                             text="Marca"
-                                             prefWidth="260"/>
-                            </columns>
-                        </TableView>
-                    </children>
-                </VBox>
+                <ListView fx:id="farmacoListView"
+                          prefHeight="420.0"
+                          style="-fx-background-color: transparent; -fx-padding: 10;"/>
             </center>
-
-            <!-- BARRA PULSANTI IN BASSO -->
-            <bottom>
-                <HBox spacing="8"
-                      alignment="CENTER_RIGHT"
-                      style="-fx-padding: 8 16 14 16;">
-                    <children>
-                        <Button fx:id="newButton"
-                                text="Nuovo farmaco"
-                                onAction="#handleAdd"
-                                styleClass="btn-primary"/>
-
-                        <Button fx:id="editButton"
-                                text="Modifica"
-                                onAction="#handleEdit"
-                                styleClass="btn-secondary"/>
-
-                        <Button fx:id="deleteButton"
-                                text="Elimina"
-                                onAction="#handleDelete"
-                                styleClass="btn-secondary"/>
-                    </children>
-                </HBox>
-            </bottom>
         </BorderPane>
 
     </children>

@@ -89,6 +89,31 @@
             </children>
         </VBox>
 
+        <!-- Patologie -->
+        <VBox styleClass="card" spacing="12">
+            <children>
+                <HBox styleClass="card-header" alignment="CENTER_LEFT" spacing="8">
+                    <children>
+                        <Label text="Patologie note" styleClass="card-title"/>
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="addPatologiaButton"
+                                text="+ Aggiungi patologia"
+                                styleClass="btn-ghost"
+                                onAction="#handleAddPatologia"/>
+                    </children>
+                </HBox>
+
+                <VBox spacing="6" style="-fx-padding: 12 16 16 16;">
+                    <children>
+                        <FlowPane fx:id="patologieContainer" hgap="8" vgap="8"/>
+                        <Label fx:id="patologieEmptyLabel"
+                               text="Nessuna patologia registrata"
+                               styleClass="page-subtitle"/>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+
         <!-- Pulsanti -->
         <HBox spacing="8" alignment="CENTER_RIGHT">
             <children>

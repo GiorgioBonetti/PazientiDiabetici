@@ -44,9 +44,9 @@
 
                 <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
                     <children>
-                        <Label text="Visite oggi" styleClass="kpi-label"/>
+                        <Label text="Misurazioni oggi" styleClass="kpi-label"/>
                         <Label fx:id="todayVisitsLabel" text="5" styleClass="kpi-value"/>
-                        <Label text="In presenza o video" styleClass="kpi-helper"/>
+                        <Label text="Misure registrate oggi" styleClass="kpi-helper"/>
                     </children>
                 </VBox>
 
@@ -88,8 +88,8 @@
                             <TableView fx:id="alertsTable" styleClass="table-card" prefHeight="180">
                                 <columns>
                                     <TableColumn fx:id="colAlertPatient" text="Paziente" prefWidth="150"/>
-                                    <TableColumn fx:id="colAlertType" text="Tipo" prefWidth="130"/>
                                     <TableColumn fx:id="colAlertValue" text="Valore" prefWidth="90"/>
+                                <TableColumn fx:id="colAlertDetail" text="Sintomo" prefWidth="180"/>
                                     <TableColumn fx:id="colAlertTime" text="Ora" prefWidth="80"/>
                                     <TableColumn fx:id="colAlertPriority" text="Priorità" prefWidth="90"/>
                                 </columns>

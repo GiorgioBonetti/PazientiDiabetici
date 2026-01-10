@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.AdminPatientsController"
+      spacing="16"
+      stylesheets="@../css/app.css"
+      style="-fx-padding: 8 16 16 16;">
+
+    <children>
+        <VBox spacing="4">
+            <children>
+                <Label text="Pazienti"
+                       styleClass="page-title"/>
+                <Label text="Elenco completo dei pazienti registrati."
+                       styleClass="page-subtitle"/>
+            </children>
+        </VBox>
+
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <children>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="searchField"
+                           promptText="Cerca per nome, CF, email o diabetologo"
+                           prefWidth="280"
+                           styleClass="rounded-field"/>
+                <Button text="Crea paziente"
+                        styleClass="btn-primary"
+                        onAction="#handleCreatePatient"/>
+            </children>
+        </HBox>
+
+        <BorderPane styleClass="card" VBox.vgrow="ALWAYS">
+            <center>
+                <ListView fx:id="patientsListView"
+                          prefHeight="420.0"
+                          style="-fx-background-color: transparent; -fx-padding: 10;"/>
+            </center>
+        </BorderPane>
+    </children>
+</VBox>

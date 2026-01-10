@@ -42,6 +42,34 @@ public class DiabetologoDAOImpl implements DiabetologoDAO {
             }
         }
     }
+
+    @Override
+    public Diabetologo findByEmail(String email) throws Exception {
+        String sql = """
+            SELECT nome, cognome, email, password, numeroTelefono, sesso, laurea
+            FROM Diabetologo
+            WHERE email = ?
+            """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Diabetologo(
+                            rs.getString("nome"),
+                            rs.getString("cognome"),
+                            rs.getString("email"),
+                            rs.getString("password"),
+                            rs.getString("numeroTelefono"),
+                            rs.getString("sesso"),
+                            rs.getString("laurea")
+                    );
+                }
+                return null;
+            }
+        }
+    }
     @Override
     public List<Diabetologo> findAll() throws Exception {
         String sql = "SELECT nome, cognome, email, password, numeroTelefono, sesso, laurea FROM Diabetologo ORDER BY cognome, nome";
