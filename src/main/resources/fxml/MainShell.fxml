@@ -114,6 +114,7 @@
                                 styleClass="nav-item"/>
                         <Button fx:id="messagesButton"
                                 text="Messaggi"
+                                onAction="#handleMessagesNav"
                                 styleClass="nav-item"/>
                         <Button fx:id="reportsButton"
                                 text="Report"

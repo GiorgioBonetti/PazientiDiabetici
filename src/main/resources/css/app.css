@@ -645,6 +645,133 @@
     -fx-alignment: CENTER_RIGHT;
 }
 
+/* ====== MESSAGES ====== */
+
+.message-list {
+    -fx-background-color: #f3f4f6;
+    -fx-control-inner-background: #f3f4f6;
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+}
+
+.message-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 6 0 6 0;
+}
+
+.message-row {
+    -fx-padding: 2 10 2 10;
+}
+
+.message-bubble {
+    -fx-background-color: white;
+    -fx-background-radius: 16 16 16 4;
+    -fx-padding: 8 12 8 12;
+    -fx-max-width: 360;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0.2, 0, 1);
+}
+
+.message-bubble-me {
+    -fx-background-color: #e0e7ff;
+    -fx-background-radius: 16 16 4 16;
+}
+
+.message-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #111827;
+}
+
+.message-text-me {
+    -fx-text-fill: #111827;
+}
+
+.message-time {
+    -fx-font-size: 10px;
+    -fx-text-fill: #9ca3af;
+}
+
+.message-time-me {
+    -fx-text-fill: #6b7280;
+}
+
+.message-read {
+    -fx-font-size: 10px;
+    -fx-text-fill: #4f46e5;
+}
+
+.message-date {
+    -fx-background-color: rgba(79,70,229,0.12);
+    -fx-text-fill: #3730a3;
+    -fx-font-size: 10px;
+    -fx-font-weight: 600;
+    -fx-padding: 3 10 3 10;
+    -fx-background-radius: 999;
+}
+
+.message-thread-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 6 8 6 8;
+}
+
+.message-thread-list .list-cell:selected {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.message-thread-list .list-cell:focused {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.message-thread-list {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-selection-bar: transparent;
+    -fx-selection-bar-non-focused: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
+}
+
+.message-thread {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: #e5e7eb;
+    -fx-padding: 8 10 8 10;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.05), 8, 0.2, 0, 2);
+}
+
+.message-thread:hover {
+    -fx-background-color: #f4f5f7;
+    -fx-border-color: #d1d5db;
+    -fx-cursor: hand;
+}
+
+.message-thread-list .list-cell:selected .message-thread {
+    -fx-background-color: #eef2ff;
+    -fx-border-color: #4f46e5;
+}
+
+.thread-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #111827;
+}
+
+.thread-preview {
+    -fx-font-size: 11px;
+    -fx-text-fill: #6b7280;
+}
+
+.unread-badge {
+    -fx-background-color: #4f46e5;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-padding: 2 6 2 6;
+    -fx-background-radius: 999;
+}
+
 
 /*misurazioni doctor*/
 

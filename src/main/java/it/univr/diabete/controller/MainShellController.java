@@ -352,6 +352,33 @@ public class MainShellController {
         }
     }
 
+    @FXML
+    private void handleMessagesNav() {
+        try {
+            if ("Paziente".equalsIgnoreCase(role)) {
+                FXMLLoader loader = new FXMLLoader(
+                        MainApp.class.getResource("/fxml/PatientMessagesView.fxml")
+                );
+                Parent view = loader.load();
+                PatientMessagesController ctrl = loader.getController();
+                if (codiceFiscale != null) {
+                    ctrl.setPatientContext(codiceFiscale);
+                }
+                contentArea.getChildren().setAll(view);
+            } else if ("Diabetologo".equalsIgnoreCase(role)) {
+                FXMLLoader loader = new FXMLLoader(
+                        MainApp.class.getResource("/fxml/DoctorMessagesView.fxml")
+                );
+                Parent view = loader.load();
+                DoctorMessagesController ctrl = loader.getController();
+                ctrl.setDoctorContext(loggedUserId);
+                contentArea.getChildren().setAll(view);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void openPatientDetail(Paziente paziente) {
         try {
             FXMLLoader loader = new FXMLLoader(

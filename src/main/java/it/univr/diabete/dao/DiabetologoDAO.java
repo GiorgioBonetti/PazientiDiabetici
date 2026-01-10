@@ -6,6 +6,8 @@ import java.util.List;
 public interface DiabetologoDAO {
     Diabetologo findByEmailAndPassword(String email, String password) throws Exception;
 
+    Diabetologo findByEmail(String email) throws Exception;
+
     List<Diabetologo> findAll() throws Exception;
 
     void insert(Diabetologo d) throws Exception;
