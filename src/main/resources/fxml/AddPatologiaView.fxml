@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           stylesheets="@../css/app.css"
+           fx:controller="it.univr.diabete.controller.AddPatologiaController"
+           styleClass="dialog-root">
+
+    <children>
+        <VBox spacing="18"
+              alignment="TOP_CENTER"
+              prefHeight="260"
+              prefWidth="360"
+              maxWidth="620"
+              styleClass="dialog-card"
+              style="-fx-padding: 24;">
+
+            <Label text="Nuova patologia" styleClass="dialog-title"/>
+            <Label text="Associa una patologia al paziente"
+                   styleClass="dialog-subtitle"/>
+
+            <VBox spacing="12" style="-fx-padding: 6 0 0 0;">
+
+                <VBox spacing="4">
+                    <Label text="Nome patologia" styleClass="dialog-field-label"/>
+                    <TextField fx:id="nomeField" styleClass="field-control"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label text="Data inizio (opzionale)" styleClass="dialog-field-label"/>
+                    <DatePicker fx:id="dataInizioPicker" styleClass="field-control"/>
+                </VBox>
+
+            </VBox>
+
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="Annulla"
+                        styleClass="btn-ghost"
+                        onAction="#handleCancel"/>
+                <Button text="Aggiungi"
+                        styleClass="btn-primary"
+                        onAction="#handleSave"/>
+            </HBox>
+        </VBox>
+    </children>
+</StackPane>

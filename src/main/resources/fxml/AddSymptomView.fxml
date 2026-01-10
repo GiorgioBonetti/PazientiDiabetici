@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           stylesheets="@../css/app.css"
+           fx:controller="it.univr.diabete.controller.AddSymptomController"
+           styleClass="dialog-root">
+
+    <children>
+        <VBox spacing="18"
+              alignment="TOP_CENTER"
+              prefHeight="420"
+              prefWidth="360"
+              maxWidth="620"
+              styleClass="dialog-card"
+              style="-fx-padding: 24;">
+
+            <Label text="Nuovo sintomo" styleClass="dialog-title"/>
+            <Label text="Inserisci il sintomo di oggi"
+                   styleClass="dialog-subtitle"/>
+
+            <VBox spacing="12" style="-fx-padding: 6 0 0 0;">
+
+                <VBox spacing="4">
+                    <Label text="Descrizione" styleClass="dialog-field-label"/>
+                    <TextField fx:id="descrizioneField" styleClass="field-control"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label text="Intensita (1-10)" styleClass="dialog-field-label"/>
+                    <TextField fx:id="intensitaField" styleClass="field-control"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label text="Frequenza (opzionale)" styleClass="dialog-field-label"/>
+                    <TextField fx:id="frequenzaField" styleClass="field-control"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label text="Note aggiuntive" styleClass="dialog-field-label"/>
+                    <TextArea fx:id="noteField" styleClass="field-control" prefRowCount="3"/>
+                </VBox>
+
+            </VBox>
+
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="Annulla"
+                        styleClass="btn-ghost"
+                        onAction="#handleCancel"/>
+                <Button text="Salva sintomo"
+                        styleClass="btn-primary"
+                        onAction="#handleSave"/>
+            </HBox>
+        </VBox>
+    </children>
+</StackPane>
