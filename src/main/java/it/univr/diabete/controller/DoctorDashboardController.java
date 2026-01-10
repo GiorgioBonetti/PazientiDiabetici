@@ -11,11 +11,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
@@ -78,26 +75,6 @@ public class DoctorDashboardController {
                     return fullName.contains(q) || email.contains(q) || idStr.contains(q);
                 });
             });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void handleAddPatient() {
-        try {
-            FXMLLoader loader = new FXMLLoader(MainApp.class.getResource("/fxml/AddPatientView.fxml"));
-            Parent root = loader.load();
-
-            AddPatientController ctrl = loader.getController();
-            ctrl.initData(idDiabetologoLoggato, this::reloadPatients);
-
-            Stage popup = new Stage();
-            popup.initModality(Modality.WINDOW_MODAL);
-            popup.setScene(new Scene(root));
-            popup.setTitle("Nuovo paziente");
-            popup.showAndWait();
 
         } catch (Exception e) {
             e.printStackTrace();

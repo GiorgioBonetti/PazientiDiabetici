@@ -33,11 +33,6 @@
                 <TextField fx:id="searchField"
                            promptText="Cerca per nome, cognome o ID"
                            styleClass="field-control"/>
-
-                <!-- 👉 NUOVO BOTTONE -->
-                <Button text="Nuovo paziente"
-                        styleClass="btn-primary"
-                        onAction="#handleAddPatient"/>
             </children>
         </HBox>
 

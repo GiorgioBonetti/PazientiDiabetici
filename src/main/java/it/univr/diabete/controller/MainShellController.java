@@ -86,8 +86,21 @@ public class MainShellController {
 
     private void configureSidebarForRole() {
         boolean isPatient = "Paziente".equalsIgnoreCase(role);
+        boolean isAdmin = "Admin".equalsIgnoreCase(role);
 
-        if (isPatient) {
+        if (isAdmin) {
+            dashboardButton.setText("Pazienti");
+            measurementsButton.setText("Diabetologi");
+
+            therapyButton.setVisible(false);
+            therapyButton.setManaged(false);
+            messagesButton.setVisible(false);
+            messagesButton.setManaged(false);
+            reportsButton.setVisible(false);
+            reportsButton.setManaged(false);
+            FarmacoButton.setVisible(false);
+            FarmacoButton.setManaged(false);
+        } else if (isPatient) {
             dashboardButton.setText("Home");
             measurementsButton.setText("Misurazioni");
             therapyButton.setText("Terapia");
@@ -159,6 +172,8 @@ public class MainShellController {
 
             if ("Paziente".equalsIgnoreCase(role)) {
                 fxml = "/fxml/PatientDashboardView.fxml";
+            } else if ("Admin".equalsIgnoreCase(role)) {
+                fxml = "/fxml/AdminPatientsView.fxml";
             } else {
                 fxml = "/fxml/DoctorDashboardView.fxml";
             }
@@ -169,7 +184,7 @@ public class MainShellController {
             if ("Paziente".equalsIgnoreCase(role)) {
                 PatientDashboardController controller = loader.getController();
                 controller.setPatientData(userName, codiceFiscale);
-            } else {
+            } else if ("Diabetologo".equalsIgnoreCase(role)) {
                 DoctorDashboardController ctrl = loader.getController();
                 // ✅ loggedUserId per diabetologo = email
                 ctrl.setDoctorContext(loggedUserId);
@@ -208,6 +223,12 @@ public class MainShellController {
 
                 contentArea.getChildren().setAll(view);
 
+            } else if ("Admin".equalsIgnoreCase(role)) {
+                FXMLLoader loader = new FXMLLoader(
+                        MainApp.class.getResource("/fxml/AdminDoctorsView.fxml")
+                );
+                Parent view = loader.load();
+                contentArea.getChildren().setAll(view);
             } else {
                 FXMLLoader loader = new FXMLLoader(
                         MainApp.class.getResource("/fxml/DoctorMeasurementsView.fxml")

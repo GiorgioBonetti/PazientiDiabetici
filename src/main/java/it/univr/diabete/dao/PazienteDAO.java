@@ -15,4 +15,6 @@ public interface PazienteDAO {
     void insert(Paziente paziente) throws Exception;
 
     void update(Paziente paziente) throws Exception;
+
+    void deleteById(String codiceFiscale) throws Exception;
 }

@@ -22,8 +22,8 @@
               style="-fx-padding: 24;">
 
             <!-- TITLE -->
-            <Label text="Nuovo paziente" styleClass="dialog-title"/>
-            <Label text="Inserisci i dati del nuovo paziente"
+            <Label fx:id="titleLabel" text="Nuovo paziente" styleClass="dialog-title"/>
+            <Label fx:id="subtitleLabel" text="Inserisci i dati del nuovo paziente"
                    styleClass="dialog-subtitle"/>
 
             <!-- FORM -->
@@ -51,6 +51,12 @@
                 <VBox spacing="4">
                     <Label text="Numero telefono" styleClass="dialog-field-label"/>
                     <TextField fx:id="telefonoField" styleClass="field-control"/>
+                </VBox>
+
+                <!-- Diabetologo (solo admin) -->
+                <VBox fx:id="diabetologoContainer" spacing="4" visible="false" managed="false">
+                    <Label text="Diabetologo" styleClass="dialog-field-label"/>
+                    <ComboBox fx:id="diabetologoCombo" styleClass="field-control"/>
                 </VBox>
 
                 <!-- CF -->
@@ -92,7 +98,7 @@
                 <Button text="Annulla"
                         styleClass="btn-ghost"
                         onAction="#handleCancel"/>
-                <Button text="Crea paziente"
+                <Button fx:id="saveButton" text="Crea paziente"
                         styleClass="btn-primary"
                         onAction="#handleSave"/>
             </HBox>

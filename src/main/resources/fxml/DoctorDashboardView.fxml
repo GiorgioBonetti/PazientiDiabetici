@@ -146,10 +146,6 @@
                         <children>
                             <Label text="Pazienti" styleClass="card-title"/>
                             <Pane HBox.hgrow="ALWAYS"/>
-                            <Button
-                                    text="+"
-                                    styleClass="btn-primary"
-                                    onAction="#handleAddPatient"/>
                             <TextField fx:id="patientSearchField"
                                        promptText="Cerca per nome o codice"
                                        styleClass="field-control"/>

@@ -618,6 +618,13 @@
     -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.04), 10, 0.15, 0, 2);
 }
 
+.patient-card:hover {
+    -fx-background-color: #f5f3ff;
+    -fx-border-color: #a855f7;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(129,140,248,0.35), 12, 0.3, 0, 4);
+}
+
 .patient-card-main {
     -fx-spacing: 4;
 }
@@ -840,6 +847,11 @@
     -fx-text-fill: #111827;
     -fx-background-radius: 999;
     -fx-padding: 8 18 8 18;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #e5e7eb;
 }
 /* Lista farmaci dentro Add/Edit therapy */
 .farmaco-list-view {

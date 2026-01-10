@@ -147,15 +147,15 @@ public class PazienteDAOImpl implements PazienteDAO {
 
             ps.setString(1, p.getNome());
             ps.setString(2, p.getCognome());
+            ps.setString(3, p.getEmail());
+            ps.setString(4, p.getNumeroTelefono());
 
             if (p.getDataNascita() != null) {
-                ps.setDate(3, Date.valueOf(p.getDataNascita()));
+                ps.setDate(5, Date.valueOf(p.getDataNascita()));
             } else {
-                ps.setNull(3, java.sql.Types.DATE);
+                ps.setNull(5, java.sql.Types.DATE);
             }
 
-            ps.setString(4, p.getNumeroTelefono());
-            ps.setString(5, p.getEmail());
             ps.setString(6, p.getSesso());
             ps.setString(7, p.getCodiceFiscale());
             ps.setString(8, p.getPassword());
@@ -196,10 +196,21 @@ public class PazienteDAOImpl implements PazienteDAO {
             ps.setString(4, p.getNumeroTelefono());
             ps.setString(5, p.getEmail());
             ps.setString(6, p.getSesso());
-            ps.setString(7, p.getCodiceFiscale());
-            ps.setString(8, p.getPassword());
-            ps.setString(9, p.getFkDiabetologo());
+            ps.setString(7, p.getPassword());
+            ps.setString(8, p.getFkDiabetologo());
+            ps.setString(9, p.getCodiceFiscale());
 
+            ps.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteById(String codiceFiscale) throws Exception {
+        String sql = "DELETE FROM Paziente WHERE codiceFiscale = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, codiceFiscale);
             ps.executeUpdate();
         }
     }
