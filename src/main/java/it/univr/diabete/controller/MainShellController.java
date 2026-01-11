@@ -49,9 +49,10 @@ public class MainShellController {
     /** ID utente loggato: per Paziente = CF, per Diabetologo = email */
     private String loggedUserId;
 
+    private Button activeNavButton;
+
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
 
-    // --- GETTERS UTILI (così basta hardcode) -------------------------
     public String getRole() { return role; }
     public String getUserName() { return userName; }
     public String getCodiceFiscale() { return codiceFiscale; }
@@ -124,6 +125,16 @@ public class MainShellController {
         }
     }
 
+    private void setActiveNav(Button btn) {
+        if (activeNavButton != null) {
+            activeNavButton.getStyleClass().remove("nav-item-selected");
+        }
+        if (btn != null && !btn.getStyleClass().contains("nav-item-selected")) {
+            btn.getStyleClass().add("nav-item-selected");
+        }
+        activeNavButton = btn;
+    }
+
     @FXML
     private void handleLogout() {
         try {
@@ -188,11 +199,12 @@ public class MainShellController {
                 controller.setPatientData(userName, codiceFiscale);
             } else if ("Diabetologo".equalsIgnoreCase(role)) {
                 DoctorDashboardController ctrl = loader.getController();
-                // ✅ loggedUserId per diabetologo = email
+                // loggedUserId per diabetologo = email
                 ctrl.setDoctorContext(loggedUserId);
             }
 
             contentArea.getChildren().setAll(dashboard);
+            setActiveNav(dashboardButton);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -200,12 +212,14 @@ public class MainShellController {
 
     @FXML
     private void handleDashboardNav() {
+        setActiveNav(dashboardButton);
         loadDashboard();
     }
 
     @FXML
     private void handlePatientsNav() {
         if ("Paziente".equalsIgnoreCase(role)) return;
+        setActiveNav(dashboardButton);
         loadDashboard();
     }
 
@@ -225,6 +239,8 @@ public class MainShellController {
                 }
 
                 contentArea.getChildren().setAll(view);
+                setActiveNav(measurementsButton);
+
 
             } else if ("Admin".equalsIgnoreCase(role)) {
                 FXMLLoader loader = new FXMLLoader(
@@ -232,6 +248,8 @@ public class MainShellController {
                 );
                 Parent view = loader.load();
                 contentArea.getChildren().setAll(view);
+                setActiveNav(measurementsButton);
+
             } else {
                 FXMLLoader loader = new FXMLLoader(
                         MainApp.class.getResource("/fxml/DoctorMeasurementsView.fxml")
@@ -239,6 +257,8 @@ public class MainShellController {
                 Parent view = loader.load();
 
                 contentArea.getChildren().setAll(view);
+                setActiveNav(measurementsButton);
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -265,6 +285,7 @@ public class MainShellController {
                 controller.hideEditingToolsPat();
             }
 
+            setActiveNav(therapyButton);
             contentArea.getChildren().setAll(view);
 
         } catch (IOException e) {
@@ -274,6 +295,7 @@ public class MainShellController {
 
     @FXML
     private void handleFarmacoNav() {
+        setActiveNav(FarmacoButton);
         openFarmacoView();
     }
 
@@ -300,6 +322,7 @@ public class MainShellController {
                 ctrl.hideEditingTools();
             }
             contentArea.getChildren().setAll(view);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -314,6 +337,7 @@ public class MainShellController {
             PatientReportController ctrl = loader.getController();
             ctrl.setPatientContext(fullName, codiceFiscale);
             contentArea.getChildren().setAll(view);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -334,6 +358,7 @@ public class MainShellController {
                 ctrl.hideEditingToolsPat();
             }
             contentArea.getChildren().setAll(view);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -353,6 +378,8 @@ public class MainShellController {
                 controller.setPatientContext(userName, codiceFiscale);
 
                 contentArea.getChildren().setAll(view);
+                setActiveNav(reportsButton);
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -373,6 +400,8 @@ public class MainShellController {
                     ctrl.setPatientContext(codiceFiscale);
                 }
                 contentArea.getChildren().setAll(view);
+                setActiveNav(messagesButton);
+
             } else if ("Diabetologo".equalsIgnoreCase(role)) {
                 FXMLLoader loader = new FXMLLoader(
                         MainApp.class.getResource("/fxml/DoctorMessagesView.fxml")
@@ -381,6 +410,7 @@ public class MainShellController {
                 DoctorMessagesController ctrl = loader.getController();
                 ctrl.setDoctorContext(loggedUserId);
                 contentArea.getChildren().setAll(view);
+                setActiveNav(messagesButton);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -397,7 +427,6 @@ public class MainShellController {
             controller.setPatient(paziente);
 
             contentArea.getChildren().setAll(view);
-
         } catch (IOException e) {
             e.printStackTrace();
         }

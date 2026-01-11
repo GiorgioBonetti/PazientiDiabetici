@@ -1,149 +1,130 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <StackPane xmlns="http://javafx.com/javafx/21"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="it.univr.diabete.controller.MainShellController"
            stylesheets="@../css/app.css"
            styleClass="root-bg">
 
-    <children>
-        <!-- Card centrale con app shell -->
-        <BorderPane maxWidth="1180"
-                    maxHeight="680"
-                    prefWidth="1180"
-                    prefHeight="680"
-                    styleClass="app-shell">
+    <!-- Card centrale con app shell -->
+    <BorderPane maxWidth="1180"
+                maxHeight="680"
+                prefWidth="1180"
+                prefHeight="680"
+                styleClass="app-shell">
 
-            <!-- TOP BAR -->
-            <top>
-                <HBox spacing="10"
-                      alignment="CENTER_LEFT"
-                      styleClass="topbar">
-                    <children>
-                        <VBox spacing="2">
-                            <children>
-                                <Label text="Telemedicina"
-                                       styleClass="topbar-title-sub"/>
-                                <Label text="Gestione diabete"
-                                       styleClass="topbar-title-main"/>
-                            </children>
-                        </VBox>
-
-                        <!-- role badge removed -->
-
-                        <!-- 🔥 CENTRO: area che si espande e centra il banner -->
-                        <StackPane HBox.hgrow="ALWAYS">
-                            <children>
-                                <Label fx:id="globalAlertLabel"
-                                       text=""
-                                       visible="false" managed="false"
-                                       opacity="0"
-                                       StackPane.alignment="CENTER"
-                                       style="-fx-font-size: 11px;
-                      -fx-padding: 6 10;
-                      -fx-background-radius: 999;
-                      -fx-text-fill: #065f46;
-                      -fx-background-color: #d1fae5;"/>
-                            </children>
-                        </StackPane>
-
-                        <!-- Data odierna -->
-                        <VBox alignment="CENTER_RIGHT" spacing="2">
-                            <children>
-                                <Label text="Oggi"
-                                       styleClass="topbar-date-label"/>
-                                <Label fx:id="todayLabel"
-                                       text="26 Nov 2025"
-                                       styleClass="topbar-date-value"/>
-                            </children>
-                        </VBox>
-
-                        <!-- Notifiche -->
-                        <Button fx:id="notificationsButton"
-                                text="🔔"
-                                styleClass="icon-button"/>
-
-                        <!-- Utente -->
-                        <HBox spacing="8"
-                              alignment="CENTER"
-                              styleClass="user-chip">
-                            <children>
-                                <Label fx:id="userInitialsLabel"
-                                       text="VS"
-                                       styleClass="user-avatar-initials"/>
-                            </children>
-                        </HBox>
-                    </children>
-                </HBox>
-            </top>
-
-            <!-- SIDEBAR -->
-            <left>
-                <VBox spacing="10"
-                      prefWidth="220"
-                      styleClass="sidebar">
-                    <children>
-                        <Label text="Navigazione"
-                               styleClass="sidebar-title"/>
-
-                        <!-- Bottoni nav -->
-                        <Button fx:id="dashboardButton"
-                                text="Dashboard"
-                                onAction="#handleDashboardNav"
-                                styleClass="nav-item"/>
-                        <Button fx:id="measurementsButton"
-                                text="Misurazioni"
-                                onAction="#handleMeasurementsNav"
-                                styleClass="nav-item"/>
-                        <Button fx:id="therapyButton"
-                                text="Terapia"
-                                onAction="#handleTherapyNav"
-                                styleClass="nav-item"/>
-                        <Button fx:id="FarmacoButton"
-                                text="Farmaco"
-                                onAction="#handleFarmacoNav"
-                                styleClass="nav-item"/>
-                        <Button fx:id="messagesButton"
-                                text="Messaggi"
-                                onAction="#handleMessagesNav"
-                                styleClass="nav-item"/>
-                        <Button fx:id="reportsButton"
-                                text="Report"
-                                onAction="#handleReportsNav"
-                                styleClass="nav-item"/>
-
-                        <Pane VBox.vgrow="ALWAYS"/>
-
-                        <VBox spacing="4">
-                            <children>
-                                <Button text="Logout"
-                                        onAction="#handleLogout"
-                                        styleClass="nav-item"/>
-                                <Label text="Supporto"
-                                       styleClass="sidebar-footer-title"/>
-                                <Hyperlink fx:id="supportLink"
-                                           text="Contatta assistenza"
-                                           styleClass="sidebar-footer-link"/>
-                                <Label text="Versione 1.0.0"
-                                       styleClass="sidebar-footer-version"/>
-                            </children>
-                        </VBox>
-                    </children>
+        <!-- TOP BAR -->
+        <top>
+            <HBox spacing="10"
+                  alignment="CENTER_LEFT"
+                  styleClass="topbar">
+                <VBox spacing="2">
+                    <Label text="Telemedicina"
+                           styleClass="topbar-title-sub"/>
+                    <Label text="Gestione diabete"
+                           styleClass="topbar-title-main"/>
                 </VBox>
-            </left>
 
-            <!-- CONTENUTO CENTRALE -->
-            <center>
-                <StackPane fx:id="contentArea"
-                           style="-fx-padding: 16; -fx-background-color: #f9fafb;">
-                    <!-- Qui il controller carica DoctorDashboardView / PatientDashboardView -->
+                <!-- role badge removed -->
+
+                <!-- 🔥 CENTRO: area che si espande e centra il banner -->
+                <StackPane HBox.hgrow="ALWAYS">
+                    <Label fx:id="globalAlertLabel"
+                           visible="false" managed="false"
+                           opacity="0"
+                           StackPane.alignment="CENTER"
+                           style="-fx-font-size: 11px;
+          -fx-padding: 6 10;
+          -fx-background-radius: 999;
+          -fx-text-fill: #065f46;
+          -fx-background-color: #d1fae5;"/>
                 </StackPane>
-            </center>
 
-        </BorderPane>
-    </children>
+                <!-- Data odierna -->
+                <VBox alignment="CENTER_RIGHT" spacing="2">
+                    <Label text="Oggi"
+                           styleClass="topbar-date-label"/>
+                    <Label fx:id="todayLabel"
+                           text="26 Nov 2025"
+                           styleClass="topbar-date-value"/>
+                </VBox>
+
+                <!-- Notifiche -->
+                <Button fx:id="notificationsButton"
+                        text="🔔"
+                        styleClass="icon-button"/>
+
+                <!-- Utente -->
+                <HBox spacing="8"
+                      alignment="CENTER"
+                      styleClass="user-chip">
+                    <Label fx:id="userInitialsLabel"
+                           text="VS"
+                           styleClass="user-avatar-initials"/>
+                </HBox>
+            </HBox>
+        </top>
+
+        <!-- SIDEBAR -->
+        <left>
+            <VBox spacing="10"
+                  prefWidth="220"
+                  styleClass="sidebar">
+                <Label text="Navigazione"
+                       styleClass="sidebar-title"/>
+
+                <!-- Bottoni nav -->
+                <Button fx:id="dashboardButton"
+                        text="Dashboard"
+                        onAction="#handleDashboardNav"
+                        styleClass="nav-item"/>
+                <Button fx:id="measurementsButton"
+                        text="Misurazioni"
+                        onAction="#handleMeasurementsNav"
+                        styleClass="nav-item"/>
+                <Button fx:id="therapyButton"
+                        text="Terapia"
+                        onAction="#handleTherapyNav"
+                        styleClass="nav-item"/>
+                <Button fx:id="FarmacoButton"
+                        text="Farmaco"
+                        onAction="#handleFarmacoNav"
+                        styleClass="nav-item"/>
+                <Button fx:id="messagesButton"
+                        text="Messaggi"
+                        onAction="#handleMessagesNav"
+                        styleClass="nav-item"/>
+                <Button fx:id="reportsButton"
+                        text="Report"
+                        onAction="#handleReportsNav"
+                        styleClass="nav-item"/>
+
+                <Pane VBox.vgrow="ALWAYS"/>
+
+                <VBox spacing="4">
+                    <Button text="Logout"
+                            onAction="#handleLogout"
+                            styleClass="nav-item"/>
+                    <Label text="Supporto"
+                           styleClass="sidebar-footer-title"/>
+                    <Hyperlink fx:id="supportLink"
+                               text="Contatta assistenza"
+                               styleClass="sidebar-footer-link"/>
+                    <Label text="Versione 1.0.0"
+                           styleClass="sidebar-footer-version"/>
+                </VBox>
+            </VBox>
+        </left>
+
+        <!-- CONTENUTO CENTRALE -->
+        <center>
+            <StackPane fx:id="contentArea"
+                       style="-fx-padding: 16; -fx-background-color: #f9fafb;">
+                <!-- Qui il controller carica DoctorDashboardView / PatientDashboardView -->
+            </StackPane>
+        </center>
+
+    </BorderPane>
 </StackPane>

@@ -140,13 +140,12 @@
     -fx-cursor: hand;
 }
 
-.nav-item:hover {
-    -fx-background-color: #f3f4f6;
-}
-
 .nav-item-selected {
-    -fx-background-color: #e0e7ff;
-    -fx-text-fill: #4338ca;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #4f46e5, #4338ca);
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-background-radius: 12;
+    -fx-padding: 6 10 6 10;
 }
 
 .nav-dot {
@@ -1189,6 +1188,5 @@
 /* evita che le singole celle sovrascrivano lo sfondo della riga */
 .rounded-table .table-row-cell:selected .table-cell {
     -fx-background-color: transparent;
-    -fx-text-fill: -fx-text-base-color; /* mantiene il colore del testo leggibile */
     -fx-text-fill: #ffffff;
 }
