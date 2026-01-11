@@ -7,14 +7,14 @@ import it.univr.diabete.dao.DiabetologoDAO;
 import it.univr.diabete.dao.impl.DiabetologoDAOImpl;
 import it.univr.diabete.model.Paziente;
 import it.univr.diabete.model.Diabetologo;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 public class LoginController {
@@ -24,7 +24,6 @@ public class LoginController {
 
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
-    @FXML private Label loginErrorLabel;
     @FXML private Button loginButton;
 
     @FXML
@@ -40,7 +39,7 @@ public class LoginController {
         String password = passwordField.getText();
 
         if (email == null || password == null || email.isBlank() || password.isBlank()) {
-            showError("Inserisci email e password.");
+            ErrorDialog.show("Dati mancanti", "Inserisci email e password.");
             return;
         }
 
@@ -52,10 +51,9 @@ public class LoginController {
 
             Paziente paziente = pazienteDAO.findByEmailAndPassword(email, password);
             Diabetologo diabetologo;
-
             String role;
             String displayName;
-            String userId; // per Paziente = CF, per Diabetologo = email
+            String userId;
 
             if (paziente != null) {
                 role = "Paziente";
@@ -66,10 +64,10 @@ public class LoginController {
                 if (diabetologo != null) {
                     role = "Diabetologo";
                     displayName = diabetologo.getNome() + " " + diabetologo.getCognome();
-                    // NB: nel DB la colonna è eMail, nel model hai getEmail() -> ok
                     userId = diabetologo.getEmail();
                 } else {
-                    showError("Credenziali errate.");
+                    ErrorDialog.show("Credenziali errate",
+                            "Email o password non validi. Riprova.");
                     return;
                 }
             }
@@ -77,15 +75,10 @@ public class LoginController {
             openShell(role, displayName, userId);
 
         } catch (Exception ex) {
+            ErrorDialog.show("Errore di connessione",
+                    "Impossibile connettersi al database. Riprova.");
             ex.printStackTrace();
-            showError("Errore di connessione al database.");
         }
-    }
-
-    private void showError(String message) {
-        loginErrorLabel.setText(message);
-        loginErrorLabel.setVisible(true);
-        loginErrorLabel.setManaged(true);
     }
 
     private void openShell(String role, String displayName, String userId) throws Exception {
@@ -94,7 +87,6 @@ public class LoginController {
 
         MainShellController shellController = loader.getController();
         MainApp.setMainShellController(shellController);
-
         shellController.setUserData(role, displayName, userId);
 
         Stage stage = (Stage) emailField.getScene().getWindow();
@@ -106,5 +98,4 @@ public class LoginController {
         stage.centerOnScreen();
         stage.show();
     }
-
 }

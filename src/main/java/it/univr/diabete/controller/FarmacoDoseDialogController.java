@@ -1,5 +1,6 @@
 package it.univr.diabete.controller;
 
+import it.univr.diabete.ui.ErrorDialog;  // ← IMPORT Aggiunto
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -10,7 +11,6 @@ public class FarmacoDoseDialogController {
     @FXML private Label farmacoNameLabel;
     @FXML private TextField assunzioniField;
     @FXML private TextField unitaField;
-    @FXML private Label errorLabel;
 
     private boolean confirmed = false;
     private int assunzioni;
@@ -18,30 +18,47 @@ public class FarmacoDoseDialogController {
 
     public void init(String nomeFarmaco) {
         farmacoNameLabel.setText(nomeFarmaco);
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
     }
 
     @FXML
     private void handleConfirm() {
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
-
         try {
-            assunzioni = Integer.parseInt(assunzioniField.getText().trim());
-            unita = Integer.parseInt(unitaField.getText().trim());
+            String assunzioniText = assunzioniField.getText() != null ? assunzioniField.getText().trim() : "";
+            String unitaText = unitaField.getText() != null ? unitaField.getText().trim() : "";
 
-            if (assunzioni <= 0 || unita <= 0) {
-                throw new NumberFormatException();
+            if (assunzioniText.isEmpty()) {
+                ErrorDialog.show("Assunzioni mancanti",
+                        "Inserisci il numero di assunzioni giornaliere.");
+                return;
+            }
+
+            if (unitaText.isEmpty()) {
+                ErrorDialog.show("Unità mancanti",
+                        "Inserisci la quantità per assunzione.");
+                return;
+            }
+
+            assunzioni = Integer.parseInt(assunzioniText);
+            unita = Integer.parseInt(unitaText);
+
+            if (assunzioni <= 0) {
+                ErrorDialog.show("Assunzioni non valide",
+                        "Le assunzioni giornaliere devono essere > 0.");
+                return;
+            }
+
+            if (unita <= 0) {
+                ErrorDialog.show("Unità non valide",
+                        "La quantità per assunzione deve essere > 0.");
+                return;
             }
 
             confirmed = true;
             close();
 
         } catch (NumberFormatException e) {
-            errorLabel.setText("Inserisci numeri interi positivi.");
-            errorLabel.setVisible(true);
-            errorLabel.setManaged(true);
+            ErrorDialog.show("Valori non validi",
+                    "Inserisci numeri interi positivi per assunzioni e unità.");
         }
     }
 

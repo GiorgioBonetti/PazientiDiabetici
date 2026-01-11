@@ -1,6 +1,7 @@
 package it.univr.diabete.controller;
 
 import it.univr.diabete.model.Farmaco;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -11,18 +12,10 @@ public class FarmacoFormController {
     @FXML private Label titleLabel;
     @FXML private TextField nomeField;
     @FXML private TextField marcaField;
-    @FXML private Label errorLabel;
 
-    private Farmaco farmaco;      // esistente (edit) o nuovo
+    private Farmaco farmaco;
     private boolean confirmed = false;
 
-    @FXML
-    private void initialize() {
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
-    }
-
-    /** Init(null) per "nuovo", init(farmaco) per "modifica". */
     public void init(Farmaco existing, String title) {
         this.farmaco = existing;
         if (title != null && !title.isBlank()) {
@@ -43,7 +36,7 @@ public class FarmacoFormController {
         String marca = marcaField.getText() != null ? marcaField.getText().trim() : "";
 
         if (nome.isEmpty()) {
-            showError();
+            ErrorDialog.show("Nome mancante", "Inserisci il nome del farmaco.");
             return;
         }
 
@@ -62,12 +55,6 @@ public class FarmacoFormController {
     private void handleCancel() {
         confirmed = false;
         close();
-    }
-
-    private void showError() {
-        errorLabel.setText("Inserisci il nome del farmaco.");
-        errorLabel.setVisible(true);
-        errorLabel.setManaged(true);
     }
 
     private void close() {

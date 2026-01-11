@@ -9,6 +9,7 @@ import it.univr.diabete.dao.impl.PazienteDAOImpl;
 import it.univr.diabete.model.Diabetologo;
 import it.univr.diabete.model.Message;
 import it.univr.diabete.model.Paziente;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,7 +44,9 @@ public class PatientMessagesController {
 
     private String patientId;
     private String diabetologistId;
+
     private final ObservableList<Message> messages = FXCollections.observableArrayList();
+
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -63,6 +66,7 @@ public class PatientMessagesController {
     private void loadAssignedDiabetologist() {
         try {
             Paziente paziente = pazienteDAO.findById(patientId);
+
             if (paziente == null || paziente.getFkDiabetologo() == null) {
                 infoLabel.setText("Nessun diabetologo assegnato.");
                 infoLabel.setVisible(true);
@@ -71,18 +75,23 @@ public class PatientMessagesController {
                 sendButton.setDisable(true);
                 return;
             }
+
             diabetologistId = paziente.getFkDiabetologo();
             infoLabel.setVisible(false);
             infoLabel.setManaged(false);
             messageInput.setDisable(false);
             sendButton.setDisable(false);
+
             Diabetologo d = diabetologoDAO.findByEmail(diabetologistId);
             if (d != null) {
                 diabetologistLabel.setText(d.getNome() + " " + d.getCognome());
             } else {
                 diabetologistLabel.setText(diabetologistId);
             }
+
         } catch (Exception e) {
+            ErrorDialog.show("Errore caricamento diabetologo",
+                    "Impossibile caricare i dati del diabetologo assegnato.");
             e.printStackTrace();
         }
     }
@@ -91,12 +100,16 @@ public class PatientMessagesController {
         if (patientId == null || diabetologistId == null) {
             return;
         }
+
         try {
             List<Message> list = messageDAO.getConversation(patientId, diabetologistId);
             messages.setAll(list);
             messageDAO.markAsRead(patientId, diabetologistId, "PAZIENTE");
             scrollToBottom();
+
         } catch (Exception e) {
+            ErrorDialog.show("Errore caricamento messaggi",
+                    "Impossibile caricare la conversazione.");
             e.printStackTrace();
         }
     }
@@ -104,12 +117,16 @@ public class PatientMessagesController {
     @FXML
     private void handleSend() {
         if (patientId == null || diabetologistId == null) {
+            ErrorDialog.show("Errore", "Paziente o diabetologo non validi.");
             return;
         }
+
         String text = messageInput.getText() != null ? messageInput.getText().trim() : "";
         if (text.isEmpty()) {
+            ErrorDialog.show("Messaggio vuoto", "Inserisci un messaggio prima di inviare.");
             return;
         }
+
         try {
             Message m = new Message();
             m.setFkPatient(patientId);
@@ -117,11 +134,14 @@ public class PatientMessagesController {
             m.setSenderRole("PAZIENTE");
             m.setContent(text);
             m.setSentAt(LocalDateTime.now());
-            messageDAO.sendMessage(m);
 
+            messageDAO.sendMessage(m);
             messageInput.clear();
             loadMessages();
+
         } catch (Exception e) {
+            ErrorDialog.show("Errore di invio",
+                    "Impossibile inviare il messaggio. Riprova.");
             e.printStackTrace();
         }
     }
@@ -139,6 +159,7 @@ public class PatientMessagesController {
             @Override
             protected void updateItem(Message msg, boolean empty) {
                 super.updateItem(msg, empty);
+
                 if (empty || msg == null) {
                     setGraphic(null);
                     setText(null);
@@ -181,6 +202,7 @@ public class PatientMessagesController {
                 if (isMe) {
                     time.getStyleClass().add("message-time-me");
                 }
+
                 meta.getChildren().add(time);
 
                 if (isMe && msg.isRead()) {
@@ -192,8 +214,8 @@ public class PatientMessagesController {
                 bubble.getChildren().addAll(content, meta);
                 row.getChildren().add(bubble);
                 HBox.setMargin(bubble, new Insets(2, 8, 2, 8));
-                wrapper.getChildren().add(row);
 
+                wrapper.getChildren().add(row);
                 setGraphic(wrapper);
                 setText(null);
             }
@@ -211,14 +233,17 @@ public class PatientMessagesController {
         if (index <= 0) {
             return true;
         }
+
         List<Message> items = getMessages();
         if (index >= items.size()) {
             return false;
         }
+
         Message prev = items.get(index - 1);
         if (prev == null || prev.getSentAt() == null || msg.getSentAt() == null) {
             return true;
         }
+
         LocalDate prevDate = prev.getSentAt().toLocalDate();
         LocalDate curDate = msg.getSentAt().toLocalDate();
         return !prevDate.equals(curDate);
@@ -232,9 +257,11 @@ public class PatientMessagesController {
         if (sentAt == null) {
             return "";
         }
+
         LocalDate date = sentAt.toLocalDate();
         LocalDate today = LocalDate.now();
         long diff = ChronoUnit.DAYS.between(date, today);
+
         if (diff == 0) {
             return "Oggi";
         }

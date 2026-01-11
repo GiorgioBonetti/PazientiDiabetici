@@ -6,6 +6,7 @@ import it.univr.diabete.dao.impl.MessageDAOImpl;
 import it.univr.diabete.dao.impl.PazienteDAOImpl;
 import it.univr.diabete.model.Message;
 import it.univr.diabete.model.Paziente;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,8 +17,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -45,8 +46,10 @@ public class DoctorMessagesController {
 
     private String diabetologistId;
     private Paziente selectedPatient;
+
     private final ObservableList<ConversationItem> conversations = FXCollections.observableArrayList();
     private final ObservableList<Message> messages = FXCollections.observableArrayList();
+
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -74,25 +77,31 @@ public class DoctorMessagesController {
         if (diabetologistId == null) {
             return;
         }
+
         try {
             List<Paziente> all = pazienteDAO.findAll();
             Map<String, Integer> unreadMap = messageDAO.getUnreadByPatient(diabetologistId);
 
             List<ConversationItem> items = new ArrayList<>();
+
             for (Paziente p : all) {
                 if (p.getFkDiabetologo() == null) {
                     continue;
                 }
+
                 if (!diabetologistId.equalsIgnoreCase(p.getFkDiabetologo())) {
                     continue;
                 }
+
                 Message last = messageDAO.getLastMessage(p.getCodiceFiscale(), diabetologistId);
                 int unread = unreadMap.getOrDefault(p.getCodiceFiscale(), 0);
+
                 items.add(new ConversationItem(p, last, unread));
             }
 
             String selectedId = selectedPatient != null ? selectedPatient.getCodiceFiscale() : null;
             conversations.setAll(items);
+
             if (selectedId != null) {
                 for (ConversationItem item : items) {
                     if (selectedId.equals(item.patient.getCodiceFiscale())) {
@@ -101,7 +110,10 @@ public class DoctorMessagesController {
                     }
                 }
             }
+
         } catch (Exception e) {
+            ErrorDialog.show("Errore caricamento conversazioni",
+                    "Impossibile caricare la lista dei pazienti.");
             e.printStackTrace();
         }
     }
@@ -110,7 +122,6 @@ public class DoctorMessagesController {
         selectedPatient = item.patient;
         chatTitleLabel.setText(selectedPatient.getNome() + " " + selectedPatient.getCognome());
         chatSubtitleLabel.setText(selectedPatient.getEmail() != null ? selectedPatient.getEmail() : "—");
-
         loadMessages();
         markAsRead();
         item.unreadCount = 0;
@@ -121,6 +132,7 @@ public class DoctorMessagesController {
         if (selectedPatient == null) {
             return;
         }
+
         try {
             List<Message> list = messageDAO.getConversation(
                     selectedPatient.getCodiceFiscale(),
@@ -128,7 +140,10 @@ public class DoctorMessagesController {
             );
             messages.setAll(list);
             scrollToBottom();
+
         } catch (Exception e) {
+            ErrorDialog.show("Errore caricamento messaggi",
+                    "Impossibile caricare la conversazione.");
             e.printStackTrace();
         }
     }
@@ -137,9 +152,12 @@ public class DoctorMessagesController {
         if (selectedPatient == null) {
             return;
         }
+
         try {
-        messageDAO.markAsRead(selectedPatient.getCodiceFiscale(), diabetologistId, "DIABETOLOGO");
+            messageDAO.markAsRead(selectedPatient.getCodiceFiscale(), diabetologistId, "DIABETOLOGO");
         } catch (Exception e) {
+            ErrorDialog.show("Errore marcatura messaggi",
+                    "Impossibile marcare i messaggi come letti.");
             e.printStackTrace();
         }
     }
@@ -147,12 +165,17 @@ public class DoctorMessagesController {
     @FXML
     private void handleSend() {
         if (selectedPatient == null) {
+            ErrorDialog.show("Nessun paziente selezionato",
+                    "Seleziona un paziente prima di inviare un messaggio.");
             return;
         }
+
         String text = messageInput.getText() != null ? messageInput.getText().trim() : "";
         if (text.isEmpty()) {
+            ErrorDialog.show("Messaggio vuoto", "Inserisci un messaggio prima di inviare.");
             return;
         }
+
         try {
             Message m = new Message();
             m.setFkPatient(selectedPatient.getCodiceFiscale());
@@ -160,12 +183,14 @@ public class DoctorMessagesController {
             m.setSenderRole("DIABETOLOGO");
             m.setContent(text);
             m.setSentAt(LocalDateTime.now());
-            messageDAO.sendMessage(m);
 
+            messageDAO.sendMessage(m);
             messageInput.clear();
             loadMessages();
-            loadConversations();
+
         } catch (Exception e) {
+            ErrorDialog.show("Errore di invio",
+                    "Impossibile inviare il messaggio. Riprova.");
             e.printStackTrace();
         }
     }
@@ -183,6 +208,7 @@ public class DoctorMessagesController {
             @Override
             protected void updateItem(Message msg, boolean empty) {
                 super.updateItem(msg, empty);
+
                 if (empty || msg == null) {
                     setGraphic(null);
                     setText(null);
@@ -225,6 +251,7 @@ public class DoctorMessagesController {
                 if (isMe) {
                     time.getStyleClass().add("message-time-me");
                 }
+
                 meta.getChildren().add(time);
 
                 if (isMe && msg.isRead()) {
@@ -236,8 +263,8 @@ public class DoctorMessagesController {
                 bubble.getChildren().addAll(content, meta);
                 row.getChildren().add(bubble);
                 HBox.setMargin(bubble, new Insets(2, 8, 2, 8));
-                wrapper.getChildren().add(row);
 
+                wrapper.getChildren().add(row);
                 setGraphic(wrapper);
                 setText(null);
             }
@@ -249,39 +276,55 @@ public class DoctorMessagesController {
             @Override
             protected void updateItem(ConversationItem item, boolean empty) {
                 super.updateItem(item, empty);
+
                 if (empty || item == null) {
                     setGraphic(null);
                     setText(null);
                     return;
                 }
 
+                HBox root = new HBox(12);
+                root.setPadding(new Insets(8));
+                root.setStyle("-fx-background-color: white; -fx-border-color: #e5e7eb; -fx-border-width: 0 0 1 0;");
+
                 VBox textBox = new VBox(2);
-                Label name = new Label(item.patient.getNome() + " " + item.patient.getCognome());
-                name.getStyleClass().add("thread-title");
 
-                String preview = item.lastMessage != null ? item.lastMessage.getContent() : "Nessun messaggio";
-                Label last = new Label(preview);
-                last.getStyleClass().add("thread-preview");
-                last.setMaxWidth(220);
-                last.setTextOverrun(OverrunStyle.ELLIPSIS);
+                Label nameLabel = new Label(item.patient.getNome() + " " + item.patient.getCognome());
+                nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
 
-                textBox.getChildren().addAll(name, last);
+                Label lastMsgLabel = new Label();
+                if (item.lastMessage != null) {
+                    String preview = item.lastMessage.getContent().length() > 40
+                            ? item.lastMessage.getContent().substring(0, 40) + "..."
+                            : item.lastMessage.getContent();
+                    lastMsgLabel.setText(preview);
+                } else {
+                    lastMsgLabel.setText("Nessun messaggio");
+                }
+                lastMsgLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
+                lastMsgLabel.setWrapText(true);
 
-                HBox root = new HBox(8);
-                root.getStyleClass().add("message-thread");
-                root.setAlignment(Pos.CENTER_LEFT);
+                textBox.getChildren().addAll(nameLabel, lastMsgLabel);
 
                 Region spacer = new Region();
                 HBox.setHgrow(spacer, Priority.ALWAYS);
 
-                root.getChildren().addAll(textBox, spacer);
+                VBox sideBox = new VBox(4);
+                sideBox.setAlignment(Pos.TOP_RIGHT);
 
                 if (item.unreadCount > 0) {
-                    Label badge = new Label(String.valueOf(item.unreadCount));
-                    badge.getStyleClass().add("unread-badge");
-                    root.getChildren().add(badge);
+                    Label unreadLabel = new Label(String.valueOf(item.unreadCount));
+                    unreadLabel.setStyle(
+                            "-fx-background-color: #ef4444; " +
+                                    "-fx-text-fill: white; " +
+                                    "-fx-font-weight: bold; " +
+                                    "-fx-padding: 4 8; " +
+                                    "-fx-background-radius: 12;"
+                    );
+                    sideBox.getChildren().add(unreadLabel);
                 }
 
+                root.getChildren().addAll(textBox, spacer, sideBox);
                 setGraphic(root);
                 setText(null);
             }
@@ -299,14 +342,17 @@ public class DoctorMessagesController {
         if (index <= 0) {
             return true;
         }
+
         List<Message> items = getMessages();
         if (index >= items.size()) {
             return false;
         }
+
         Message prev = items.get(index - 1);
         if (prev == null || prev.getSentAt() == null || msg.getSentAt() == null) {
             return true;
         }
+
         LocalDate prevDate = prev.getSentAt().toLocalDate();
         LocalDate curDate = msg.getSentAt().toLocalDate();
         return !prevDate.equals(curDate);
@@ -320,9 +366,11 @@ public class DoctorMessagesController {
         if (sentAt == null) {
             return "";
         }
+
         LocalDate date = sentAt.toLocalDate();
         LocalDate today = LocalDate.now();
         long diff = ChronoUnit.DAYS.between(date, today);
+
         if (diff == 0) {
             return "Oggi";
         }
@@ -332,12 +380,13 @@ public class DoctorMessagesController {
         return dateFormatter.format(date);
     }
 
-    private static class ConversationItem {
-        private final Paziente patient;
-        private final Message lastMessage;
-        private int unreadCount;
+    // Inner class per item conversazione
+    public static class ConversationItem {
+        public Paziente patient;
+        public Message lastMessage;
+        public int unreadCount;
 
-        private ConversationItem(Paziente patient, Message lastMessage, int unreadCount) {
+        public ConversationItem(Paziente patient, Message lastMessage, int unreadCount) {
             this.patient = patient;
             this.lastMessage = lastMessage;
             this.unreadCount = unreadCount;

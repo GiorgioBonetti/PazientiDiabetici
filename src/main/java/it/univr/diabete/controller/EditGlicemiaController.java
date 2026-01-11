@@ -3,8 +3,11 @@ package it.univr.diabete.controller;
 import it.univr.diabete.dao.GlicemiaDAO;
 import it.univr.diabete.dao.impl.GlicemiaDAOImpl;
 import it.univr.diabete.model.Glicemia;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.time.format.DateTimeFormatter;
@@ -37,8 +40,11 @@ public class EditGlicemiaController {
     @FXML
     private void handleSave() {
         try {
+            // --- VALIDAZIONI ---
             String text = valueField.getText();
-            if (text == null || text.isBlank()) {
+            if (text == null || text.trim().isEmpty()) {
+                ErrorDialog.show("Valore mancante",
+                        "Inserisci il valore della glicemia.");
                 return;
             }
 
@@ -46,23 +52,31 @@ public class EditGlicemiaController {
             try {
                 valore = Integer.parseInt(text.trim());
             } catch (NumberFormatException ex) {
-                // valore non numerico
+                ErrorDialog.show("Valore non valido",
+                        "Inserisci un numero intero valido.");
                 return;
             }
-            glicemia.setValore(valore);
 
-            // opzionale: limiti come nello spinner (40–400)
-            if (glicemia.getValore() < 40 || glicemia.getValore() > 400) {
+            if (valore < 40 || valore > 400) {
+                ErrorDialog.show("Valore fuori range",
+                        "Il valore della glicemia deve essere tra 40 e 400 mg/dL.");
                 return;
             }
+
+            glicemia.setValore(valore);
 
             // --- valida momento ---
             String momento = momentChoice.getValue();
             if (momento == null || momento.isBlank()) {
+                ErrorDialog.show("Momento mancante",
+                        "Seleziona il momento della giornata.");
                 return;
             }
 
-            glicemiaDAO.update(glicemia);  // UPDATE nel DB
+            glicemia.setParteGiorno(momento);
+
+            // --- SALVATAGGIO ---
+            glicemiaDAO.update(glicemia);
 
             if (refreshCallback != null)
                 refreshCallback.run();
@@ -70,6 +84,8 @@ public class EditGlicemiaController {
             close();
 
         } catch (Exception e) {
+            ErrorDialog.show("Errore di salvataggio",
+                    "Impossibile aggiornare la misurazione. Riprova.");
             e.printStackTrace();
         }
     }

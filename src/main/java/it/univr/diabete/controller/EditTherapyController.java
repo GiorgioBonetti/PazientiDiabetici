@@ -2,6 +2,7 @@ package it.univr.diabete.controller;
 
 import it.univr.diabete.database.Database;
 import it.univr.diabete.model.Terapia;
+import it.univr.diabete.ui.ErrorDialog;  // ← IMPORT Aggiunto
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,14 +24,10 @@ public class EditTherapyController {
 
     @FXML private DatePicker dataInizioPicker;
     @FXML private DatePicker dataFinePicker;
-
     @FXML private TextField searchFarmacoField;
     @FXML private ListView<String> farmacoListView;
-
     @FXML private HBox selectedFarmaciPane;
     @FXML private ScrollPane selectedFarmaciScroll;
-
-    @FXML private Label errorLabel;
     @FXML private TextField nomeTerapiaField;
 
     private Terapia terapiaOriginale;
@@ -53,15 +50,10 @@ public class EditTherapyController {
     }
 
     private final ObservableList<FarmacoInTerapia> selectedFarmaci = FXCollections.observableArrayList();
-
-    // elenco farmaci rimossi (per fare delete)
     private final List<FarmacoInTerapia> farmaciDaCancellare = new ArrayList<>();
 
     @FXML
     private void initialize() {
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
-
         farmacoListView.setItems(allFarmaci);
         farmacoListView.setCellFactory(lv -> createFarmacoCardCell());
 
@@ -89,36 +81,44 @@ public class EditTherapyController {
 
         dataInizioPicker.setValue(terapia.getDataInizio());
         dataFinePicker.setValue(terapia.getDataFine());
-
-        // ✅ nome terapia in edit
         nomeTerapiaField.setText(terapia.getNome() != null ? terapia.getNome() : "");
 
-        // ✅ carico farmaci della terapia (senza versione)
         loadFarmaciDellaTerapia(terapia.getId());
     }
 
     @FXML
     private void handleSave() {
-        hideError();
-
+        // --- VALIDAZIONI ---
         LocalDate dataInizio = dataInizioPicker.getValue();
-        LocalDate dataFine   = dataFinePicker.getValue();
+        if (dataInizio == null) {
+            ErrorDialog.show("Data inizio mancante", "Seleziona la data di inizio della terapia.");
+            return;
+        }
 
-        if (dataInizio == null) { showError("Seleziona una data di inizio."); return; }
-        if (dataFine != null && dataFine.isBefore(dataInizio)) { showError("La data di fine non può essere precedente."); return; }
+        LocalDate dataFine = dataFinePicker.getValue();
+        if (dataFine != null && dataFine.isBefore(dataInizio)) {
+            ErrorDialog.show("Date non valide",
+                    "La data di fine non può essere precedente alla data di inizio.");
+            return;
+        }
 
         String nomeTerapia = (nomeTerapiaField.getText() != null) ? nomeTerapiaField.getText().trim() : "";
-        if (nomeTerapia.isEmpty()) { showError("Inserisci il nome della terapia."); return; }
+        if (nomeTerapia.isEmpty()) {
+            ErrorDialog.show("Nome mancante", "Inserisci il nome della terapia.");
+            return;
+        }
 
-        if (selectedFarmaci.isEmpty()) { showError("Aggiungi almeno un farmaco alla terapia."); return; }
+        if (selectedFarmaci.isEmpty()) {
+            ErrorDialog.show("Farmaci mancanti", "Aggiungi almeno un farmaco alla terapia.");
+            return;
+        }
 
+        // --- SALVATAGGIO ---
         try (Connection conn = Database.getConnection()) {
             conn.setAutoCommit(false);
 
-            // ✅ update terapia (nome + date + ultimaModifica)
             updateTerapia(conn, terapiaOriginale.getId(), nomeTerapia, dataInizio, dataFine);
 
-            // ✅ upsert farmaci (update se esiste, altrimenti insert)
             for (FarmacoInTerapia fit : selectedFarmaci) {
                 if (existsFarmacoTerapia(conn, terapiaOriginale.getId(), fit.fkFarmaco)) {
                     updateFarmacoTerapia(conn, terapiaOriginale.getId(), fit.fkFarmaco,
@@ -129,14 +129,12 @@ public class EditTherapyController {
                 }
             }
 
-            // ✅ delete farmaci rimossi (e assunzioni collegate se presenti)
             for (FarmacoInTerapia del : farmaciDaCancellare) {
                 deleteFarmacoTerapiaAndAssunzioni(conn, terapiaOriginale.getId(), del.fkFarmaco);
             }
 
             conn.commit();
 
-            // aggiorna oggetto in memoria (utile per UI)
             terapiaOriginale.setNome(nomeTerapia);
             terapiaOriginale.setDataInizio(dataInizio);
             terapiaOriginale.setDataFine(dataFine);
@@ -145,8 +143,9 @@ public class EditTherapyController {
             closeWindow();
 
         } catch (Exception e) {
+            ErrorDialog.show("Errore di salvataggio",
+                    "Impossibile salvare le modifiche alla terapia. Riprova.");
             e.printStackTrace();
-            showError("Errore durante il salvataggio delle modifiche.");
         }
     }
 
@@ -160,17 +159,6 @@ public class EditTherapyController {
         stage.close();
     }
 
-    private void showError(String msg) {
-        errorLabel.setText(msg);
-        errorLabel.setVisible(true);
-        errorLabel.setManaged(true);
-    }
-
-    private void hideError() {
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
-    }
-
     private void loadFarmaciFromDb() {
         allFarmaci.clear();
         String sql = "SELECT nome FROM Farmaco ORDER BY nome";
@@ -180,6 +168,8 @@ public class EditTherapyController {
 
             while (rs.next()) allFarmaci.add(rs.getString("nome"));
         } catch (SQLException e) {
+            ErrorDialog.show("Errore caricamento farmaci",
+                    "Impossibile caricare la lista dei farmaci.");
             e.printStackTrace();
         }
     }
@@ -246,7 +236,6 @@ public class EditTherapyController {
         };
     }
 
-    // ✅ senza versione
     private void loadFarmaciDellaTerapia(int idTerapia) {
         selectedFarmaci.clear();
         farmaciDaCancellare.clear();
@@ -274,6 +263,8 @@ public class EditTherapyController {
                 }
             }
         } catch (SQLException e) {
+            ErrorDialog.show("Errore caricamento farmaci",
+                    "Impossibile caricare i farmaci della terapia.");
             e.printStackTrace();
         }
     }
@@ -302,7 +293,6 @@ public class EditTherapyController {
             try (Connection conn = Database.getConnection()) {
                 int idFarmaco = ensureFarmaco(conn, nomeFarmaco);
 
-                // se già presente, sovrascrivo dosi
                 FarmacoInTerapia esistente = null;
                 for (FarmacoInTerapia f : selectedFarmaci) {
                     if (f.fkFarmaco == idFarmaco) { esistente = f; break; }
@@ -313,6 +303,8 @@ public class EditTherapyController {
             }
 
         } catch (Exception e) {
+            ErrorDialog.show("Errore selezione farmaco",
+                    "Impossibile configurare il farmaco selezionato.");
             e.printStackTrace();
         }
     }
@@ -349,7 +341,7 @@ public class EditTherapyController {
             }
         }
 
-        String insertSql = "INSERT INTO Farmaco (nome, marca) VALUES (?, NULL, 0)";
+        String insertSql = "INSERT INTO Farmaco (nome, marca) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, nome);
             ps.executeUpdate();
@@ -361,7 +353,6 @@ public class EditTherapyController {
         throw new SQLException("Impossibile creare/recuperare il farmaco.");
     }
 
-    // ✅ aggiorna anche nome + ultimaModifica
     private void updateTerapia(Connection conn, int idTerapia, String nome, LocalDate dataInizio, LocalDate dataFine) throws SQLException {
         String sql = """
             UPDATE Terapia
@@ -427,8 +418,6 @@ public class EditTherapyController {
     }
 
     private void deleteFarmacoTerapiaAndAssunzioni(Connection conn, int fkTerapia, int fkFarmaco) throws SQLException {
-        // Se vuoi cancellare anche le assunzioni collegate:
-        // (se la tua tabella si chiama AssunzioneTerapia invece di Assunzione, cambia qui)
         String sqlAss = "DELETE FROM Assunzione WHERE fkTerapia = ? AND fkFarmaco = ?";
         try (PreparedStatement ps = conn.prepareStatement(sqlAss)) {
             ps.setInt(1, fkTerapia);

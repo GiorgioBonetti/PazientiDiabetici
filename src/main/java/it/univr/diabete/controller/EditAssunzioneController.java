@@ -3,8 +3,11 @@ package it.univr.diabete.controller;
 import it.univr.diabete.dao.AssunzioneDAO;
 import it.univr.diabete.dao.impl.AssunzioneDAOImpl;
 import it.univr.diabete.model.Assunzione;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
@@ -37,21 +40,63 @@ public class EditAssunzioneController {
     @FXML
     private void handleSave() {
         try {
-            int quantita = Integer.parseInt(quantitaField.getText());
+            // --- VALIDAZIONI ---
+            String quantitaText = quantitaField.getText() != null ? quantitaField.getText().trim() : "";
+            if (quantitaText.isEmpty()) {
+                ErrorDialog.show("Quantità mancante",
+                        "Inserisci la quantità assunta.");
+                return;
+            }
 
-            LocalDate d = dataPicker.getValue();
-            LocalTime t = LocalTime.parse(oraField.getText());
+            int quantita;
+            try {
+                quantita = Integer.parseInt(quantitaText);
+                if (quantita <= 0) {
+                    ErrorDialog.show("Quantità non valida",
+                            "La quantità assunta deve essere > 0.");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                ErrorDialog.show("Quantità non valida",
+                        "Inserisci un numero intero valido per la quantità.");
+                return;
+            }
 
+            LocalDate data = dataPicker.getValue();
+            if (data == null) {
+                ErrorDialog.show("Data mancante",
+                        "Seleziona la data dell'assunzione.");
+                return;
+            }
+
+            String oraText = oraField.getText() != null ? oraField.getText().trim() : "";
+            if (oraText.isEmpty()) {
+                ErrorDialog.show("Ora mancante",
+                        "Inserisci l'orario dell'assunzione.");
+                return;
+            }
+
+            LocalTime ora;
+            try {
+                ora = LocalTime.parse(oraText);
+            } catch (Exception e) {
+                ErrorDialog.show("Ora non valida",
+                        "Inserisci un orario valido (es: 14:30).");
+                return;
+            }
+
+            // --- SALVATAGGIO ---
             assunzione.setQuantitaAssunta(quantita);
-            assunzione.setDateStamp(LocalDateTime.of(d, t));
+            assunzione.setDateStamp(LocalDateTime.of(data, ora));
 
             dao.update(assunzione);
 
             if (reloadCallback != null) reloadCallback.run();
-
             close();
 
         } catch (Exception e) {
+            ErrorDialog.show("Errore di salvataggio",
+                    "Impossibile aggiornare l'assunzione. Riprova.");
             e.printStackTrace();
         }
     }
