@@ -65,7 +65,6 @@ public class PatientDashboardController {
     @FXML
     private TableColumn<Glicemia, String> colDashMoment;
 
-    // checkbox "Oggi"
     @FXML
     private CheckBox chkMattino;
 
