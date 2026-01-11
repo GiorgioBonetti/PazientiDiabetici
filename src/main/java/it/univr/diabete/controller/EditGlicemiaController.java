@@ -37,8 +37,30 @@ public class EditGlicemiaController {
     @FXML
     private void handleSave() {
         try {
-            glicemia.setValore(Integer.parseInt(valueField.getText()));
-            glicemia.setParteGiorno(momentChoice.getValue());
+            String text = valueField.getText();
+            if (text == null || text.isBlank()) {
+                return;
+            }
+
+            int valore;
+            try {
+                valore = Integer.parseInt(text.trim());
+            } catch (NumberFormatException ex) {
+                // valore non numerico
+                return;
+            }
+            glicemia.setValore(valore);
+
+            // opzionale: limiti come nello spinner (40–400)
+            if (glicemia.getValore() < 40 || glicemia.getValore() > 400) {
+                return;
+            }
+
+            // --- valida momento ---
+            String momento = momentChoice.getValue();
+            if (momento == null || momento.isBlank()) {
+                return;
+            }
 
             glicemiaDAO.update(glicemia);  // UPDATE nel DB
 
