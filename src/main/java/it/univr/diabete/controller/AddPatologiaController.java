@@ -3,9 +3,8 @@ package it.univr.diabete.controller;
 import it.univr.diabete.dao.PatologiaDAO;
 import it.univr.diabete.dao.impl.PatologiaDAOImpl;
 import it.univr.diabete.model.Patologia;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -31,13 +30,20 @@ public class AddPatologiaController {
     private void handleSave() {
         String nome = nomeField.getText() != null ? nomeField.getText().trim() : "";
         if (nome.isEmpty()) {
-            showError("Inserisci il nome della patologia.");
+            ErrorDialog.show("Nome mancante", "Inserisci il nome della patologia.");
             return;
         }
 
         try {
             if (patologiaDAO.existsByPazienteAndNome(fkPaziente, nome)) {
-                showError("Patologia gia' presente per questo paziente.");
+                ErrorDialog.show("Patologia duplicata",
+                        "Questa patologia è già presente per questo paziente.");
+                return;
+            }
+
+            if (dataInizioPicker.getValue() == null) {
+                ErrorDialog.show("Data mancante",
+                        "Seleziona la data di inizio della patologia.");
                 return;
             }
 
@@ -52,6 +58,8 @@ public class AddPatologiaController {
             }
             close();
         } catch (Exception e) {
+            ErrorDialog.show("Errore di salvataggio",
+                    "Impossibile salvare la patologia. Riprova.");
             e.printStackTrace();
         }
     }
@@ -64,11 +72,5 @@ public class AddPatologiaController {
     private void close() {
         Stage stage = (Stage) nomeField.getScene().getWindow();
         stage.close();
-    }
-
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, message, ButtonType.OK);
-        alert.setHeaderText("Dati incompleti");
-        alert.showAndWait();
     }
 }

@@ -3,6 +3,7 @@ package it.univr.diabete.controller;
 import it.univr.diabete.dao.DiabetologoDAO;
 import it.univr.diabete.dao.impl.DiabetologoDAOImpl;
 import it.univr.diabete.model.Diabetologo;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -54,13 +55,50 @@ public class AddDoctorController {
     @FXML
     private void handleSave() {
         try {
+            // --- VALIDAZIONI ---
+            if (nomeField.getText() == null || nomeField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Nome mancante", "Inserisci il nome del diabetologo.");
+                return;
+            }
+
+            if (cognomeField.getText() == null || cognomeField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Cognome mancante", "Inserisci il cognome del diabetologo.");
+                return;
+            }
+
+            if (emailField.getText() == null || emailField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Email mancante", "Inserisci l'email del diabetologo.");
+                return;
+            }
+
+            if (telefonoField.getText() == null || telefonoField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Telefono mancante", "Inserisci il numero di telefono.");
+                return;
+            }
+
+            if (sessoChoice.getValue() == null) {
+                ErrorDialog.show("Sesso non selezionato", "Seleziona il sesso del diabetologo.");
+                return;
+            }
+
+            if (laureaField.getText() == null || laureaField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Laurea mancante", "Inserisci l'università di laurea.");
+                return;
+            }
+
+            if (passwordField.getText() == null || passwordField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Password mancante", "Inserisci la password.");
+                return;
+            }
+
+            // --- SALVATAGGIO ---
             Diabetologo d = new Diabetologo();
-            d.setNome(nomeField.getText());
-            d.setCognome(cognomeField.getText());
-            d.setEmail(emailField.getText());
-            d.setNumeroTelefono(telefonoField.getText());
+            d.setNome(nomeField.getText().trim());
+            d.setCognome(cognomeField.getText().trim());
+            d.setEmail(emailField.getText().trim());
+            d.setNumeroTelefono(telefonoField.getText().trim());
             d.setSesso(sessoChoice.getValue());
-            d.setLaurea(laureaField.getText());
+            d.setLaurea(laureaField.getText().trim());
             d.setPassword(passwordField.getText());
 
             if (editMode) {
@@ -74,6 +112,8 @@ public class AddDoctorController {
             }
             close();
         } catch (Exception e) {
+            ErrorDialog.show("Errore di salvataggio",
+                    "Impossibile salvare il diabetologo. Riprova.");
             e.printStackTrace();
         }
     }

@@ -6,16 +6,15 @@ import it.univr.diabete.dao.impl.DiabetologoDAOImpl;
 import it.univr.diabete.dao.impl.PazienteDAOImpl;
 import it.univr.diabete.model.Diabetologo;
 import it.univr.diabete.model.Paziente;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -38,12 +37,11 @@ public class AddPatientController {
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
     private final DiabetologoDAO diabetologoDAO = new DiabetologoDAOImpl();
 
-    private String diabetologoId;           // viene passato dal controller del medico
-    private Runnable onSavedCallback;    // ricarica lista pazienti
+    private String diabetologoId;
+    private Runnable onSavedCallback;
     private boolean adminMode;
     private boolean editMode;
 
-    // --- inizializzazione dati da fuori ---
     public void initData(String diabetologoId, Runnable callback) {
         this.diabetologoId = diabetologoId;
         this.onSavedCallback = callback;
@@ -95,26 +93,72 @@ public class AddPatientController {
         }
     }
 
-    // --- SALVATAGGIO NUOVO PAZIENTE ---
     @FXML
     private void handleSave() {
         try {
-            Paziente p = new Paziente();
+            // --- VALIDAZIONI ---
+            if (nomeField.getText() == null || nomeField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Nome mancante", "Inserisci il nome del paziente.");
+                return;
+            }
 
-            p.setNome(nomeField.getText());
-            p.setCognome(cognomeField.getText());
-            p.setEmail(emailField.getText());
-            p.setNumeroTelefono(telefonoField.getText());
-            p.setCodiceFiscale(cfField.getText());
-            p.setSesso(sessoChoice.getValue());
-            p.setDataNascita(dataNascitaPicker.getValue());
-            p.setPassword(passwordField.getText());
+            if (cognomeField.getText() == null || cognomeField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Cognome mancante", "Inserisci il cognome del paziente.");
+                return;
+            }
+
+            if (emailField.getText() == null || emailField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Email mancante", "Inserisci l'email del paziente.");
+                return;
+            }
+
+            if (telefonoField.getText() == null || telefonoField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Telefono mancante", "Inserisci il numero di telefono.");
+                return;
+            }
+
+            if (cfField.getText() == null || cfField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Codice fiscale mancante", "Inserisci il codice fiscale.");
+                return;
+            }
+
+            if (sessoChoice.getValue() == null) {
+                ErrorDialog.show("Sesso non selezionato", "Seleziona il sesso del paziente.");
+                return;
+            }
+
+            if (dataNascitaPicker.getValue() == null) {
+                ErrorDialog.show("Data di nascita mancante", "Seleziona la data di nascita.");
+                return;
+            }
+
+            if (passwordField.getText() == null || passwordField.getText().trim().isEmpty()) {
+                ErrorDialog.show("Password mancante", "Inserisci la password.");
+                return;
+            }
+
             if (adminMode) {
                 Diabetologo selected = diabetologoCombo.getValue();
                 if (selected == null) {
-                    showError("Seleziona un diabetologo.");
+                    ErrorDialog.show("Diabetologo non selezionato", "Seleziona un diabetologo.");
                     return;
                 }
+            }
+
+            // --- SALVATAGGIO ---
+            Paziente p = new Paziente();
+
+            p.setNome(nomeField.getText().trim());
+            p.setCognome(cognomeField.getText().trim());
+            p.setEmail(emailField.getText().trim());
+            p.setNumeroTelefono(telefonoField.getText().trim());
+            p.setCodiceFiscale(cfField.getText().trim());
+            p.setSesso(sessoChoice.getValue());
+            p.setDataNascita(dataNascitaPicker.getValue());
+            p.setPassword(passwordField.getText());
+
+            if (adminMode) {
+                Diabetologo selected = diabetologoCombo.getValue();
                 p.setFkDiabetologo(selected.getEmail());
             } else {
                 p.setFkDiabetologo(diabetologoId);
@@ -123,7 +167,7 @@ public class AddPatientController {
             if (editMode) {
                 pazienteDAO.update(p);
             } else {
-                pazienteDAO.insert(p);  // 🔥 CREA IL PAZIENTE
+                pazienteDAO.insert(p);
             }
 
             if (onSavedCallback != null)
@@ -131,6 +175,8 @@ public class AddPatientController {
             close();
 
         } catch (Exception e) {
+            ErrorDialog.show("Errore di salvataggio",
+                    "Impossibile salvare il paziente. Riprova.");
             e.printStackTrace();
         }
     }
@@ -179,14 +225,10 @@ public class AddPatientController {
                 }
             }
         } catch (Exception e) {
+            ErrorDialog.show("Errore caricamento diabetologi",
+                    "Impossibile caricare la lista dei diabetologi.");
             e.printStackTrace();
         }
-    }
-
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, message, ButtonType.OK);
-        alert.setHeaderText("Dati incompleti");
-        alert.showAndWait();
     }
 
     private void setDialogTexts(String title, String subtitle, String actionText) {

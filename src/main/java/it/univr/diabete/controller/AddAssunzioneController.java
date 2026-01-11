@@ -3,6 +3,7 @@ package it.univr.diabete.controller;
 import it.univr.diabete.dao.AssunzioneDAO;
 import it.univr.diabete.dao.impl.AssunzioneDAOImpl;
 import it.univr.diabete.model.Assunzione;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -39,10 +40,18 @@ public class AddAssunzioneController {
         try {
             int q = Integer.parseInt(quantitaField.getText());
             LocalDate d = dateField.getValue();
-            if (d == null) return;
+            if (d == null) {
+                ErrorDialog.show("Data non valida",
+                        "Seleziona una data valida per l'assunzione.");
+                return;
+            }
 
             // controllo valore assunzione
-            if (q <= 0) return;
+            if (q <= 0) {
+                ErrorDialog.show("Valore non valido",
+                        "Inserisci una quantità positiva per l'assunzione.");
+                return;
+            }
 
             Assunzione a = new Assunzione();
             a.setQuantitaAssunta(q);

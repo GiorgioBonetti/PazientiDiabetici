@@ -3,9 +3,8 @@ package it.univr.diabete.controller;
 import it.univr.diabete.dao.SintomoDAO;
 import it.univr.diabete.dao.impl.SintomoDAOImpl;
 import it.univr.diabete.model.Sintomo;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -34,16 +33,27 @@ public class AddSymptomController {
         String descrizione = descrizioneField.getText() != null ? descrizioneField.getText().trim() : "";
         String intensitaText = intensitaField.getText() != null ? intensitaField.getText().trim() : "";
 
-        if (descrizione.isEmpty() || intensitaText.isEmpty()) {
-            showError("Compila descrizione e intensita.");
+        if (descrizione.isEmpty()) {
+            ErrorDialog.show("Descrizione mancante", "Inserisci la descrizione del sintomo.");
+            return;
+        }
+
+        if (intensitaText.isEmpty()) {
+            ErrorDialog.show("Intensità mancante", "Inserisci l'intensità del sintomo.");
             return;
         }
 
         int intensita;
         try {
             intensita = Integer.parseInt(intensitaText);
+            if (intensita < 1 || intensita > 10) {
+                ErrorDialog.show("Intensità non valida",
+                        "L'intensità deve essere un numero tra 1 e 10.");
+                return;
+            }
         } catch (NumberFormatException e) {
-            showError("Intensita deve essere un numero.");
+            ErrorDialog.show("Intensità non valida",
+                    "L'intensità deve essere un numero valido (1-10).");
             return;
         }
 
@@ -64,6 +74,8 @@ public class AddSymptomController {
             }
             close();
         } catch (Exception e) {
+            ErrorDialog.show("Errore di salvataggio",
+                    "Impossibile salvare il sintomo. Riprova.");
             e.printStackTrace();
         }
     }
@@ -76,11 +88,5 @@ public class AddSymptomController {
     private void close() {
         Stage stage = (Stage) descrizioneField.getScene().getWindow();
         stage.close();
-    }
-
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING, message, ButtonType.OK);
-        alert.setHeaderText("Dati incompleti");
-        alert.showAndWait();
     }
 }
