@@ -8,6 +8,7 @@ import it.univr.diabete.ui.ConfirmDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -116,17 +117,17 @@ public class AdminPatientsController {
                 Region spacer = new Region();
                 HBox.setHgrow(spacer, Priority.ALWAYS);
                 root.getChildren().addAll(textBox, spacer, actions);
-                root.setOnMouseClicked(e -> {
-                    Paziente p = getItem();
-                    if (p != null) {
-                        openEditPatient(p);
-                    }
-                });
             }
 
             @Override
             protected void updateItem(Paziente p, boolean empty) {
                 super.updateItem(p, empty);
+
+                // Pulisci gli event listener PRIMA di aggiornare
+                deleteBtn.setOnAction(null);
+                deleteBtn.setOnMouseClicked(null);
+                root.setOnMouseClicked(null);
+
                 if (empty || p == null) {
                     setGraphic(null);
                     setText(null);
@@ -135,18 +136,28 @@ public class AdminPatientsController {
                     String email = p.getEmail() != null ? p.getEmail() : "—";
                     String cf = p.getCodiceFiscale() != null ? p.getCodiceFiscale() : "—";
                     String fk = p.getFkDiabetologo() != null ? p.getFkDiabetologo() : "—";
-                    metaLbl.setText(email + "  •  CF: " + cf + "  •  " + fk);
+                    metaLbl.setText(email + "  •  CF: " + cf + "  •  Diabetologo con mail: " + fk);
+
+                    // Imposta i listener OGNI VOLTA che aggiorna
                     deleteBtn.setOnAction(e -> {
                         e.consume();
                         deletePatient(p);
                     });
-                    deleteBtn.setOnMouseClicked(e -> e.consume());
+                    deleteBtn.setOnMouseClicked(Event::consume);
+                    root.setOnMouseClicked(e -> {
+                        Paziente paziente = getItem();
+                        if (paziente != null) {
+                            openEditPatient(paziente);
+                        }
+                    });
+
                     setGraphic(root);
                     setText(null);
                 }
             }
         };
     }
+
 
     private void openEditPatient(Paziente paziente) {
         try {
