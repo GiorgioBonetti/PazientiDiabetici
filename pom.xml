@@ -11,7 +11,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <!-- Use Java 17 for JavaFX -->
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -60,10 +59,15 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>it.univr.diabete.MainApp</mainClass>
+                            <options>
+                                <option>--enable-native-access=javafx.graphics,javafx.controls</option>
+                                <option>--sun-misc-unsafe-memory-access=allow</option>
+                            </options>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 

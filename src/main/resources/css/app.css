@@ -1119,7 +1119,7 @@
 }
 
 .chip-scroll .scroll-bar .thumb {
-    -fx-background-color: trasparent;      /* se vuoi, altrimenti metti transparent */
+    -fx-background-color: transparent;
 
 }
 

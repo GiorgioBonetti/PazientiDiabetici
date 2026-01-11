@@ -671,9 +671,19 @@ public class PatientTherapyController {
             Parent root = loader.load();
 
             ConfirmDialogController ctrl = loader.getController();
+
+            String dateStr = "data non disponibile";
+            String nomeFarmaco = "";
+            if (a != null && a.getDateStamp() != null) {
+                dateStr = df.format(a.getDateStamp());
+            }
+            if (farmacoTerapiaCorrente != null && farmacoTerapiaCorrente.getFarmaco() != null) {
+                nomeFarmaco = farmacoTerapiaCorrente.getFarmaco().getNome();
+            }
+
             ctrl.setTexts(
                     "Conferma eliminazione",
-                    "Eliminare l’assunzione selezionata?\n"
+                    "Eliminare l’assunzione del farmaco " + nomeFarmaco + " aggiunto il " + dateStr + "?\n"
             );
 
             Stage dialog = new Stage();
@@ -694,3 +704,4 @@ public class PatientTherapyController {
         }
     }
 }
+
