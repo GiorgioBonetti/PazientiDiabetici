@@ -21,7 +21,6 @@ import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
@@ -53,6 +52,38 @@ public class DoctorMessagesController {
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    private boolean autoOpenedOnce = false;
+
+    /**
+     * Quando apriamo una conversazione automaticamente, vogliamo mantenere il badge/unread nella colonna
+     * finché l'utente non cambia conversazione (o esce dalla pagina). Questo flag tiene traccia del fatto
+     * che la conversazione corrente ha un "unread UI" da pulire al prossimo cambio.
+     */
+    private boolean pendingClearUnreadOnConversationChange = false;
+
+    /**
+     * In UI, dopo l'auto-open vogliamo mantenere il badge finché l'utente non fa una delle azioni che
+     * consideriamo "ho visto":
+     * - cambia conversazione
+     * - riclicca la conversazione corrente a sinistra
+     * - invia un messaggio di risposta
+     */
+    private void clearPendingUnreadBadgeIfAny() {
+        if (selectedPatient == null || !pendingClearUnreadOnConversationChange) {
+            return;
+        }
+
+        String prevId = selectedPatient.getCodiceFiscale();
+        for (ConversationItem ci : conversations) {
+            if (ci.patient != null && prevId.equals(ci.patient.getCodiceFiscale())) {
+                ci.unreadCount = 0;
+                break;
+            }
+        }
+        pendingClearUnreadOnConversationChange = false;
+        conversationsListView.refresh();
+    }
+
     public void setDoctorContext(String doctorId) {
         this.diabetologistId = doctorId;
         loadConversations();
@@ -62,6 +93,18 @@ public class DoctorMessagesController {
     private void initialize() {
         conversationsListView.setItems(conversations);
         conversationsListView.setCellFactory(lv -> createConversationCell());
+
+        // Click sulla conversazione corrente: non cambia la selection, quindi il listener non scatta.
+        // In quel caso, se avevamo un badge "in sospeso" dall'auto-open, lo puliamo.
+        conversationsListView.setOnMouseClicked(evt -> {
+            ConversationItem selected = conversationsListView.getSelectionModel().getSelectedItem();
+            if (selected != null && selectedPatient != null
+                    && selected.patient != null
+                    && selectedPatient.getCodiceFiscale().equals(selected.patient.getCodiceFiscale())) {
+                clearPendingUnreadBadgeIfAny();
+            }
+        });
+
         conversationsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
             if (newV != null) {
                 openConversation(newV);
@@ -99,16 +142,60 @@ public class DoctorMessagesController {
                 items.add(new ConversationItem(p, last, unread));
             }
 
+            // Ordina: prima le conversazioni con messaggi, in ordine di ultimo messaggio decrescente;
+            // poi quelle senza messaggi in fondo. Tie-breaker stabile per non "saltare" tra refresh.
+            items.sort((a, b) -> {
+                boolean aHas = a.lastMessage != null && a.lastMessage.getSentAt() != null;
+                boolean bHas = b.lastMessage != null && b.lastMessage.getSentAt() != null;
+
+                if (aHas && bHas) {
+                    int cmp = b.lastMessage.getSentAt().compareTo(a.lastMessage.getSentAt());
+                    if (cmp != 0) return cmp;
+                } else if (aHas) {
+                    return -1;
+                } else if (bHas) {
+                    return 1;
+                }
+
+                // entrambi senza timestamp: ordina per CF per stabilità
+                String aId = a.patient != null ? a.patient.getCodiceFiscale() : "";
+                String bId = b.patient != null ? b.patient.getCodiceFiscale() : "";
+                return aId.compareToIgnoreCase(bId);
+            });
+
             String selectedId = selectedPatient != null ? selectedPatient.getCodiceFiscale() : null;
             conversations.setAll(items);
 
+            // Se l'utente aveva già selezionato un paziente, mantieni la selezione.
             if (selectedId != null) {
                 for (ConversationItem item : items) {
                     if (selectedId.equals(item.patient.getCodiceFiscale())) {
                         conversationsListView.getSelectionModel().select(item);
+                        return;
+                    }
+                }
+            }
+
+            // Al primo caricamento, apri automaticamente la conversazione più recente CON messaggi.
+            // Se non ce ne sono, apri la prima (che sarà una vuota).
+            if (!autoOpenedOnce && !items.isEmpty()) {
+                autoOpenedOnce = true;
+
+                int indexToSelect = -1;
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).lastMessage != null) {
+                        indexToSelect = i;
                         break;
                     }
                 }
+                if (indexToSelect < 0) {
+                    indexToSelect = 0;
+                }
+
+                // Segnala che la prima conversazione viene aperta automaticamente:
+                // manteniamo il badge finché l'utente non cambia conversazione o esce dalla pagina.
+                pendingClearUnreadOnConversationChange = true;
+                conversationsListView.getSelectionModel().select(indexToSelect);
             }
 
         } catch (Exception e) {
@@ -119,12 +206,37 @@ public class DoctorMessagesController {
     }
 
     private void openConversation(ConversationItem item) {
+        // Se l'utente sta cambiando conversazione, ora possiamo rimuovere il badge della chat precedente
+        // (se era stata aperta automaticamente e avevamo deciso di mantenerlo visibile).
+        if (selectedPatient != null && pendingClearUnreadOnConversationChange) {
+            String prevId = selectedPatient.getCodiceFiscale();
+            String newId = item.patient != null ? item.patient.getCodiceFiscale() : null;
+
+            // Pulisci solo se stiamo davvero andando su un'altra conversazione.
+            if (newId != null && !prevId.equals(newId)) {
+                for (ConversationItem ci : conversations) {
+                    if (ci.patient != null && prevId.equals(ci.patient.getCodiceFiscale())) {
+                        ci.unreadCount = 0;
+                        break;
+                    }
+                }
+                pendingClearUnreadOnConversationChange = false;
+            }
+        }
+
         selectedPatient = item.patient;
         chatTitleLabel.setText(selectedPatient.getNome() + " " + selectedPatient.getCognome());
         chatSubtitleLabel.setText(selectedPatient.getEmail() != null ? selectedPatient.getEmail() : "—");
         loadMessages();
         markAsRead();
-        item.unreadCount = 0;
+
+        // Qui NON azzeriamo più subito item.unreadCount.
+        // Lo azzeriamo solo se la chat è stata aperta manualmente (click utente).
+        // Se è stata aperta automaticamente, lo lasciamo visibile finché l'utente non cambia conversazione.
+        if (!pendingClearUnreadOnConversationChange) {
+            item.unreadCount = 0;
+        }
+
         conversationsListView.refresh();
     }
 
@@ -164,6 +276,9 @@ public class DoctorMessagesController {
 
     @FXML
     private void handleSend() {
+        // Se l'utente risponde, consideriamo la notifica "vista" e puliamo il badge UI (solo UI, DB invariato).
+        clearPendingUnreadBadgeIfAny();
+
         if (selectedPatient == null) {
             ErrorDialog.show("Nessun paziente selezionato",
                     "Seleziona un paziente prima di inviare un messaggio.");
@@ -186,7 +301,9 @@ public class DoctorMessagesController {
 
             messageDAO.sendMessage(m);
             messageInput.clear();
+
             loadMessages();
+            loadConversations();
 
         } catch (Exception e) {
             ErrorDialog.show("Errore di invio",
@@ -271,6 +388,25 @@ public class DoctorMessagesController {
         };
     }
 
+    private static final int CONVERSATION_PREVIEW_MAX_CHARS = 30;
+
+    private String buildConversationPreviewText(Message lastMessage) {
+        if (lastMessage == null || lastMessage.getContent() == null) {
+            return "Nessun messaggio";
+        }
+
+        String content = lastMessage.getContent().trim().replaceAll("\\s+", " ");
+        if (content.isEmpty()) {
+            return "(messaggio vuoto)";
+        }
+
+        if (content.length() <= CONVERSATION_PREVIEW_MAX_CHARS) {
+            return content;
+        }
+
+        return content.substring(0, CONVERSATION_PREVIEW_MAX_CHARS) + "...";
+    }
+
     private ListCell<ConversationItem> createConversationCell() {
         return new ListCell<>() {
             @Override
@@ -283,48 +419,62 @@ public class DoctorMessagesController {
                     return;
                 }
 
-                HBox root = new HBox(12);
-                root.setPadding(new Insets(8));
-                root.setStyle("-fx-background-color: white; -fx-border-color: #e5e7eb; -fx-border-width: 0 0 1 0;");
+                // Wrapper che viene stilizzato dal CSS (app.css: .message-thread)
+                HBox root = new HBox(10);
+                root.getStyleClass().add("message-thread");
 
-                VBox textBox = new VBox(2);
+                VBox textBox = new VBox(3);
+
+                // Riga 1: Nome paziente + timestamp (allineati sulla stessa baseline)
+                HBox topRow = new HBox(8);
+                topRow.setAlignment(Pos.BASELINE_LEFT);
 
                 Label nameLabel = new Label(item.patient.getNome() + " " + item.patient.getCognome());
-                nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+                nameLabel.getStyleClass().add("thread-title");
+                nameLabel.setMaxWidth(Double.MAX_VALUE);
+                nameLabel.setTextOverrun(OverrunStyle.ELLIPSIS);
+                HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
-                Label lastMsgLabel = new Label();
-                if (item.lastMessage != null) {
-                    String preview = item.lastMessage.getContent().length() > 40
-                            ? item.lastMessage.getContent().substring(0, 40) + "..."
-                            : item.lastMessage.getContent();
-                    lastMsgLabel.setText(preview);
+                Label timeLabel = new Label();
+                timeLabel.getStyleClass().add("thread-preview");
+                if (item.lastMessage != null && item.lastMessage.getSentAt() != null) {
+                    LocalDate msgDate = item.lastMessage.getSentAt().toLocalDate();
+                    LocalDate today = LocalDate.now();
+                    timeLabel.setText(msgDate.equals(today)
+                            ? formatTime(item.lastMessage.getSentAt())
+                            : dateFormatter.format(msgDate));
                 } else {
-                    lastMsgLabel.setText("Nessun messaggio");
+                    timeLabel.setText("");
                 }
-                lastMsgLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
-                lastMsgLabel.setWrapText(true);
 
-                textBox.getChildren().addAll(nameLabel, lastMsgLabel);
+                topRow.getChildren().addAll(nameLabel, timeLabel);
 
-                Region spacer = new Region();
-                HBox.setHgrow(spacer, Priority.ALWAYS);
+                // Riga 2: preview ultimo messaggio
+                Label lastMsgLabel = new Label();
+                lastMsgLabel.getStyleClass().add("thread-preview");
+
+                String preview = buildConversationPreviewText(item.lastMessage);
+                lastMsgLabel.setText(preview);
+
+                // Evita che il testo "spinga" fuori badge/orario: una riga, ellissi, larghezza limitata allo spazio disponibile
+                lastMsgLabel.setWrapText(false);
+                lastMsgLabel.setMinWidth(0);
+                lastMsgLabel.setMaxWidth(Double.MAX_VALUE);
+                lastMsgLabel.setTextOverrun(OverrunStyle.ELLIPSIS);
+
+                textBox.getChildren().addAll(topRow, lastMsgLabel);
+                HBox.setHgrow(textBox, Priority.ALWAYS);
 
                 VBox sideBox = new VBox(4);
-                sideBox.setAlignment(Pos.TOP_RIGHT);
+                sideBox.setAlignment(Pos.CENTER_RIGHT);
 
                 if (item.unreadCount > 0) {
                     Label unreadLabel = new Label(String.valueOf(item.unreadCount));
-                    unreadLabel.setStyle(
-                            "-fx-background-color: #ef4444; " +
-                                    "-fx-text-fill: white; " +
-                                    "-fx-font-weight: bold; " +
-                                    "-fx-padding: 4 8; " +
-                                    "-fx-background-radius: 12;"
-                    );
+                    unreadLabel.getStyleClass().add("unread-badge");
                     sideBox.getChildren().add(unreadLabel);
                 }
 
-                root.getChildren().addAll(textBox, spacer, sideBox);
+                root.getChildren().addAll(textBox, sideBox);
                 setGraphic(root);
                 setText(null);
             }

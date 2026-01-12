@@ -1,6 +1,3 @@
-
-
-
 /* ====== ROOT / BACKGROUND ====== */
 
 .root-bg {
@@ -833,7 +830,7 @@
 
 .thread-title {
     -fx-font-size: 12px;
-    -fx-font-weight: 600;
+    -fx-font-weight: 700; /* nome+cognome in grassetto */
     -fx-text-fill: #111827;
 }
 
@@ -851,6 +848,10 @@
     -fx-background-radius: 999;
 }
 
+#conversationsLabel,
+#selectPatientLabel {
+    -fx-font-weight: 700;
+}
 
 /*misurazioni doctor*/
 
