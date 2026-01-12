@@ -41,6 +41,8 @@ public class DoctorMeasurementsController {
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
 
+    private String doctorId;
+
     private final ObservableList<Paziente> allPatients = FXCollections.observableArrayList();
     private FilteredList<Paziente> filtered;
 
@@ -49,6 +51,12 @@ public class DoctorMeasurementsController {
 
     private final LocalDate today = LocalDate.now();
 
+    public void setDoctorContext(String doctorId) {
+        this.doctorId = (doctorId == null) ? null : doctorId.trim();
+        loadPatientsAndMeasurements();
+        renderCards();
+    }
+
     @FXML
     private void initialize() {
         // layout del FlowPane (margini simmetrici e spaziatura)
@@ -56,10 +64,7 @@ public class DoctorMeasurementsController {
         cardsContainer.setVgap(20);
         cardsContainer.setPadding(new Insets(12, 14, 14, 14));
 
-        // 1) carico pazienti + misurazioni
-        loadPatientsAndMeasurements();
-
-        // 2) filtro per ricerca
+        // 1) filtro per ricerca
         filtered = new FilteredList<>(allPatients, p -> true);
 
         searchField.textProperty().addListener((obs, oldV, newV) -> {
@@ -74,7 +79,7 @@ public class DoctorMeasurementsController {
             renderCards();
         });
 
-        // 3) prima renderizzazione
+        // 2) prima renderizzazione
         renderCards();
     }
 
@@ -82,14 +87,29 @@ public class DoctorMeasurementsController {
      * Carica tutti i pazienti e tutte le misurazioni in memoria (UNA query per tipo).
      */
     private void loadPatientsAndMeasurements() {
+        if (doctorId == null || doctorId.isBlank()) {
+            allPatients.clear();
+            glicemiePerPaziente = new HashMap<>();
+            return;
+        }
         try {
             // pazienti
-            allPatients.setAll(pazienteDAO.findAll());
+            List<Paziente> filteredPatients = pazienteDAO.findAll().stream()
+                    .filter(p -> p.getFkDiabetologo() != null
+                            && p.getFkDiabetologo().equalsIgnoreCase(doctorId))
+                    .toList();
+            allPatients.setAll(filteredPatients);
             // ultimo creato in alto (id più grande prima)
             //allPatients.sort((a, b) -> Integer.compare(b.getCodiceFiscale(), a.getCodiceFiscale()));
 
             // glicemie (una sola query)
-            List<Glicemia> tutte = glicemiaDAO.findAll();
+            Set<String> patientIds = filteredPatients.stream()
+                    .map(Paziente::getCodiceFiscale)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+            List<Glicemia> tutte = glicemiaDAO.findAll().stream()
+                    .filter(g -> patientIds.contains(g.getFkPaziente()))
+                    .toList();
 
             // raggruppo per IdPaziente
             glicemiePerPaziente = tutte.stream()

@@ -255,6 +255,8 @@ public class MainShellController {
                         MainApp.class.getResource("/fxml/DoctorMeasurementsView.fxml")
                 );
                 Parent view = loader.load();
+                DoctorMeasurementsController controller = loader.getController();
+                controller.setDoctorContext(loggedUserId);
 
                 contentArea.getChildren().setAll(view);
                 setActiveNav(measurementsButton);
