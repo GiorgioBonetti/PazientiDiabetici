@@ -14,4 +14,6 @@ public interface TerapiaDAO {
     void insert(Terapia terapia) throws Exception;
 
     void update(Terapia terapia) throws Exception;
+
+    void delete(int id) throws Exception;
 }

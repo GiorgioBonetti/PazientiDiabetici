@@ -8,6 +8,12 @@
     -fx-background-color: white;
     -fx-background-radius: 24;
     -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.18), 24, 0.35, 0, 6);
+    -fx-min-width: 800;
+    -fx-min-height: 600;
+    -fx-pref-width: 1180;
+    -fx-pref-height: 680;
+    -fx-max-width: Infinity;
+    -fx-max-height: Infinity;
 }
 
 /* ====== TOP BAR ====== */
@@ -930,7 +936,7 @@
 }
 
 .icon-edit-btn SVGPath {
-    -fx-fill: #4b5563;
+    -fx-fill: #4c1d95;
 }
 
 .icon-edit-btn:hover SVGPath {
@@ -938,7 +944,7 @@
 }
 
 .icon-delete-btn {
-    -fx-background-color: #eef2ff;
+    -fx-background-color: white;
     -fx-border-color: #c4b5fd;
     -fx-padding: 4;
     -fx-background-radius: 999;
@@ -952,7 +958,7 @@
 }
 
 .icon-delete-btn SVGPath {
-    -fx-fill: #4b5563;
+    -fx-fill: #4c1d95;
 }
 
 .icon-delete-btn:hover SVGPath {
@@ -980,6 +986,14 @@
 
 .icon-edit-btn .svg-path {
     -fx-fill: #4c1d95;
+}
+
+/* Pulsante modifica quando la riga è selezionata nella tabella */
+.table-card .table-row-cell:selected .icon-edit-btn,
+.rounded-table .table-row-cell:selected .icon-edit-btn {
+    -fx-background-color: white;
+    -fx-background-radius: 999;
+    -fx-padding: 4;
 }
 
 /* ---------- DIALOG MODERNI ---------- */
@@ -1188,6 +1202,16 @@
 
 /* evita che le singole celle sovrascrivano lo sfondo della riga */
 .rounded-table .table-row-cell:selected .table-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+}
+
+/* stesso stile di selezione viola per la tabella allarmi (table-card) */
+.table-card .table-row-cell:selected {
+    -fx-background-color: #4f46e5;
+}
+
+.table-card .table-row-cell:selected .table-cell {
     -fx-background-color: transparent;
     -fx-text-fill: #ffffff;
 }

@@ -133,4 +133,55 @@ public class TerapiaDAOImpl implements TerapiaDAO {
             t.setUltimaModifica(LocalDateTime.now());
         }
     }
+
+    @Override
+    public void delete(int id) throws Exception {
+        // Prima elimina le associazioni FarmacoTerapia (cascata)
+        String sqlDeleteFarmacoTerapia = """
+                DELETE FROM FarmacoTerapia
+                WHERE fkTerapia = ?
+                """;
+
+        // Poi elimina le assunzioni associate
+        String sqlDeleteAssunzioni = """
+                DELETE FROM Assunzione
+                WHERE fkTerapia = ?
+                """;
+
+        // Infine elimina la terapia
+        String sqlDeleteTerapia = """
+                DELETE FROM Terapia
+                WHERE id = ?
+                """;
+
+        try (Connection conn = Database.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                // Elimina FarmacoTerapia
+                try (PreparedStatement ps1 = conn.prepareStatement(sqlDeleteFarmacoTerapia)) {
+                    ps1.setInt(1, id);
+                    ps1.executeUpdate();
+                }
+
+                // Elimina Assunzioni
+                try (PreparedStatement ps2 = conn.prepareStatement(sqlDeleteAssunzioni)) {
+                    ps2.setInt(1, id);
+                    ps2.executeUpdate();
+                }
+
+                // Elimina Terapia
+                try (PreparedStatement ps3 = conn.prepareStatement(sqlDeleteTerapia)) {
+                    ps3.setInt(1, id);
+                    ps3.executeUpdate();
+                }
+
+                conn.commit();
+            } catch (Exception e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }
+    }
 }

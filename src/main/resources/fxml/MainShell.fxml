@@ -6,7 +6,7 @@
 <StackPane styleClass="root-bg" stylesheets="@../css/app.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.MainShellController">
 
     <!-- Card centrale con app shell -->
-    <BorderPane maxHeight="680" maxWidth="1180" prefHeight="680" prefWidth="1180" styleClass="app-shell">
+    <BorderPane styleClass="app-shell">
 
         <!-- TOP BAR -->
         <top>

@@ -145,12 +145,14 @@ public class MainShellController {
             );
             Parent root = loader.load();
 
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 1150, 850);
             scene.getStylesheets().add(
                     MainApp.class.getResource("/css/app.css").toExternalForm()
             );
 
             stage.setScene(scene);
+            stage.setWidth(1150);
+            stage.setHeight(850);
             stage.show();
 
         } catch (IOException e) {

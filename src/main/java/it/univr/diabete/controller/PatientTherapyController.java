@@ -10,6 +10,7 @@ import it.univr.diabete.dao.impl.FarmacoTerapiaDAOImpl;
 import it.univr.diabete.model.Assunzione;
 import it.univr.diabete.model.Terapia;
 import it.univr.diabete.model.FarmacoTerapia;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -233,7 +234,16 @@ public class PatientTherapyController {
         editBtn.setId("editTherapyButton");
         editBtn.setOnAction(e -> handleEditTherapy(t));
 
-        HBox bottomRow = new HBox(editBtn);
+        Button deleteBtn = new Button();
+        deleteBtn.getStyleClass().add("icon-delete-btn");
+        SVGPath deleteIcon = new SVGPath();
+        deleteIcon.setContent("M6 7h10l-1 12H7L6 7zm2-3h6l1 2H7l1-2zm-3 2h14v2H5V6z");
+        deleteIcon.getStyleClass().add("svg-path");
+        deleteBtn.setGraphic(deleteIcon);
+        deleteBtn.setId("deleteTherapyButton");
+        deleteBtn.setOnAction(e -> handleDeleteTherapy(t));
+
+        HBox bottomRow = new HBox(8, editBtn, deleteBtn);
         bottomRow.setAlignment(Pos.BOTTOM_RIGHT);
 
         card.getChildren().addAll(row1, lblInfo, bottomRow);
@@ -397,6 +407,7 @@ public class PatientTherapyController {
                     codiceFiscale,
                     terapiaCorrente.getId(),                 // ✅ fkTerapia vero
                     farmacoTerapiaCorrente.getFkFarmaco(),   // ✅ fkFarmaco
+                    terapiaCorrente.getDataInizio(),         // ✅ Data inizio terapia
                     this::loadAssunzioni
             );
             Stage popup = new Stage();
@@ -605,9 +616,52 @@ public class PatientTherapyController {
             node.setVisible(false);
             node.setManaged(false);
         }
+
+        for (Node node : therapyCardsContainer.lookupAll("#deleteTherapyButton")) {
+            node.setVisible(false);
+            node.setManaged(false);
+        }
     }
 
     // ─────────────────── ADD / EDIT TERAPIA ───────────────────
+
+    private void handleDeleteTherapy(Terapia t) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    MainApp.class.getResource("/fxml/ConfirmDialogView.fxml")
+            );
+            Parent root = loader.load();
+
+            ConfirmDialogController ctrl = loader.getController();
+            ctrl.setTexts(
+                    "Conferma eliminazione",
+                    "Eliminare la terapia \"" + t.getNome() + "\"?\n" +
+                    "Verranno eliminate anche tutte le assunzioni registrate."
+            );
+
+            Stage dialog = new Stage();
+            dialog.initOwner(therapyRoot.getScene().getWindow());
+            dialog.initModality(Modality.WINDOW_MODAL);
+            dialog.setResizable(false);
+            dialog.setScene(new Scene(root));
+            dialog.setTitle("Conferma");
+            dialog.showAndWait();
+
+            if (ctrl.isConfirmed()) {
+                try {
+                    terapiaDAO.delete(t.getId());
+                    loadTerapie();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    ErrorDialog.show("Errore eliminazione",
+                            "Impossibile eliminare la terapia. Verificare che non sia collegata ad altri dati.");
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     private void handleAddTherapy() {

@@ -35,14 +35,15 @@ public class MainApp extends Application {
                     new FXMLLoader(MainApp.class.getResource("/fxml/LoginView.fxml"));
             Parent root = loader.load();
 
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 1150, 850);
             scene.getStylesheets().add(
                     MainApp.class.getResource("/css/app.css").toExternalForm()
             );
 
             primaryStage.setTitle("Telemedicina - Gestione Diabete Tipo 2");
             primaryStage.setScene(scene);
-            primaryStage.centerOnScreen();   // 👈 centrata
+            primaryStage.setWidth(1150);
+            primaryStage.setHeight(850);
             primaryStage.show();
 
         } catch (IOException e) {
@@ -61,14 +62,15 @@ public class MainApp extends Application {
             setMainShellController(shell);
             shell.setUserData(role, displayName); // se ti serve
 
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 1150, 850);
             scene.getStylesheets().add(
                     MainApp.class.getResource("/css/app.css").toExternalForm()
             );
 
             primaryStage.setTitle("Telemedicina - Gestione Diabete Tipo 2");
             primaryStage.setScene(scene);
-            primaryStage.centerOnScreen();   // 👈 di nuovo centrata
+            primaryStage.setWidth(1150);
+            primaryStage.setHeight(850);
             primaryStage.show();
 
         } catch (IOException e) {

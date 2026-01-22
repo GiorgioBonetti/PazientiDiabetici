@@ -28,7 +28,7 @@ public class EditGlicemiaController {
         this.glicemia = g;
         this.refreshCallback = refresh;
 
-        dateLabel.setText("Registrata il: " + g.getDateStamp().format(df));
+        dateLabel.setText(g.getDateStamp().format(df));
         valueField.setText(String.valueOf(g.getValore()));
 
         momentChoice.getItems().addAll("Mattina",

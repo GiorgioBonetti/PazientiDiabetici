@@ -40,7 +40,7 @@
             </HBox>
         </top>
         <center>
-            <TableView fx:id="measurementsTable" prefHeight="220">
+            <TableView fx:id="measurementsTable" prefHeight="220" styleClass="table-card">
                 <columns>
                     <TableColumn fx:id="colMeasDateTime" prefWidth="150" text="Data e ora"/>
                     <TableColumn fx:id="colMeasValue" prefWidth="160" text="Valore (mg/dL)"/>

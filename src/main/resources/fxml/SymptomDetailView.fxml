@@ -2,59 +2,49 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<StackPane xmlns="http://javafx.com/javafx/21"
-           xmlns:fx="http://javafx.com/fxml/1"
-           stylesheets="@../css/app.css"
-           fx:controller="it.univr.diabete.controller.SymptomDetailController"
-           styleClass="dialog-root">
 
-    <VBox spacing="14"
-          prefHeight="360"
-          prefWidth="360"
-          maxWidth="620"
-          styleClass="dialog-card"
-          style="-fx-padding: 24;">
+<StackPane styleClass="dialog-root" stylesheets="@../css/app.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.SymptomDetailController">
 
-        <Label text="Dettaglio sintomo" styleClass="dialog-title"/>
+    <VBox maxWidth="620" prefHeight="360" prefWidth="360" spacing="14" style="-fx-padding: 24;" styleClass="dialog-card">
+
+        <Label styleClass="dialog-title" text="Dettaglio sintomo" />
 
         <VBox spacing="10">
             <VBox spacing="4">
-                <Label text="Descrizione" styleClass="dialog-field-label"/>
-                <Label fx:id="descrizioneLabel" text="—" styleClass="page-title-accent"/>
+                <Label styleClass="dialog-field-label" text="Descrizione" />
+                <Label fx:id="descrizioneLabel" styleClass="page-title-accent" text="—" />
             </VBox>
 
             <HBox spacing="12">
                 <VBox spacing="4">
-                    <Label text="Intensita" styleClass="dialog-field-label"/>
-                    <Label fx:id="intensitaLabel" text="—" styleClass="page-subtitle"/>
+                    <Label styleClass="dialog-field-label" text="Intensità" />
+                    <Label fx:id="intensitaLabel" styleClass="page-subtitle" text="—" />
                 </VBox>
                 <VBox spacing="4">
-                    <Label text="Frequenza" styleClass="dialog-field-label"/>
-                    <Label fx:id="frequenzaLabel" text="—" styleClass="page-subtitle"/>
+                    <Label styleClass="dialog-field-label" text="Frequenza" />
+                    <Label fx:id="frequenzaLabel" styleClass="page-subtitle" text="—" />
                 </VBox>
             </HBox>
 
             <VBox spacing="4">
-                <Label text="Note" styleClass="dialog-field-label"/>
-                <Label fx:id="noteLabel" text="—" styleClass="page-subtitle" wrapText="true"/>
+                <Label styleClass="dialog-field-label" text="Note" />
+                <Label fx:id="noteLabel" styleClass="page-subtitle" text="—" wrapText="true" />
             </VBox>
 
             <HBox spacing="12">
                 <VBox spacing="4">
-                    <Label text="Periodo" styleClass="dialog-field-label"/>
-                    <Label fx:id="periodoLabel" text="—" styleClass="page-subtitle"/>
+                    <Label styleClass="dialog-field-label" text="Periodo" />
+                    <Label fx:id="periodoLabel" styleClass="page-subtitle" text="—" />
                 </VBox>
                 <VBox spacing="4">
-                    <Label text="Registrato" styleClass="dialog-field-label"/>
-                    <Label fx:id="timestampLabel" text="—" styleClass="page-subtitle"/>
+                    <Label styleClass="dialog-field-label" text="Registrato" />
+                    <Label fx:id="timestampLabel" styleClass="page-subtitle" text="—" />
                 </VBox>
             </HBox>
         </VBox>
 
-        <HBox spacing="12" alignment="CENTER_RIGHT">
-            <Button text="Chiudi"
-                    styleClass="btn-primary"
-                    onAction="#handleClose"/>
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+            <Button onAction="#handleClose" styleClass="btn-primary" text="Chiudi" />
         </HBox>
     </VBox>
 </StackPane>

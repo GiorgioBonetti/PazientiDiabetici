@@ -8,6 +8,7 @@
 
     <VBox spacing="4">
         <Label styleClass="dialog-title" text="Imposta dosi farmaco"/>
+        <Label fx:id="farmacoNameLabel" styleClass="page-title-accent" text="—"/>
     </VBox>
 
     <GridPane hgap="12" vgap="12">

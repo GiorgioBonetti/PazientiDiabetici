@@ -25,9 +25,18 @@ public class SymptomDetailController {
         frequenzaLabel.setText(valueOrDash(s.getFrequenza()));
         noteLabel.setText(valueOrDash(s.getNoteAggiuntive()));
 
-        String start = s.getDataInizio() != null ? dateFmt.format(s.getDataInizio()) : "—";
-        String end = s.getDataFine() != null ? dateFmt.format(s.getDataFine()) : "—";
-        periodoLabel.setText(start + " → " + end);
+        String start = s.getDataInizio() != null ? dateFmt.format(s.getDataInizio()) : null;
+        String end = s.getDataFine() != null ? dateFmt.format(s.getDataFine()) : null;
+
+        if (start != null && end != null) {
+            periodoLabel.setText(start + " → " + end);
+        } else if (start != null) {
+            periodoLabel.setText(start);
+        } else if (end != null) {
+            periodoLabel.setText(end);
+        } else {
+            periodoLabel.setText("—");
+        }
 
         String ts = s.getDateStamp() != null
                 ? dateFmt.format(s.getDateStamp()) + " " + timeFmt.format(s.getDateStamp())

@@ -58,14 +58,14 @@ public class FarmacoDAOImpl implements FarmacoDAO {
     public void insert(Farmaco f) throws Exception {
         String sql = """
                 INSERT INTO Farmaco (nome, marca)
-                VALUES (?, ?, ?)
+                VALUES (?, ?)
                 """;
 
         try (Connection conn = Database.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, f.getNome());
-            ps.setString(2, f.getMarca());
+            ps.setString(2, f.getMarca() != null ? f.getMarca() : "");
 
             ps.executeUpdate();
 
@@ -89,7 +89,7 @@ public class FarmacoDAOImpl implements FarmacoDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, f.getNome());
-            ps.setString(2, f.getMarca());
+            ps.setString(2, f.getMarca() != null ? f.getMarca() : "");
             ps.setInt(3, f.getId());
 
             ps.executeUpdate();

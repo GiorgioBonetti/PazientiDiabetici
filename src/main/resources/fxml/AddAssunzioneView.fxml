@@ -29,6 +29,12 @@
             <DatePicker fx:id="dateField" prefHeight="26.0" prefWidth="273.0" />
         </VBox>
 
+        <!-- Orario -->
+        <VBox spacing="4">
+            <Label styleClass="dialog-field-label" text="Orario assunzione" />
+            <TextField fx:id="timeField" promptText="HH:mm" styleClass="field-control" />
+        </VBox>
+
         <Button maxWidth="Infinity" onAction="#handleConfirm" styleClass="btn-primary" text="Conferma" />
 
         <Button maxWidth="Infinity" onAction="#handleCancel" styleClass="btn-ghost" text="Annulla" />

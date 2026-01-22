@@ -4,6 +4,7 @@ import it.univr.diabete.dao.FarmacoDAO;
 import it.univr.diabete.dao.impl.FarmacoDAOImpl;
 import it.univr.diabete.model.Farmaco;
 import it.univr.diabete.ui.ConfirmDialog;
+import it.univr.diabete.ui.ErrorDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,6 +24,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public class FarmacoController {
 
@@ -149,7 +151,15 @@ public class FarmacoController {
             farmacoDAO.delete(farmaco.getId());
             loadFarmaci();
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e instanceof SQLIntegrityConstraintViolationException || e.getCause() instanceof SQLIntegrityConstraintViolationException) {
+                ErrorDialog.show(
+                        "Impossibile eliminare",
+                        "Il farmaco è collegato a una terapia. Rimuovilo dalle terapie prima di eliminarlo."
+                );
+            } else {
+                ErrorDialog.show("Errore", "Eliminazione non riuscita. Riprova.");
+                e.printStackTrace();
+            }
         }
     }
 
