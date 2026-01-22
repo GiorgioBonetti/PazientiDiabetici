@@ -94,6 +94,10 @@ public class FarmacoController {
             dialog.initModality(Modality.WINDOW_MODAL);
             dialog.setTitle("Nuovo farmaco");
             dialog.setScene(new Scene(root));
+
+            dialog.setWidth(350);
+            dialog.setHeight(300);
+
             dialog.showAndWait();
 
             if (formCtrl.isConfirmed()) {
