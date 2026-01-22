@@ -1,85 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
-<StackPane xmlns="http://javafx.com/javafx/21"
-           xmlns:fx="http://javafx.com/fxml/1"
-           stylesheets="@../css/app.css"
-           fx:controller="it.univr.diabete.controller.AddDoctorController"
-           styleClass="dialog-root">
+<StackPane styleClass="dialog-root" stylesheets="@../css/app.css" xmlns="http://javafx.com/javafx/17.0.12"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.AddDoctorController">
 
-    <children>
-        <VBox spacing="18"
-              alignment="TOP_CENTER"
-              prefHeight="480"
-              prefWidth="350"
-              maxWidth="620"
-              styleClass="dialog-card"
-              style="-fx-padding: 24;">
+    <VBox alignment="TOP_CENTER" maxWidth="620" prefHeight="480" prefWidth="350" spacing="18" style="-fx-padding: 24;"
+          styleClass="dialog-card">
 
-            <Label fx:id="titleLabel" text="Nuovo diabetologo" styleClass="dialog-title"/>
-            <Label fx:id="subtitleLabel" text="Inserisci i dati del nuovo diabetologo"
-                   styleClass="dialog-subtitle"/>
+        <Label fx:id="titleLabel" styleClass="dialog-title" text="Nuovo diabetologo"/>
 
-            <VBox spacing="12" style="-fx-padding: 6 0 0 0;">
+        <VBox spacing="12" style="-fx-padding: 6 0 0 0;">
 
-                <VBox spacing="4">
-                    <Label text="Nome" styleClass="dialog-field-label"/>
-                    <TextField fx:id="nomeField" styleClass="field-control"/>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Cognome" styleClass="dialog-field-label"/>
-                    <TextField fx:id="cognomeField" styleClass="field-control"/>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Email" styleClass="dialog-field-label"/>
-                    <TextField fx:id="emailField" styleClass="field-control"/>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Numero telefono" styleClass="dialog-field-label"/>
-                    <TextField fx:id="telefonoField" styleClass="field-control"/>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Sesso" styleClass="dialog-field-label"/>
-                    <ChoiceBox fx:id="sessoChoice" styleClass="field-control">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="M"/>
-                                <String fx:value="F"/>
-                                <String fx:value="Altro"/>
-                            </FXCollections>
-                        </items>
-                    </ChoiceBox>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Laurea" styleClass="dialog-field-label"/>
-                    <TextField fx:id="laureaField" styleClass="field-control"/>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Password iniziale" styleClass="dialog-field-label"/>
-                    <PasswordField fx:id="passwordField" styleClass="field-control"/>
-                </VBox>
-
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Nome"/>
+                <TextField fx:id="nomeField" styleClass="field-control"/>
             </VBox>
 
-            <HBox spacing="12" alignment="CENTER_RIGHT">
-                <Button text="Annulla"
-                        styleClass="btn-ghost"
-                        onAction="#handleCancel"/>
-                <Button fx:id="saveButton" text="Crea diabetologo"
-                        styleClass="btn-primary"
-                        onAction="#handleSave"/>
-            </HBox>
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Cognome"/>
+                <TextField fx:id="cognomeField" styleClass="field-control"/>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Email"/>
+                <TextField fx:id="emailField" styleClass="field-control"/>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Numero telefono"/>
+                <TextField fx:id="telefonoField" styleClass="field-control"/>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Sesso"/>
+                <ChoiceBox fx:id="sessoChoice" prefHeight="40.0" prefWidth="120.0" styleClass="field-control">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="M"/>
+                            <String fx:value="F"/>
+                            <String fx:value="Altro"/>
+                        </FXCollections>
+                    </items>
+                </ChoiceBox>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Laurea"/>
+                <TextField fx:id="laureaField" styleClass="field-control"/>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Password iniziale"/>
+                <PasswordField fx:id="passwordField" styleClass="field-control"/>
+            </VBox>
+
         </VBox>
-    </children>
+
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+            <Button onAction="#handleCancel" styleClass="btn-ghost" text="Annulla"/>
+            <Button fx:id="saveButton" onAction="#handleSave" styleClass="btn-primary" text="Crea diabetologo"/>
+        </HBox>
+    </VBox>
 </StackPane>

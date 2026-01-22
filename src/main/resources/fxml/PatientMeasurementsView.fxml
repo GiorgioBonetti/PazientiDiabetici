@@ -4,77 +4,71 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="16" style="-fx-padding: 8 16 16 16;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.PatientMeasurementsController">
+<VBox spacing="16" style="-fx-padding: 8 16 16 16;" xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.PatientMeasurementsController">
 
-    <children>
-
-        <!-- HEADER -->
-        <VBox spacing="4">
-            <children>
-                <HBox alignment="CENTER_LEFT" spacing="8">
-                    <children>
-                        <Label styleClass="page-title" text="Misurazioni" />
-                        <Label fx:id="patientNameLabel" styleClass="page-title-accent" text="Luigi Bianchi" />
-                    </children>
-                </HBox>
-                <!-- Bottoni di navigazione -->
-                <HBox alignment="CENTER_LEFT" spacing="12">
-                    <Label styleClass="page-subtitle" text="Qui puoi vedere lo storico delle tue misurazioni glicemiche." visible="false" wrapText="true" />
-                    <Pane HBox.hgrow="ALWAYS" />
-                    <Button fx:id="goReportButton" onAction="#handleGoToReport" prefWidth="150" style="-fx-font-size: 12px" styleClass="btn-ghost" text="Report" />
-
-                    <Button fx:id="goTherapyButton" onAction="#handleGoToTherapy" prefWidth="150" style="-fx-font-size: 12px" styleClass="btn-ghost" text="Terapia" />
-                </HBox>
-
-            </children>
-        </VBox>
-
-        <!-- CARD STORICO MISURAZIONI (più stretta a sinistra) -->
-        <HBox alignment="CENTER_LEFT" spacing="0" VBox.vgrow="NEVER">
-        <BorderPane prefHeight="200" prefWidth="470" styleClass="card">
-            <top>
-                <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
-                    <children>
-                        <Label styleClass="card-title" text="Ultime misurazioni" />
-                        <Pane HBox.hgrow="ALWAYS" />
-                        <Button fx:id="addGlycemiaButton" onAction="#handleAddGlicemia" styleClass="btn-ghost" text="Registra glicemia" />
-                        <ComboBox fx:id="filterCombo" styleClass="btn-ghost" />
-                    </children>
-                </HBox>
-            </top>
-            <center>
-                <TableView fx:id="measurementsTable" prefHeight="220">
-                    <columns>
-                        <TableColumn fx:id="colMeasDateTime" prefWidth="150" text="Data e ora" />
-                        <TableColumn fx:id="colMeasValue" prefWidth="160" text="Valore (mg/dL)" />
-                        <TableColumn fx:id="colMeasMoment" prefWidth="100" text="Momento" />
-                    </columns>
-                </TableView>
-            </center>
-        </BorderPane>
+    <!-- HEADER -->
+    <VBox spacing="4">
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <Label styleClass="page-title" text="Misurazioni"/>
+            <Label fx:id="patientNameLabel" styleClass="page-title-accent" text="Luigi Bianchi"/>
         </HBox>
-        <!-- CARD GRAFICO ANDAMENTO (full width) -->
-        <BorderPane styleClass="card" VBox.vgrow="ALWAYS">
-            <top>
-                <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
-                    <children>
-                        <Label styleClass="card-title" text="Andamento glicemia" />
-                        <Pane HBox.hgrow="ALWAYS" />
-                    </children>
-                </HBox>
-            </top>
+        <!-- Bottoni di navigazione -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <Label styleClass="page-subtitle" text="Qui puoi vedere lo storico delle tue misurazioni glicemiche."
+                   visible="false" wrapText="true"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button fx:id="goReportButton" onAction="#handleGoToReport" prefWidth="150" style="-fx-font-size: 12px"
+                    styleClass="btn-ghost" text="Report"/>
 
-            <center>
-                <LineChart fx:id="glycemiaChart" animated="false" legendVisible="false" prefHeight="260">
-                    <xAxis>
-                        <CategoryAxis label="Data / ora" fx:id="xAxis" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis fx:id="yAxis" label="Valore (mg/dL)" />
-                    </yAxis>
-                </LineChart>
-            </center>
-        </BorderPane>
+            <Button fx:id="goTherapyButton" onAction="#handleGoToTherapy" prefWidth="150"
+                    style="-fx-font-size: 12px" styleClass="btn-ghost" text="Terapia"/>
+        </HBox>
 
-    </children>
+    </VBox>
+
+    <!-- CARD STORICO MISURAZIONI (più stretta a sinistra) -->
+    <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
+    <BorderPane prefHeight="200" prefWidth="470" styleClass="card">
+        <top>
+            <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
+                <Label styleClass="card-title" text="Ultime misurazioni"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Button fx:id="addGlycemiaButton" onAction="#handleAddGlicemia" styleClass="btn-ghost"
+                        text="Registra glicemia"/>
+                <ComboBox fx:id="filterCombo" styleClass="btn-ghost"/>
+            </HBox>
+        </top>
+        <center>
+            <TableView fx:id="measurementsTable" prefHeight="220">
+                <columns>
+                    <TableColumn fx:id="colMeasDateTime" prefWidth="150" text="Data e ora"/>
+                    <TableColumn fx:id="colMeasValue" prefWidth="160" text="Valore (mg/dL)"/>
+                    <TableColumn fx:id="colMeasMoment" prefWidth="100" text="Momento"/>
+                </columns>
+            </TableView>
+        </center>
+    </BorderPane>
+    </HBox>
+    <!-- CARD GRAFICO ANDAMENTO (full width) -->
+    <BorderPane styleClass="card" VBox.vgrow="ALWAYS">
+        <top>
+            <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
+                <Label styleClass="card-title" text="Andamento glicemia"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </top>
+
+        <center>
+            <LineChart fx:id="glycemiaChart" animated="false" legendVisible="false" prefHeight="260">
+                <xAxis>
+                    <CategoryAxis label="Data / ora" fx:id="xAxis"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="yAxis" label="Valore (mg/dL)"/>
+                </yAxis>
+            </LineChart>
+        </center>
+    </BorderPane>
+
 </VBox>

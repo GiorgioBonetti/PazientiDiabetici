@@ -1,45 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.univr.diabete.controller.AdminDoctorsController"
-      spacing="16"
-      stylesheets="@../css/app.css"
-      style="-fx-padding: 8 16 16 16;">
+<VBox spacing="16" style="-fx-padding: 8 16 16 16;" stylesheets="@../css/app.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.AdminDoctorsController">
 
-    <children>
-        <VBox spacing="4">
-            <children>
-                <Label text="Diabetologi"
-                       styleClass="page-title"/>
-                <Label text="Gestione dei diabetologi registrati."
-                       styleClass="page-subtitle"/>
-            </children>
-        </VBox>
+    <VBox spacing="4">
+        <Label styleClass="page-title" text="Diabetologi"/>
+    </VBox>
 
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <children>
-                <Pane HBox.hgrow="ALWAYS"/>
-                <TextField fx:id="searchField"
-                           promptText="Cerca per nome, email o telefono"
-                           prefWidth="280"
-                           styleClass="rounded-field"/>
-                <Button text="Crea diabetologo"
-                        styleClass="btn-primary"
-                        onAction="#handleCreateDoctor"/>
-            </children>
-        </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Pane HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" prefWidth="280" promptText="Cerca per nome, email o telefono"
+                   styleClass="rounded-field"/>
+        <Button onAction="#handleCreateDoctor" styleClass="btn-primary" text="Crea diabetologo"/>
+    </HBox>
 
-        <BorderPane styleClass="card" VBox.vgrow="ALWAYS">
-            <center>
-                <ListView fx:id="doctorsListView"
-                          prefHeight="420.0"
-                          style="-fx-background-color: transparent; -fx-padding: 10;"/>
-            </center>
-        </BorderPane>
-    </children>
+    <BorderPane styleClass="card" VBox.vgrow="ALWAYS">
+        <center>
+            <ListView fx:id="doctorsListView" prefHeight="420.0"
+                      style="-fx-background-color: transparent; -fx-padding: 10;"/>
+        </center>
+    </BorderPane>
 </VBox>

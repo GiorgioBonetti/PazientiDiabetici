@@ -34,13 +34,11 @@
                 -fx-background-color: transparent;
                 -fx-background-insets: 0;
             ">
-        <content>
-            <FlowPane fx:id="cardsContainer"
-                      hgap="16" vgap="16"
-                      prefWrapLength="900"
-                      style="-fx-background-color: transparent;">
-            </FlowPane>
-        </content>
+        <FlowPane fx:id="cardsContainer"
+                  hgap="16" vgap="16"
+                  prefWrapLength="900"
+                  style="-fx-background-color: transparent;">
+        </FlowPane>
     </ScrollPane>
 
 </VBox>

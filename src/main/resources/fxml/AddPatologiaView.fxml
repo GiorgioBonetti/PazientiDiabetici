@@ -1,50 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx/21"
-           xmlns:fx="http://javafx.com/fxml/1"
-           stylesheets="@../css/app.css"
-           fx:controller="it.univr.diabete.controller.AddPatologiaController"
-           styleClass="dialog-root">
+<StackPane styleClass="dialog-root" stylesheets="@../css/app.css" xmlns="http://javafx.com/javafx/17.0.12"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.AddPatologiaController">
 
-    <children>
-        <VBox spacing="18"
-              alignment="TOP_CENTER"
-              prefHeight="260"
-              prefWidth="360"
-              maxWidth="620"
-              styleClass="dialog-card"
-              style="-fx-padding: 24;">
+    <VBox alignment="TOP_CENTER" maxWidth="620" prefHeight="260" prefWidth="360" spacing="18" style="-fx-padding: 24;"
+          styleClass="dialog-card">
 
-            <Label text="Nuova patologia" styleClass="dialog-title"/>
-            <Label text="Associa una patologia al paziente"
-                   styleClass="dialog-subtitle"/>
+        <Label styleClass="dialog-title" text="Nuova patologia"/>
 
-            <VBox spacing="12" style="-fx-padding: 6 0 0 0;">
+        <VBox spacing="12" style="-fx-padding: 6 0 0 0;">
 
-                <VBox spacing="4">
-                    <Label text="Nome patologia" styleClass="dialog-field-label"/>
-                    <TextField fx:id="nomeField" styleClass="field-control"/>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Data inizio (opzionale)" styleClass="dialog-field-label"/>
-                    <DatePicker fx:id="dataInizioPicker" styleClass="field-control"/>
-                </VBox>
-
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Nome patologia"/>
+                <TextField fx:id="nomeField" styleClass="field-control"/>
             </VBox>
 
-            <HBox spacing="12" alignment="CENTER_RIGHT">
-                <Button text="Annulla"
-                        styleClass="btn-ghost"
-                        onAction="#handleCancel"/>
-                <Button text="Aggiungi"
-                        styleClass="btn-primary"
-                        onAction="#handleSave"/>
-            </HBox>
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Data inizio (opzionale)"/>
+                <DatePicker fx:id="dataInizioPicker" prefHeight="40.0" prefWidth="312.0" styleClass="field-control"/>
+            </VBox>
+
         </VBox>
-    </children>
+
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+            <Button onAction="#handleCancel" styleClass="btn-ghost" text="Annulla"/>
+            <Button onAction="#handleSave" styleClass="btn-primary" text="Aggiungi"/>
+        </HBox>
+    </VBox>
 </StackPane>

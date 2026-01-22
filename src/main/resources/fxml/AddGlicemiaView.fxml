@@ -1,78 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.univr.diabete.controller.AddGlicemiaController"
-      stylesheets="@../css/app.css"
-      spacing="16"
-      alignment="CENTER"
-      styleClass="dialog-root">
-
-    <children>
-
-        <!-- Card centrale -->
-        <VBox spacing="16"
-              prefWidth="380"
-              styleClass="dialog-card">
-            <children>
-
-                <!-- Titolo -->
-                <VBox spacing="4">
-                    <children>
-                        <Label text="Registra glicemia"
-                               styleClass="dialog-title"/>
-                        <Label text="Inserisci il valore di glicemia rilevato."
-                               wrapText="true"
-                               styleClass="dialog-subtitle"/>
-                    </children>
-                </VBox>
-
-                <!-- Campo valore -->
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <children>
-                        <Label text="Valore (mg/dL):"
-                               styleClass="dialog-field-label"/>
-                        <TextField fx:id="valoreField"
-                                   promptText="es. 105"
-                                   styleClass="field-control"
-                                   prefWidth="180"/>
-                    </children>
-                </HBox>
-                <Label text="Momento" styleClass="dialog-field-label"/>
-                <ComboBox fx:id="momentoChoice"
-                          promptText="Seleziona parteGiorno"
-                          styleClass="field-control"
-                          prefWidth="180"/>
-                <!-- Azioni -->
-                <HBox spacing="10"
-                      alignment="CENTER_RIGHT">
-                    <children>
-                        <Button text="Annulla"
-                                onAction="#handleCancel"
-                                styleClass="btn-ghost"/>
-                        <Button text="Salva"
-                                onAction="#handleSave"
-                                defaultButton="true"
-                                styleClass="btn-primary"/>
-                    </children>
-                </HBox>
-
-            </children>
-
-            <!-- padding interno -->
-            <padding>
-                <Insets top="20" right="24" bottom="20" left="24"/>
-            </padding>
-        </VBox>
-
-    </children>
+<VBox alignment="CENTER" spacing="16" styleClass="dialog-root" stylesheets="@../css/app.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.AddGlicemiaController">
 
     <!-- padding esterno (spazio dal bordo finestra) -->
     <padding>
-        <Insets top="12" right="12" bottom="12" left="12"/>
+        <Insets bottom="12" left="12" right="12" top="12" />
     </padding>
+
+    <!-- Card centrale -->
+    <VBox prefWidth="380" spacing="16" styleClass="dialog-card">
+
+        <!-- padding interno -->
+        <padding>
+            <Insets bottom="20" left="24" right="24" top="20" />
+        </padding>
+
+        <!-- Titolo -->
+        <VBox spacing="4">
+            <Label styleClass="dialog-title" text="Registra glicemia" />
+        </VBox>
+
+        <!-- Campo valore -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <Label styleClass="dialog-field-label" text="Valore (mg/dL):" />
+            <Label layoutX="10.0" layoutY="16.0" prefWidth="30.0" styleClass="dialog-field-label" text="Valore (mg/dL):" visible="false" />
+            <TextField fx:id="valoreField" alignment="TOP_LEFT" prefHeight="32.0" prefWidth="186.0" promptText="es. 105" styleClass="field-control" />
+        </HBox>
+        <HBox alignment="CENTER_LEFT" layoutX="34.0" layoutY="100.0" spacing="12">
+            <Label styleClass="dialog-field-label" text="Momento:" />
+            <Label prefHeight="19.0" prefWidth="57.0" styleClass="dialog-field-label" text="Momento:" visible="false" />
+            <ComboBox fx:id="momentoChoice" prefHeight="40.0" prefWidth="191.0" promptText="Seleziona..." styleClass="field-control" />
+        </HBox>
+        <!-- Azioni -->
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <Button onAction="#handleCancel" styleClass="btn-ghost" text="Annulla" />
+            <Button defaultButton="true" onAction="#handleSave" styleClass="btn-primary" text="Salva" />
+        </HBox>
+
+    </VBox>
+
 </VBox>

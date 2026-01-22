@@ -3,50 +3,28 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.univr.diabete.controller.DoctorPatientsController"
-      spacing="12"
-      stylesheets="@../css/app.css"
-      style="-fx-padding: 8 16 16 16;">
+<VBox spacing="12" style="-fx-padding: 8 16 16 16;" stylesheets="@../css/app.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.DoctorPatientsController">
 
-    <children>
+    <!-- Header pagina -->
+    <VBox spacing="4">
+        <Label styleClass="page-title" text="Pazienti"/>
+    </VBox>
 
-        <!-- Header pagina -->
-        <VBox spacing="4">
-            <children>
-                <Label text="Pazienti"
-                       styleClass="page-title"/>
-                <Label text="Elenco dei pazienti seguiti dal diabetologo."
-                       styleClass="page-subtitle"/>
-            </children>
-        </VBox>
+    <!-- Barra di ricerca -->
+    <!-- HEADER PAGINA PAZIENTI -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <!-- riempie lo spazio in mezzo -->
+        <Pane HBox.hgrow="ALWAYS"/>
 
-        <!-- Barra di ricerca -->
-        <!-- HEADER PAGINA PAZIENTI -->
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <children>
-                <!-- riempie lo spazio in mezzo -->
-                <Pane HBox.hgrow="ALWAYS"/>
+        <!-- campo di ricerca esistente -->
+        <TextField fx:id="searchField" promptText="Cerca per nome, cognome o ID" styleClass="field-control"/>
+    </HBox>
 
-                <!-- campo di ricerca esistente -->
-                <TextField fx:id="searchField"
-                           promptText="Cerca per nome, cognome o ID"
-                           styleClass="field-control"/>
-            </children>
-        </HBox>
+    <!-- Tabella pazienti -->
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent;">
+        <VBox fx:id="patientsContainer" spacing="10" styleClass="card-body"/>
+    </ScrollPane>
 
-        <!-- Tabella pazienti -->
-        <ScrollPane fitToWidth="true"
-                    hbarPolicy="NEVER"
-                    vbarPolicy="AS_NEEDED"
-                    style="-fx-background-color: transparent;">
-            <content>
-                <VBox fx:id="patientsContainer"
-                      spacing="10"
-                      styleClass="card-body"/>
-            </content>
-        </ScrollPane>
-
-    </children>
 </VBox>

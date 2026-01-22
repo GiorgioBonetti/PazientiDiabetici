@@ -7,7 +7,6 @@
 
     <VBox spacing="4">
         <Label styleClass="page-title" text="Messaggi" />
-        <Label styleClass="page-subtitle" text="Conversazioni con i pazienti in carico." />
     </VBox>
 
     <HBox spacing="12" VBox.vgrow="ALWAYS">

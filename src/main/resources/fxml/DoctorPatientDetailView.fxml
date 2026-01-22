@@ -1,128 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
+<VBox spacing="16" style="-fx-padding: 16 24 24 24;" xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.univr.diabete.controller.DoctorPatientDetailController"
-      spacing="16"
-      style="-fx-padding: 16 24 24 24;">
-    <children>
+      fx:controller="it.univr.diabete.controller.DoctorPatientDetailController"><!-- Titolo -->
+    <VBox spacing="4">
+        <Label styleClass="page-title" text="Scheda paziente"/>
+        <Label fx:id="patientNameLabel" styleClass="page-subtitle" text="Nome Cognome"/>
+    </VBox>
 
-        <!-- Titolo -->
-        <VBox spacing="4">
-            <children>
-                <Label text="Scheda paziente" styleClass="page-title"/>
-                <Label fx:id="patientNameLabel"
-                       text="Nome Cognome"
-                       styleClass="page-subtitle"/>
-            </children>
-        </VBox>
-
-        <!-- Card dati paziente -->
-        <VBox styleClass="card" spacing="12">
-            <children>
-                <HBox styleClass="card-header" alignment="CENTER_LEFT" spacing="8">
-                    <children>
-                        <Label text="Dati anagrafici" styleClass="card-title"/>
-                    </children>
-                </HBox>
-
-                <GridPane hgap="16" vgap="10" style="-fx-padding: 12 16 16 16;">
-                    <columnConstraints>
-                        <ColumnConstraints percentWidth="25"/>
-                        <ColumnConstraints percentWidth="25"/>
-                        <ColumnConstraints percentWidth="25"/>
-                        <ColumnConstraints percentWidth="25"/>
-                    </columnConstraints>
-
-                    <!-- Riga 1 -->
-                    <children>
-                        <Label text="Nome" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                               styleClass="field-label"/>
-                        <TextField fx:id="nomeField" GridPane.rowIndex="1" GridPane.columnIndex="0"
-                                   styleClass="field-control"/>
-
-                        <Label text="Cognome" GridPane.rowIndex="0" GridPane.columnIndex="1"
-                               styleClass="field-label"/>
-                        <TextField fx:id="cognomeField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                                   styleClass="field-control"/>
-
-                        <Label text="Email" GridPane.rowIndex="0" GridPane.columnIndex="2"
-                               styleClass="field-label"/>
-                        <TextField fx:id="emailField" GridPane.rowIndex="1" GridPane.columnIndex="2"
-                                   styleClass="field-control"/>
-
-                        <Label text="Telefono" GridPane.rowIndex="0" GridPane.columnIndex="3"
-                               styleClass="field-label"/>
-                        <TextField fx:id="telefonoField" GridPane.rowIndex="1" GridPane.columnIndex="3"
-                                   styleClass="field-control"/>
-
-                        <!-- Riga 2 -->
-                        <Label text="Data di nascita" GridPane.rowIndex="2" GridPane.columnIndex="0"
-                               styleClass="field-label"/>
-                        <DatePicker fx:id="dataNascitaPicker"
-                                    GridPane.rowIndex="3" GridPane.columnIndex="0"
-                                    styleClass="field-control"/>
-
-                        <Label text="Sesso" GridPane.rowIndex="2" GridPane.columnIndex="1"
-                               styleClass="field-label"/>
-                        <ChoiceBox fx:id="sessoChoice"
-                                   GridPane.rowIndex="3" GridPane.columnIndex="1"
-                                   styleClass="field-control"/>
-
-                        <Label text="Codice fiscale" GridPane.rowIndex="2" GridPane.columnIndex="2"
-                               styleClass="field-label"/>
-                        <TextField fx:id="codiceFiscaleField"
-                                   GridPane.rowIndex="3" GridPane.columnIndex="2"
-                                   styleClass="field-control"/>
-
-                        <Label text="Password (iniziale)" GridPane.rowIndex="2" GridPane.columnIndex="3"
-                               styleClass="field-label"/>
-                        <PasswordField fx:id="passwordField"
-                                       GridPane.rowIndex="3" GridPane.columnIndex="3"
-                                       styleClass="field-control"/>
-                    </children>
-                </GridPane>
-            </children>
-        </VBox>
-
-        <!-- Patologie -->
-        <VBox styleClass="card" spacing="12">
-            <children>
-                <HBox styleClass="card-header" alignment="CENTER_LEFT" spacing="8">
-                    <children>
-                        <Label text="Patologie note" styleClass="card-title"/>
-                        <Pane HBox.hgrow="ALWAYS"/>
-                        <Button fx:id="addPatologiaButton"
-                                text="+ Aggiungi patologia"
-                                styleClass="btn-ghost"
-                                onAction="#handleAddPatologia"/>
-                    </children>
-                </HBox>
-
-                <VBox spacing="6" style="-fx-padding: 12 16 16 16;">
-                    <children>
-                        <FlowPane fx:id="patologieContainer" hgap="8" vgap="8"/>
-                        <Label fx:id="patologieEmptyLabel"
-                               text="Nessuna patologia registrata"
-                               styleClass="page-subtitle"/>
-                    </children>
-                </VBox>
-            </children>
-        </VBox>
-
-        <!-- Pulsanti -->
-        <HBox spacing="8" alignment="CENTER_RIGHT">
-            <children>
-                <Button text="Annulla" styleClass="btn-ghost"
-                        onAction="#handleCancelChanges"/>
-                <Button text="Salva modifiche" styleClass="btn-primary"
-                        onAction="#handleSave"/>
-            </children>
+    <!-- Card dati paziente -->
+    <VBox spacing="12" styleClass="card">
+        <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
+            <Label styleClass="card-title" text="Dati anagrafici"/>
         </HBox>
 
-    </children>
+        <GridPane hgap="16" style="-fx-padding: 12 16 16 16;" vgap="10">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="25"/>
+                <ColumnConstraints percentWidth="25"/>
+                <ColumnConstraints percentWidth="25"/>
+                <ColumnConstraints percentWidth="25"/>
+            </columnConstraints>
+
+            <!-- Riga 1 -->
+            <rowConstraints>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+                <RowConstraints/>
+            </rowConstraints>
+            <Label styleClass="field-label" text="Nome" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="nomeField" styleClass="field-control" GridPane.columnIndex="0"
+                       GridPane.rowIndex="1"/>
+
+            <Label styleClass="field-label" text="Cognome" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <TextField fx:id="cognomeField" styleClass="field-control" GridPane.columnIndex="1"
+                       GridPane.rowIndex="1"/>
+
+            <Label styleClass="field-label" text="Email" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+            <TextField fx:id="emailField" styleClass="field-control" GridPane.columnIndex="2"
+                       GridPane.rowIndex="1"/>
+
+            <Label styleClass="field-label" text="Telefono" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+            <TextField fx:id="telefonoField" styleClass="field-control" GridPane.columnIndex="3"
+                       GridPane.rowIndex="1"/>
+
+            <!-- Riga 2 -->
+            <Label styleClass="field-label" text="Data di nascita" GridPane.columnIndex="0"
+                   GridPane.rowIndex="2"/>
+            <DatePicker fx:id="dataNascitaPicker" styleClass="field-control" GridPane.columnIndex="0"
+                        GridPane.rowIndex="3"/>
+
+            <Label styleClass="field-label" text="Sesso" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <ChoiceBox fx:id="sessoChoice" prefHeight="26.0" prefWidth="84.0" styleClass="field-control"
+                       GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+            <Label styleClass="field-label" text="Codice fiscale" GridPane.columnIndex="2"
+                   GridPane.rowIndex="2"/>
+            <TextField fx:id="codiceFiscaleField" styleClass="field-control" GridPane.columnIndex="2"
+                       GridPane.rowIndex="3"/>
+
+            <Label styleClass="field-label" text="Password (iniziale)" GridPane.columnIndex="3"
+                   GridPane.rowIndex="2"/>
+            <PasswordField fx:id="passwordField" styleClass="field-control" GridPane.columnIndex="3"
+                           GridPane.rowIndex="3"/>
+        </GridPane>
+    </VBox>
+
+    <!-- Patologie -->
+    <VBox spacing="12" styleClass="card">
+        <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
+            <Label styleClass="card-title" text="Patologie note"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button fx:id="addPatologiaButton" onAction="#handleAddPatologia" styleClass="btn-ghost"
+                    text="+ Aggiungi patologia"/>
+        </HBox>
+
+        <VBox spacing="6" style="-fx-padding: 12 16 16 16;">
+            <FlowPane fx:id="patologieContainer" hgap="8" vgap="8"/>
+            <Label fx:id="patologieEmptyLabel" styleClass="page-subtitle" text="Nessuna patologia registrata"/>
+        </VBox>
+    </VBox>
+
+    <!-- Pulsanti -->
+    <HBox alignment="CENTER_RIGHT" spacing="8">
+        <Button onAction="#handleCancelChanges" styleClass="btn-ghost" text="Annulla"/>
+        <Button onAction="#handleSave" styleClass="btn-primary" text="Salva modifiche"/>
+    </HBox>
+
 </VBox>

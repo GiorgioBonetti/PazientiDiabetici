@@ -1,75 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.univr.diabete.controller.FarmacoFormController"
-      spacing="16"
-      styleClass="dialog-root"
-      stylesheets="@../css/app.css"
-      style="-fx-padding: 18 20 18 20;">
+<VBox spacing="16" style="-fx-padding: 18 20 18 20;" styleClass="dialog-root" stylesheets="@../css/app.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.FarmacoFormController">
 
-    <children>
+    <!-- Header -->
+    <VBox spacing="4">
+        <Label fx:id="titleLabel" styleClass="dialog-title" text="Nuovo farmaco"/>
+    </VBox>
 
-        <!-- Header -->
+    <!-- Campi -->
+    <VBox spacing="10">
         <VBox spacing="4">
-            <children>
-                <Label fx:id="titleLabel"
-                       text="Nuovo farmaco"
-                       styleClass="dialog-title"/>
-                <Label text="Inserisci le informazioni del farmaco."
-                       styleClass="dialog-subtitle"/>
-            </children>
+            <Label styleClass="form-label" text="Nome farmaco"/>
+            <TextField fx:id="nomeField" promptText="Es. Metformina" styleClass="rounded-field"/>
         </VBox>
 
-        <!-- Campi -->
-        <VBox spacing="10">
-            <children>
-
-                <VBox spacing="4">
-                    <children>
-                        <Label text="Nome farmaco"
-                               styleClass="form-label"/>
-                        <TextField fx:id="nomeField"
-                                   promptText="Es. Metformina"
-                                   styleClass="rounded-field"/>
-                    </children>
-                </VBox>
-
-                <VBox spacing="4">
-                    <children>
-                        <Label text="Marca (opzionale)"
-                               styleClass="form-label"/>
-                        <TextField fx:id="marcaField"
-                                   promptText="Es. Generic"
-                                   styleClass="rounded-field"/>
-                    </children>
-                </VBox>
-
-            </children>
+        <VBox spacing="4">
+            <Label styleClass="form-label" text="Marca (opzionale)"/>
+            <TextField fx:id="marcaField" promptText="Es. Generic" styleClass="rounded-field"/>
         </VBox>
 
-        <!-- Errore -->
-        <Label fx:id="errorLabel"
-               textFill="red"
-               wrapText="true"
-               visible="false"
-               managed="false"/>
+    </VBox>
 
-        <!-- Pulsanti -->
-        <HBox spacing="10" alignment="CENTER_RIGHT">
-            <children>
-                <Button text="Annulla"
-                        onAction="#handleCancel"
-                        styleClass="btn-secondary"/>
-                <Button text="Salva"
-                        onAction="#handleSave"
-                        styleClass="btn-primary"/>
-            </children>
-        </HBox>
+    <!-- Errore -->
+    <Label fx:id="errorLabel" managed="false" textFill="red" visible="false" wrapText="true"/>
 
-    </children>
+    <!-- Pulsanti -->
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button onAction="#handleCancel" styleClass="btn-secondary" text="Annulla"/>
+        <Button onAction="#handleSave" styleClass="btn-primary" text="Salva"/>
+    </HBox>
+
 </VBox>

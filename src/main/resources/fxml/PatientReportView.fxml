@@ -6,212 +6,189 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
-<VBox spacing="16" style="-fx-padding: 8 16 16 16;" stylesheets="@../css/app.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.PatientReportController">
+<VBox spacing="16" style="-fx-padding: 8 16 16 16;" stylesheets="@../css/app.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.PatientReportController">
 
-    <children>
+    <!-- HEADER -->
+    <VBox spacing="4">
+        <!-- Titolo -->
+        <!-- HEADER REPORT -->
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <Label styleClass="page-title" text="Report glicemico"/>
 
-        <!-- HEADER -->
-        <VBox spacing="4">
-            <children>
-                <!-- Titolo -->
-                <!-- HEADER REPORT -->
-                <HBox alignment="CENTER_LEFT" spacing="8">
-                    <children>
-                        <Label styleClass="page-title" text="Report glicemico" />
+            <!-- nome paziente evidenziato -->
+            <Label fx:id="patientNameLabel" styleClass="page-title-accent" text="Mario Rossi"/>
+            <Button fx:id="editButton" onAction="#handleEditPatient" styleClass="icon-edit-btn">
 
-                        <!-- nome paziente evidenziato -->
-                        <Label fx:id="patientNameLabel" styleClass="page-title-accent" text="Mario Rossi" />
-                        <Button fx:id="editButton" onAction="#handleEditPatient" styleClass="icon-edit-btn">
+                <graphic>
+                    <SVGPath content="M12.3 2.3 L3 11.6 L2 15.9 L6.3 14.9 L15.6 5.6 Z"/>
+                </graphic>
 
-                            <graphic>
-                                <SVGPath content="M12.3 2.3 L3 11.6 L2 15.9 L6.3 14.9 L15.6 5.6 Z" />
-                            </graphic>
+            </Button>
+            <Pane HBox.hgrow="ALWAYS"/>
 
-                        </Button>
-                        <Pane HBox.hgrow="ALWAYS" />
+            <!-- Bottone MATITA per aprire Scheda paziente -->
+        </HBox>
 
-                        <!-- Bottone MATITA per aprire Scheda paziente -->
-                    </children>
-                </HBox>
+        <!-- Riga con filtro periodo -->
+        <!-- RIGA PERIODO + NAVIGAZIONE -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <Label styleClass="page-subtitle" text="Qui puoi vedere il report completo." visible="false"
+                   wrapText="true"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <!-- Bottoni di navigazione -->
+            <Button fx:id="goMeasurementsButton" onAction="#handleGoToMeasurements" prefWidth="150"
+                    style="-fx-font-size: 12px" styleClass="btn-ghost" text="Misurazioni"/>
 
-                <!-- Riga con filtro periodo -->
-                <!-- RIGA PERIODO + NAVIGAZIONE -->
-                <HBox alignment="CENTER_LEFT" spacing="12">
-                    <children>
-                        <Label styleClass="page-subtitle" text="Qui puoi vedere il report completo." visible="false" wrapText="true" />
-                        <Pane HBox.hgrow="ALWAYS" />
-                        <!-- Bottoni di navigazione -->
-                        <Button fx:id="goMeasurementsButton" onAction="#handleGoToMeasurements" prefWidth="150" style="-fx-font-size: 12px" styleClass="btn-ghost" text="Misurazioni" />
+            <Button fx:id="goTherapyButton" onAction="#handleGoToTherapy" prefWidth="150"
+                    style="-fx-font-size: 12px" styleClass="btn-ghost" text="Terapia"/>
+        </HBox>
 
-                        <Button fx:id="goTherapyButton" onAction="#handleGoToTherapy" prefWidth="150" style="-fx-font-size: 12px" styleClass="btn-ghost" text="Terapia" />
-                    </children>
-                </HBox>
+    </VBox>
 
-            </children>
+    <!-- KPI ROW -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <!-- KPI MEDIA -->
+        <VBox spacing="6" styleClass="kpi-card">
+            <Label styleClass="kpi-label" text="Glicemia media"/>
+            <Label fx:id="avgLabel" styleClass="kpi-value" text="–"/>
+            <Label styleClass="kpi-helper" text="mg/dL"/>
         </VBox>
 
-        <!-- KPI ROW -->
-        <HBox alignment="CENTER_LEFT" spacing="12">
-            <!-- KPI MEDIA -->
-            <VBox spacing="6" styleClass="kpi-card">
-                <children>
-                    <Label styleClass="kpi-label" text="Glicemia media" />
-                    <Label fx:id="avgLabel" styleClass="kpi-value" text="–" />
-                    <Label styleClass="kpi-helper" text="mg/dL" />
-                </children>
-            </VBox>
+        <!-- KPI MIN -->
+        <VBox spacing="6" styleClass="kpi-card">
+            <Label styleClass="kpi-label" text="Valore minimo"/>
+            <Label fx:id="minLabel" styleClass="kpi-value" text="–"/>
+            <Label styleClass="kpi-helper" text="mg/dL"/>
+        </VBox>
 
-            <!-- KPI MIN -->
-            <VBox spacing="6" styleClass="kpi-card">
-                <children>
-                    <Label styleClass="kpi-label" text="Valore minimo" />
-                    <Label fx:id="minLabel" styleClass="kpi-value" text="–" />
-                    <Label styleClass="kpi-helper" text="mg/dL" />
-                </children>
-            </VBox>
+        <!-- KPI MAX -->
+        <VBox spacing="6" styleClass="kpi-card">
+            <Label styleClass="kpi-label" text="Valore massimo"/>
+            <Label fx:id="maxLabel" styleClass="kpi-value" text="–"/>
+            <Label styleClass="kpi-helper" text="mg/dL"/>
+        </VBox>
 
-            <!-- KPI MAX -->
-            <VBox spacing="6" styleClass="kpi-card">
-                <children>
-                    <Label styleClass="kpi-label" text="Valore massimo" />
-                    <Label fx:id="maxLabel" styleClass="kpi-value" text="–" />
-                    <Label styleClass="kpi-helper" text="mg/dL" />
-                </children>
-            </VBox>
+        <!-- KPI NUM MISURAZIONI -->
+        <VBox spacing="6" styleClass="kpi-card">
+            <Label styleClass="kpi-label" text="Numero misurazioni"/>
+            <Label fx:id="countLabel" styleClass="kpi-value" text="0"/>
+            <Label styleClass="kpi-helper" text="nel periodo"/>
+        </VBox>
+        <VBox alignment="CENTER" spacing="6" translateY="19"><!-- Testo centrato sopra -->
+            <Label fx:id="periodLabel" alignment="CENTER" maxWidth="Infinity" style="-fx-font-size: 10px"/>
 
-            <!-- KPI NUM MISURAZIONI -->
-            <VBox spacing="6" styleClass="kpi-card">
-                <children>
-                    <Label styleClass="kpi-label" text="Numero misurazioni" />
-                    <Label fx:id="countLabel" styleClass="kpi-value" text="0" />
-                    <Label styleClass="kpi-helper" text="nel periodo" />
-                </children>
-            </VBox>
-            <VBox alignment="CENTER" spacing="6" translateY="19">
-                    <children>
+            <!-- ComboBox sotto -->
+            <ComboBox fx:id="periodFilter" prefWidth="170" styleClass="btn-ghost"/>
+        </VBox>
+    </HBox>
 
-                        <!-- Testo centrato sopra -->
-                        <Label fx:id="periodLabel" alignment="CENTER" maxWidth="Infinity" style="-fx-font-size: 10px" styleClass="muted-label" text="" />
+    <!-- RIGA 2: GRAFICO A SINISTRA, QUADRO CLINICO A DESTRA -->
+    <HBox spacing="16">
 
-                        <!-- ComboBox sotto -->
-                        <ComboBox fx:id="periodFilter" prefWidth="170" styleClass="btn-ghost" />
-
-                    </children>
-            </VBox>
-        </HBox>
-
-        <!-- RIGA 2: GRAFICO A SINISTRA, QUADRO CLINICO A DESTRA -->
-        <HBox spacing="16">
-
-            <!-- CARD GLICEMIA (SINISTRA) -->
-            <BorderPane styleClass="card" HBox.hgrow="ALWAYS">
-                <top>
-                    <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
-                        <children>
-                            <Label styleClass="card-title" text="Andamento glicemia" />
-                            <Pane HBox.hgrow="ALWAYS" />
-                        </children>
-                    </HBox>
-                </top>
-
-                <center>
-                    <LineChart fx:id="reportChart" animated="false" legendVisible="false" prefHeight="260" prefWidth="500">
-                        <xAxis>
-                            <CategoryAxis label="Data" fx:id="xAxis" />
-                        </xAxis>
-                        <yAxis>
-                            <NumberAxis fx:id="yAxis" label="mg/dL" />
-                        </yAxis>
-                    </LineChart>
-                </center>
-            </BorderPane>
-
-            <!-- CARD QUADRO CLINICO (DESTRA) -->
-            <BorderPane prefWidth="260" styleClass="card">
-                <top>
-                    <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
-                        <children>
-                            <Label styleClass="card-title" text="Quadro clinico" />
-                            <Pane HBox.hgrow="ALWAYS" />
-                        </children>
-                    </HBox>
-                </top>
-
-                <center>
-                    <!-- Dentro questa card mettiamo 3 mini-card -->
-                    <VBox spacing="10">
-                        <padding>
-                            <Insets bottom="5" left="5" right="5" top="5" />
-                        </padding>
-                        <!-- Ultimo sintomo -->
-                        <VBox spacing="4" styleClass="kpi-card">
-                            <children>
-                                <Label styleClass="kpi-label" text="Ultimo sintomo registrato" />
-                                <Label fx:id="symptomsLabel" styleClass="page-subtitle" text="Nessun sintomo registrato" wrapText="true" />
-                            </children>
-                        </VBox>
-
-                        <!-- Patologie note -->
-                        <VBox spacing="4" styleClass="kpi-card">
-                            <children>
-                                <Label styleClass="kpi-label" text="Patologie note" />
-                                <Label fx:id="pathologiesLabel" styleClass="page-subtitle" text="Nessuna patologia registrata" wrapText="true" />
-                            </children>
-                        </VBox>
-                    </VBox>
-                </center>
-            </BorderPane>
-
-        </HBox>
-
-        <!-- RIGA 3: CARD TERAPIA ATTUALE SOTTO -->
-        <BorderPane styleClass="card">
+        <!-- CARD GLICEMIA (SINISTRA) -->
+        <BorderPane styleClass="card" HBox.hgrow="ALWAYS">
             <top>
                 <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
-                    <children>
-                        <Label styleClass="card-title" text="Terapia attuale" />
-                        <Pane HBox.hgrow="ALWAYS" />
-                        <Label fx:id="therapyStatusLabel" styleClass="chip-status-ok" text="In corso" />
-                    </children>
+                    <Label styleClass="card-title" text="Andamento glicemia"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
                 </HBox>
             </top>
 
             <center>
-                <GridPane hgap="18" vgap="6">
-                    <padding>
-                        <Insets bottom="5" left="5" right="5" top="5" />
-                    </padding>
-                    <columnConstraints>
-                        <ColumnConstraints halignment="RIGHT" minWidth="90" />
-                        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
-                    </columnConstraints>
-
-                    <children>
-                        <!-- Farmaco -->
-                        <Label styleClass="kpi-label" text="Farmaco:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                        <Label fx:id="therapyDrugLabel" styleClass="page-subtitle" text="—" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-
-                        <!-- Dosaggio -->
-                        <Label styleClass="kpi-label" text="Dosaggio:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                        <Label fx:id="therapyDoseLabel" styleClass="page-subtitle" text="—" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-
-                        <!-- Frequenza -->
-                        <Label styleClass="kpi-label" text="Frequenza:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                        <Label fx:id="therapyFreqLabel" styleClass="page-subtitle" text="—" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-
-                        <!-- Periodo -->
-                        <Label styleClass="kpi-label" text="Periodo:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                        <Label fx:id="therapyPeriodLabel" styleClass="page-subtitle" text="—" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                    </children>
-               <rowConstraints>
-                  <RowConstraints />
-                  <RowConstraints />
-                  <RowConstraints />
-                  <RowConstraints />
-               </rowConstraints>
-                </GridPane>
+                <LineChart fx:id="reportChart" animated="false" legendVisible="false" prefHeight="260" prefWidth="500">
+                    <xAxis>
+                        <CategoryAxis label="Data" fx:id="xAxis"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="yAxis" label="mg/dL"/>
+                    </yAxis>
+                </LineChart>
             </center>
         </BorderPane>
 
-    </children>
+        <!-- CARD QUADRO CLINICO (DESTRA) -->
+        <BorderPane prefWidth="260" styleClass="card">
+            <top>
+                <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
+                    <Label styleClass="card-title" text="Quadro clinico"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </top>
+
+            <center>
+                <!-- Dentro questa card mettiamo 3 mini-card -->
+                <VBox spacing="10">
+                    <padding>
+                        <Insets bottom="5" left="5" right="5" top="5"/>
+                    </padding>
+                    <!-- Ultimo sintomo -->
+                    <VBox spacing="4" styleClass="kpi-card">
+                        <Label styleClass="kpi-label" text="Ultimo sintomo registrato"/>
+                        <Label fx:id="symptomsLabel" styleClass="page-subtitle" text="Nessun sintomo registrato"
+                               wrapText="true"/>
+                    </VBox>
+
+                    <!-- Patologie note -->
+                    <VBox spacing="4" styleClass="kpi-card">
+                        <Label styleClass="kpi-label" text="Patologie note"/>
+                        <Label fx:id="pathologiesLabel" styleClass="page-subtitle"
+                               text="Nessuna patologia registrata" wrapText="true"/>
+                    </VBox>
+                </VBox>
+            </center>
+        </BorderPane>
+
+    </HBox>
+
+    <!-- RIGA 3: CARD TERAPIA ATTUALE SOTTO -->
+    <BorderPane styleClass="card">
+        <top>
+            <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
+                <Label styleClass="card-title" text="Terapia attuale"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Label fx:id="therapyStatusLabel" styleClass="chip-status-ok" text="In corso"/>
+            </HBox>
+        </top>
+
+        <center>
+            <GridPane hgap="18" vgap="6">
+                <padding>
+                    <Insets bottom="5" left="5" right="5" top="5"/>
+                </padding>
+                <columnConstraints>
+                    <ColumnConstraints halignment="RIGHT" minWidth="90"/>
+                    <ColumnConstraints halignment="LEFT" hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <rowConstraints>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                </rowConstraints>
+                <!-- Farmaco -->
+                <Label styleClass="kpi-label" text="Farmaco:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label fx:id="therapyDrugLabel" styleClass="page-subtitle" text="—" GridPane.columnIndex="1"
+                       GridPane.rowIndex="0"/>
+
+                <!-- Dosaggio -->
+                <Label styleClass="kpi-label" text="Dosaggio:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label fx:id="therapyDoseLabel" styleClass="page-subtitle" text="—" GridPane.columnIndex="1"
+                       GridPane.rowIndex="1"/>
+
+                <!-- Frequenza -->
+                <Label styleClass="kpi-label" text="Frequenza:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label fx:id="therapyFreqLabel" styleClass="page-subtitle" text="—" GridPane.columnIndex="1"
+                       GridPane.rowIndex="2"/>
+
+                <!-- Periodo -->
+                <Label styleClass="kpi-label" text="Periodo:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <Label fx:id="therapyPeriodLabel" styleClass="page-subtitle" text="—" GridPane.columnIndex="1"
+                       GridPane.rowIndex="3"/>
+            </GridPane>
+        </center>
+    </BorderPane>
+
 </VBox>

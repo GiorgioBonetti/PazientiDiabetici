@@ -4,52 +4,34 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.univr.diabete.controller.AddAssunzioneController"
-      stylesheets="@../css/app.css"
-      spacing="16"
-      alignment="CENTER"
-      styleClass="dialog-root">
+<VBox alignment="CENTER" spacing="16" styleClass="dialog-root" stylesheets="@../css/app.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.AddAssunzioneController">
 
     <padding>
-        <Insets top="12" right="12" bottom="12" left="12"/>
+        <Insets bottom="12" left="12" right="12" top="12" />
     </padding>
-    <VBox spacing="16"
-          prefWidth="320"
-          styleClass="dialog-card">
+    <VBox prefWidth="320" spacing="16" styleClass="dialog-card">
 
         <padding>
-            <Insets top="20" right="24" bottom="20" left="24"/>
+            <Insets bottom="20" left="24" right="24" top="20" />
         </padding>
 
-        <Label text="Registra assunzione"
-               styleClass="dialog-title"/>
+        <Label styleClass="dialog-title" text="Registra assunzione" />
 
         <!-- Quantità -->
         <VBox spacing="4">
-            <Label text="Quantità assunta"
-                   styleClass="dialog-field-label"/>
-            <TextField fx:id="quantitaField"
-                       styleClass="field-control"/>
+            <Label styleClass="dialog-field-label" text="Quantità assunta" />
+            <TextField fx:id="quantitaField" styleClass="field-control" />
         </VBox>
 
         <!-- Data / Ora -->
         <VBox spacing="4">
-            <Label text="Data e ora"
-                   styleClass="dialog-field-label"/>
-            <DatePicker fx:id="dateField"/>
+            <Label styleClass="dialog-field-label" text="Data e ora" />
+            <DatePicker fx:id="dateField" prefHeight="26.0" prefWidth="273.0" />
         </VBox>
 
-        <Button text="Conferma"
-                onAction="#handleConfirm"
-                styleClass="btn-primary"
-                maxWidth="Infinity"/>
+        <Button maxWidth="Infinity" onAction="#handleConfirm" styleClass="btn-primary" text="Conferma" />
 
-        <Button text="Annulla"
-                onAction="#handleCancel"
-                styleClass="btn-ghost"
-                maxWidth="Infinity"/>
+        <Button maxWidth="Infinity" onAction="#handleCancel" styleClass="btn-ghost" text="Annulla" />
 
     </VBox>
 </VBox>

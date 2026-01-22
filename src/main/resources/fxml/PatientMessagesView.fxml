@@ -1,54 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.univr.diabete.controller.PatientMessagesController"
-      spacing="12"
-      stylesheets="@../css/app.css"
-      style="-fx-padding: 8 16 16 16;">
+<VBox spacing="12" style="-fx-padding: 8 16 16 16;" stylesheets="@../css/app.css"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.univr.diabete.controller.PatientMessagesController">
 
-    <children>
-        <VBox spacing="4">
-            <children>
-                <Label text="Messaggi" styleClass="page-title"/>
-                <Label text="Chat diretta con il diabetologo assegnato."
-                       styleClass="page-subtitle"/>
-            </children>
-        </VBox>
+    <VBox spacing="4">
+        <Label styleClass="page-title" text="Messaggi"/>
+    </VBox>
 
-        <HBox spacing="8" alignment="CENTER_LEFT">
-            <children>
-                <Label text="Diabetologo:" styleClass="page-subtitle"/>
-                <Label fx:id="diabetologistLabel" text="—" styleClass="page-title-accent"/>
-                <Pane HBox.hgrow="ALWAYS"/>
-                <Label fx:id="infoLabel" text="" visible="false" managed="false" styleClass="page-subtitle"/>
-            </children>
-        </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="8">
+        <Label styleClass="page-subtitle" text="Diabetologo:"/>
+        <Label fx:id="diabetologistLabel" styleClass="page-title-accent" text="—"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label fx:id="infoLabel" managed="false" styleClass="page-subtitle" visible="false"/>
+    </HBox>
 
-        <BorderPane styleClass="card" VBox.vgrow="ALWAYS">
-            <center>
-                <ListView fx:id="messagesListView"
-                          prefHeight="420"
-                          styleClass="message-list"/>
-            </center>
-            <bottom>
-                <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-padding: 10 12;">
-                    <children>
-                        <TextField fx:id="messageInput"
-                                   promptText="Scrivi un messaggio..."
-                                   styleClass="field-control"
-                                   HBox.hgrow="ALWAYS"/>
-                        <Button fx:id="sendButton"
-                                text="Invia"
-                                styleClass="btn-primary"
-                                onAction="#handleSend"/>
-                    </children>
-                </HBox>
-            </bottom>
-        </BorderPane>
-    </children>
+    <BorderPane styleClass="card" VBox.vgrow="ALWAYS">
+        <center>
+            <ListView fx:id="messagesListView" prefHeight="420" styleClass="message-list"/>
+        </center>
+        <bottom>
+            <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 10 12;">
+                <TextField fx:id="messageInput" promptText="Scrivi un messaggio..." styleClass="field-control"
+                           HBox.hgrow="ALWAYS"/>
+                <Button fx:id="sendButton" onAction="#handleSend" styleClass="btn-primary" text="Invia"/>
+            </HBox>
+        </bottom>
+    </BorderPane>
 </VBox>

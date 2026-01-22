@@ -1,60 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx/21"
-           xmlns:fx="http://javafx.com/fxml/1"
-           stylesheets="@../css/app.css"
-           fx:controller="it.univr.diabete.controller.AddSymptomController"
-           styleClass="dialog-root">
+<StackPane styleClass="dialog-root" stylesheets="@../css/app.css" xmlns="http://javafx.com/javafx/17.0.12"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.AddSymptomController">
 
-    <children>
-        <VBox spacing="18"
-              alignment="TOP_CENTER"
-              prefHeight="420"
-              prefWidth="360"
-              maxWidth="620"
-              styleClass="dialog-card"
-              style="-fx-padding: 24;">
+    <VBox alignment="TOP_CENTER" maxWidth="620" prefHeight="420" prefWidth="360" spacing="18" style="-fx-padding: 24;"
+          styleClass="dialog-card">
 
-            <Label text="Nuovo sintomo" styleClass="dialog-title"/>
-            <Label text="Inserisci il sintomo di oggi"
-                   styleClass="dialog-subtitle"/>
+        <Label styleClass="dialog-title" text="Nuovo sintomo"/>
 
-            <VBox spacing="12" style="-fx-padding: 6 0 0 0;">
+        <VBox spacing="12" style="-fx-padding: 6 0 0 0;">
 
-                <VBox spacing="4">
-                    <Label text="Descrizione" styleClass="dialog-field-label"/>
-                    <TextField fx:id="descrizioneField" styleClass="field-control"/>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Intensita (1-10)" styleClass="dialog-field-label"/>
-                    <TextField fx:id="intensitaField" styleClass="field-control"/>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Frequenza (opzionale)" styleClass="dialog-field-label"/>
-                    <TextField fx:id="frequenzaField" styleClass="field-control"/>
-                </VBox>
-
-                <VBox spacing="4">
-                    <Label text="Note aggiuntive" styleClass="dialog-field-label"/>
-                    <TextArea fx:id="noteField" styleClass="field-control" prefRowCount="3"/>
-                </VBox>
-
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Descrizione"/>
+                <TextField fx:id="descrizioneField" styleClass="field-control"/>
             </VBox>
 
-            <HBox spacing="12" alignment="CENTER_RIGHT">
-                <Button text="Annulla"
-                        styleClass="btn-ghost"
-                        onAction="#handleCancel"/>
-                <Button text="Salva sintomo"
-                        styleClass="btn-primary"
-                        onAction="#handleSave"/>
-            </HBox>
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Intensita (1-10)"/>
+                <TextField fx:id="intensitaField" styleClass="field-control"/>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Frequenza (opzionale)"/>
+                <TextField fx:id="frequenzaField" styleClass="field-control"/>
+            </VBox>
+
+            <VBox spacing="4">
+                <Label styleClass="dialog-field-label" text="Note aggiuntive"/>
+                <TextArea fx:id="noteField" prefRowCount="3" styleClass="field-control"/>
+            </VBox>
+
         </VBox>
-    </children>
+
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+            <Button onAction="#handleCancel" styleClass="btn-ghost" text="Annulla"/>
+            <Button onAction="#handleSave" styleClass="btn-primary" text="Salva sintomo"/>
+        </HBox>
+    </VBox>
 </StackPane>

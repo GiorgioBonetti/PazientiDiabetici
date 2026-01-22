@@ -4,39 +4,22 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.univr.diabete.controller.PatientDashboardController"
-      stylesheets="@../css/app.css"
-      spacing="12">
+<VBox spacing="12" stylesheets="@../css/app.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.PatientDashboardController">
 
     <!-- Header -->
     <VBox spacing="4">
-        <HBox spacing="6" alignment="CENTER_LEFT">
-            <Label text="Benvenuto" styleClass="page-title"/>
-            <Label fx:id="patientNameLabel"
-                   text="Nome"
-                   styleClass="page-title-accent"/>
+        <HBox alignment="CENTER_LEFT" spacing="6">
+            <Label styleClass="page-title" text="Benvenuto" />
+            <Label fx:id="patientNameLabel" styleClass="page-title-accent" text="Nome" />
         </HBox>
-        <Label text="Qui puoi controllare la glicemia, la terapia e comunicare con il tuo diabetologo."
-               wrapText="true"
-               styleClass="page-subtitle"/>
+        <Label styleClass="page-subtitle" text="Qui puoi controllare la glicemia, la terapia e comunicare con il tuo diabetologo." visible="false" wrapText="true" />
     </VBox>
 
     <!-- Azioni rapide -->
     <HBox spacing="10">
-        <Button fx:id="addGlycemiaButton"
-                text="Registra glicemia"
-                onAction="#handleAddGlicemia"
-                styleClass="quick-action"/>
-        <Button fx:id="therapyButton"
-                text="Vedi terapia"
-                styleClass="quick-action"
-                onAction="#handleOpenTerapia"
-        />
-        <Button fx:id="messageDoctorButton"
-                text="Scrivi al diabetologo"
-                styleClass="quick-action"/>
+        <Button fx:id="addGlycemiaButton" onAction="#handleAddGlicemia" styleClass="quick-action" text="Registra glicemia" />
+        <Button fx:id="therapyButton" onAction="#handleOpenTerapia" styleClass="quick-action" text="Vedi terapia" />
+        <Button fx:id="messageDoctorButton" styleClass="quick-action" text="Scrivi al diabetologo" />
     </HBox>
 
     <!-- Main layout -->
@@ -46,29 +29,21 @@
             <!-- Oggi -->
             <BorderPane styleClass="card">
                 <top>
-                    <HBox spacing="8"
-                          alignment="CENTER_LEFT"
-                          styleClass="card-header">
-                        <Label text="Oggi" styleClass="card-title"/>
-                        <Pane HBox.hgrow="ALWAYS"/>
-                        <Label fx:id="todayDateLabel"
-                               text="26 Nov 2025"
-                               styleClass="card-subtitle"/>
+                    <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
+                        <Label styleClass="card-title" text="Oggi" />
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Label fx:id="todayDateLabel" styleClass="card-subtitle" text="26 Nov 2025" />
                     </HBox>
                 </top>
                 <center>
                     <VBox spacing="6">
                         <padding>
-                            <Insets top="10" right="10" bottom="10" left="10"/>
+                            <Insets bottom="10" left="10" right="10" top="10" />
                         </padding>
-                        <CheckBox fx:id="chkMattino"
-                                  text="Misura glicemia del mattino"/>
-                        <CheckBox fx:id="chkPranzo"
-                                  text="Misura glicemia prima di pranzo"/>
-                        <CheckBox fx:id="chkCena"
-                                  text="Misura glicemia prima di cena"/>
-                        <CheckBox fx:id="chkTerapiaAssunta"
-                                  text="Terapia assunta"/>
+                        <CheckBox fx:id="chkMattino" text="Misura glicemia del mattino" />
+                        <CheckBox fx:id="chkPranzo" text="Misura glicemia del pomeriggio" />
+                        <CheckBox fx:id="chkCena" text="Misura glicemia della sera" />
+                        <CheckBox fx:id="chkTerapiaAssunta" text="Terapia assunta" />
                     </VBox>
                 </center>
             </BorderPane>
@@ -76,25 +51,19 @@
             <!-- Ultime misurazioni -->
             <BorderPane styleClass="card">
                 <top>
-                    <HBox spacing="8"
-                          alignment="CENTER_LEFT"
-                          styleClass="card-header">
-                        <Label text="Ultime misurazioni" styleClass="card-title"/>
-                        <Pane HBox.hgrow="ALWAYS"/>
-                        <Button fx:id="addGlycemiaButton2"
-                                text="Registra glicemia"
-                                onAction="#handleAddGlicemia"
-                                styleClass="btn-ghost"/>
-                        <ChoiceBox fx:id="measurementFilter" onAction="#handleMeasurementFilterChange"
-                                   styleClass="btn-ghost"/>
+                    <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
+                        <Label styleClass="card-title" text="Ultime misurazioni" />
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Button fx:id="addGlycemiaButton2" onAction="#handleAddGlicemia" styleClass="btn-ghost" text="Registra glicemia" />
+                        <ChoiceBox fx:id="measurementFilter" onAction="#handleMeasurementFilterChange" styleClass="btn-ghost" />
                     </HBox>
                 </top>
                 <center>
                     <TableView fx:id="measurementsTable" prefHeight="220">
                         <columns>
-                            <TableColumn fx:id="colMeasDate" text="Data e ora" prefWidth="150"/>
-                            <TableColumn fx:id="colMeasValue" text="Valore (mg/dL)" prefWidth="120"/>
-                            <TableColumn fx:id="colDashMoment" text="Momento" prefWidth="120"/>
+                            <TableColumn fx:id="colMeasDate" prefWidth="150" text="Data e ora" />
+                            <TableColumn fx:id="colMeasValue" prefWidth="120" text="Valore (mg/dL)" />
+                            <TableColumn fx:id="colDashMoment" prefWidth="120" text="Momento" />
                         </columns>
                     </TableView>
                 </center>
@@ -102,25 +71,18 @@
         </VBox>
 
         <!-- Colonna destra: sintomi -->
-        <VBox spacing="12" prefWidth="360">
-            <BorderPane styleClass="card" prefHeight="270" maxHeight="270">
+        <VBox prefWidth="360" spacing="12">
+            <BorderPane maxHeight="270" prefHeight="270" styleClass="card">
                 <top>
-                    <HBox spacing="8"
-                          alignment="CENTER_LEFT"
-                          styleClass="card-header">
-                        <Label text="Sintomi di oggi" styleClass="card-title"/>
-                        <Pane HBox.hgrow="ALWAYS"/>
-                        <Button fx:id="addSymptomButton"
-                                text="+ Aggiungi sintomo"
-                                styleClass="btn-ghost"
-                                onAction="#handleAddSymptom"/>
+                    <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card-header">
+                        <Label styleClass="card-title" text="Sintomi di oggi" />
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Button fx:id="addSymptomButton" onAction="#handleAddSymptom" styleClass="btn-ghost" text="+ Aggiungi sintomo" />
                     </HBox>
                 </top>
                 <center>
                     <HBox spacing="12" style="-fx-padding: 12;">
-                        <ListView fx:id="todaySymptomsListView"
-                                  HBox.hgrow="ALWAYS"
-                                  styleClass="symptom-list"/>
+                        <ListView fx:id="todaySymptomsListView" styleClass="symptom-list" HBox.hgrow="ALWAYS" />
                     </HBox>
                 </center>
             </BorderPane>

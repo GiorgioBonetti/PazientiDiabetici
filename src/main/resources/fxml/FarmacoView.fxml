@@ -1,53 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.univr.diabete.controller.FarmacoController"
-      spacing="16"
-      style="-fx-padding: 8 16 16 16;">
+<VBox spacing="16" style="-fx-padding: 8 16 16 16;" xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.univr.diabete.controller.FarmacoController">
 
-    <children>
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox spacing="4">
+            <Label styleClass="page-title" text="Farmaci disponibili"/>
+        </VBox>
 
-        <!-- HEADER -->
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <children>
-                <VBox spacing="4">
-                    <children>
-                        <Label text="Farmaci disponibili"
-                               styleClass="page-title"/>
-                        <Label text="Gestisci il catalogo dei farmaci utilizzabili nelle terapie."
-                               styleClass="page-subtitle"
-                               wrapText="true"/>
-                    </children>
-                </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
 
-                <Pane HBox.hgrow="ALWAYS"/>
+        <!-- Search -->
+        <TextField fx:id="searchField" prefWidth="260" promptText="Cerca per nome o marca..."
+                   styleClass="rounded-field"/>
 
-                <!-- Search -->
-                <TextField fx:id="searchField"
-                           promptText="Cerca per nome o marca..."
-                           prefWidth="260"
-                           styleClass="rounded-field"/>
+        <Button fx:id="newButton" onAction="#handleAdd" styleClass="btn-primary" text="Nuovo farmaco"/>
+    </HBox>
 
-                <Button fx:id="newButton"
-                        text="Nuovo farmaco"
-                        onAction="#handleAdd"
-                        styleClass="btn-primary"/>
-            </children>
-        </HBox>
+    <!-- CARD CON LISTA -->
+    <BorderPane styleClass="card">
+        <center>
+            <ListView fx:id="farmacoListView" prefHeight="420.0"
+                      style="-fx-background-color: transparent; -fx-padding: 10;"/>
+        </center>
+    </BorderPane>
 
-        <!-- CARD CON LISTA -->
-        <BorderPane styleClass="card">
-            <center>
-                <ListView fx:id="farmacoListView"
-                          prefHeight="420.0"
-                          style="-fx-background-color: transparent; -fx-padding: 10;"/>
-            </center>
-        </BorderPane>
-
-    </children>
 </VBox>
