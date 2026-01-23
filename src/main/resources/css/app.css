@@ -538,20 +538,27 @@
     -fx-background-color: white;
     -fx-background-radius: 22;
     -fx-border-radius: 22;
-    -fx-padding: 16 16 16 16;      /* meno spazio sopra/sotto */
+    -fx-padding: 12 16 12 16;
 
     /* larghezza fissa */
     -fx-pref-width: 190;
     -fx-min-width: 190;
     -fx-max-width: 190;
 
-    /* altezza più bassa */
-    -fx-pref-height: 100;
-    -fx-min-height: 100;
-    -fx-max-height: 100;
-
     -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 8, 0.2, 0, 2);
     -fx-cursor: hand;
+}
+
+/* Card per paziente: compatta */
+.therapy-card-patient {
+    -fx-pref-height: 92;
+    -fx-max-height: 92;
+}
+
+/* Card per diabetologo: più alta per i pulsanti */
+.therapy-card-doctor {
+    -fx-pref-height: 135;
+    -fx-max-height: 135;
 }
 
 

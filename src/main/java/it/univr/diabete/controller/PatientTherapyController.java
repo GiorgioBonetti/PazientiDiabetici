@@ -24,7 +24,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Modality;
@@ -66,10 +65,14 @@ public class PatientTherapyController {
 
     private String codiceFiscale;
 
-    // ✅ nuova: email del diabetologo loggato (serve per INSERT Terapia)
+    // nuova: email del diabetologo loggato (serve per INSERT Terapia)
     private String fkDiabetologoLoggato;
 
-    private final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    private static final DateTimeFormatter dateFormatter =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private VBox selectedCard;
 
     // ─────────────────── NAVIGATION ───────────────────
@@ -97,7 +100,7 @@ public class PatientTherapyController {
     @FXML
     private void initialize() {
         colData.setCellValueFactory(c ->
-                new SimpleStringProperty(c.getValue().getDateStamp().format(df))
+                new SimpleStringProperty(c.getValue().getDateStamp().format(DATE_TIME_FORMATTER))
         );
         colQuantita.setCellValueFactory(c ->
                 new SimpleIntegerProperty(c.getValue().getQuantitaAssunta()).asObject()
@@ -121,7 +124,7 @@ public class PatientTherapyController {
         this.codiceFiscale = codiceFiscale;
         patientNameLabel.setText(nomeCompleto);
 
-        // ✅ recupero diabetologo loggato dal MainShell
+        // recupero diabetologo loggato dal MainShell
         // Se l'app è loggata come Diabetologo, loggedUserId = email diabetologo
         // Se l'app è loggata come Paziente, loggedUserId = CF (quindi NON va usato come fkDiabetologo)
         MainShellController shell = MainApp.getMainShellController();
@@ -179,21 +182,29 @@ public class PatientTherapyController {
     // ─────────────────── CARD TERAPIA ───────────────────
 
     private VBox creaCardTerapia(Terapia t) {
-        VBox card = new VBox(4);
-        card.getStyleClass().add("therapy-card");
-        card.setPadding(new Insets(8, 14, 10, 14));
-        card.setMinHeight(70);
-        card.setPrefHeight(70);
+        // Verifica se l'utente loggato è un diabetologo
+        boolean isDiabetologo = (fkDiabetologoLoggato != null && !fkDiabetologoLoggato.isBlank());
 
-        card.setPrefWidth(200);
+        // Spacing ridotto per il paziente, normale per diabetologo
+        VBox card = new VBox(isDiabetologo ? 6 : 4);
+
+        // Applica classi CSS appropriate
+        if (isDiabetologo) {
+            card.getStyleClass().addAll("therapy-card", "therapy-card-doctor");
+        } else {
+            card.getStyleClass().addAll("therapy-card", "therapy-card-patient");
+        }
+
         card.setMinWidth(200);
-        card.setMaxWidth(200);
+        card.setPrefWidth(200);
+        card.setMaxWidth(220);
 
         Label lblNome = new Label();
         lblNome.getStyleClass().add("card-title");
 
         Label lblInfo = new Label();
         lblInfo.getStyleClass().add("page-subtitle");
+        lblInfo.setWrapText(true);
 
         lblNome.setText(t.getNome());
 
@@ -219,39 +230,44 @@ public class PatientTherapyController {
 
         Label lblBadge = creaBadgeStato(t);
 
-        Region hSpacer = new Region();
-        HBox.setHgrow(hSpacer, Priority.ALWAYS);
-
-        HBox row1 = new HBox(8, lblNome, hSpacer, lblBadge);
+        HBox row1 = new HBox(lblNome);
         row1.setAlignment(Pos.CENTER_LEFT);
 
-        Button editBtn = new Button();
-        editBtn.getStyleClass().add("icon-edit-btn");
-        SVGPath icon = new SVGPath();
-        icon.setContent("M12.3 2.3 L3 11.6 L2 15.9 L6.3 14.9 L15.6 5.6 Z");
-        icon.getStyleClass().add("svg-path");
-        editBtn.setGraphic(icon);
-        editBtn.setId("editTherapyButton");
-        editBtn.setOnAction(e -> handleEditTherapy(t));
+        if (isDiabetologo) {
+            Button editBtn = new Button();
+            editBtn.getStyleClass().add("icon-edit-btn");
+            SVGPath icon = new SVGPath();
+            icon.setContent("M12.3 2.3 L3 11.6 L2 15.9 L6.3 14.9 L15.6 5.6 Z");
+            icon.getStyleClass().add("svg-path");
+            editBtn.setGraphic(icon);
+            editBtn.setId("editTherapyButton");
+            editBtn.setOnAction(e -> handleEditTherapy(t));
 
-        Button deleteBtn = new Button();
-        deleteBtn.getStyleClass().add("icon-delete-btn");
-        SVGPath deleteIcon = new SVGPath();
-        deleteIcon.setContent("M6 7h10l-1 12H7L6 7zm2-3h6l1 2H7l1-2zm-3 2h14v2H5V6z");
-        deleteIcon.getStyleClass().add("svg-path");
-        deleteBtn.setGraphic(deleteIcon);
-        deleteBtn.setId("deleteTherapyButton");
-        deleteBtn.setOnAction(e -> handleDeleteTherapy(t));
+            Button deleteBtn = new Button();
+            deleteBtn.getStyleClass().add("icon-delete-btn");
+            SVGPath deleteIcon = new SVGPath();
+            deleteIcon.setContent("M6 7h10l-1 12H7L6 7zm2-3h6l1 2H7l1-2zm-3 2h14v2H5V6z");
+            deleteIcon.getStyleClass().add("svg-path");
+            deleteBtn.setGraphic(deleteIcon);
+            deleteBtn.setId("deleteTherapyButton");
+            deleteBtn.setOnAction(e -> handleDeleteTherapy(t));
 
-        HBox bottomRow = new HBox(8, editBtn, deleteBtn);
-        bottomRow.setAlignment(Pos.BOTTOM_RIGHT);
+            HBox bottomRow = new HBox(4, editBtn, deleteBtn);
+            bottomRow.setAlignment(Pos.BOTTOM_RIGHT);
+            bottomRow.setPadding(new Insets(2, 0, 0, 0));
+            VBox.setVgrow(bottomRow, Priority.NEVER);
 
-        card.getChildren().addAll(row1, lblInfo, bottomRow);
+            card.getChildren().addAll(row1, lblInfo, lblBadge, bottomRow);
+        } else {
+            // Paziente: nessun pulsante
+            card.getChildren().addAll(row1, lblInfo, lblBadge);
+        }
 
         card.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> selezionaTerapia(t, card));
 
         return card;
     }
+
 
     private Label creaBadgeStato(Terapia t) {
         Label badge = new Label();
@@ -341,9 +357,9 @@ public class PatientTherapyController {
         if (terapia.getDataInizio() != null) {
             String periodoText;
             if (terapia.getDataFine() != null) {
-                periodoText = terapia.getDataInizio() + " al " + terapia.getDataFine();
+                periodoText = terapia.getDataInizio().format(dateFormatter) + " al " + terapia.getDataFine().format(dateFormatter);
             } else {
-                periodoText = "Periodo: dal " + terapia.getDataInizio();
+                periodoText = terapia.getDataInizio().format(dateFormatter);
             }
             Label lblPeriodo = new Label(periodoText);
             lblPeriodo.getStyleClass().add("drug-card-line-small");
@@ -405,9 +421,9 @@ public class PatientTherapyController {
             AddAssunzioneController controller = loader.getController();
             controller.initData(
                     codiceFiscale,
-                    terapiaCorrente.getId(),                 // ✅ fkTerapia vero
-                    farmacoTerapiaCorrente.getFkFarmaco(),   // ✅ fkFarmaco
-                    terapiaCorrente.getDataInizio(),         // ✅ Data inizio terapia
+                    terapiaCorrente.getId(),
+                    farmacoTerapiaCorrente.getFkFarmaco(),
+                    terapiaCorrente.getDataInizio(),
                     this::loadAssunzioni
             );
             Stage popup = new Stage();
@@ -667,7 +683,7 @@ public class PatientTherapyController {
     private void handleAddTherapy() {
         if (codiceFiscale == null || codiceFiscale.isBlank()) return;
 
-        // ✅ qui deve esserci un diabetologo loggato, altrimenti non posso creare terapia
+        // qui deve esserci un diabetologo loggato, altrimenti non posso creare terapia
         if (fkDiabetologoLoggato == null || fkDiabetologoLoggato.isBlank()) {
             // se vuoi: mostra alert globale
             MainShellController shell = MainApp.getMainShellController();
@@ -729,7 +745,7 @@ public class PatientTherapyController {
             String dateStr = "data non disponibile";
             String nomeFarmaco = "";
             if (a != null && a.getDateStamp() != null) {
-                dateStr = df.format(a.getDateStamp());
+                dateStr = DATE_TIME_FORMATTER.format(a.getDateStamp());
             }
             if (farmacoTerapiaCorrente != null && farmacoTerapiaCorrente.getFarmaco() != null) {
                 nomeFarmaco = farmacoTerapiaCorrente.getFarmaco().getNome();

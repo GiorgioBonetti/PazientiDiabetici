@@ -38,6 +38,7 @@ import it.univr.diabete.dao.impl.FarmacoTerapiaDAOImpl;
 import it.univr.diabete.model.FarmacoTerapia;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,6 +105,8 @@ public class PatientDashboardController {
     private final ObservableList<Sintomo> todaySymptoms =
             FXCollections.observableArrayList();
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private boolean isSameDay(LocalDateTime dt, LocalDate day) {
         return dt != null && dt.toLocalDate().isEqual(day);
@@ -114,8 +117,8 @@ public class PatientDashboardController {
         // --- colonne tabella ---
         colMeasDate.setCellValueFactory(cell -> {
             Glicemia g = cell.getValue();
-            LocalDateTime dt = g.getDateStamp();  // <-- se nel model hai getDateStamp(), cambia qui
-            String text = (dt != null) ? dt.toString() : "";
+            LocalDateTime dt = g.getDateStamp();
+            String text = (dt != null) ? DATE_TIME_FORMATTER.format(dt) : "";
             return new SimpleStringProperty(text);
         });
 

@@ -193,7 +193,7 @@ public class PatientReportController {
         } else {
             LocalDate start = filtered.get(0).getDateStamp().toLocalDate();
             LocalDate end   = filtered.get(filtered.size() - 1).getDateStamp().toLocalDate();
-            periodLabel.setText("Periodo: " + start + " - " + end);
+            periodLabel.setText("Periodo: " + start.format(periodFormatter) + " - " + end.format(periodFormatter));
         }
 
         updateKpi(filtered);
@@ -343,9 +343,9 @@ public class PatientReportController {
         }
 
         if (fine != null) {
-            therapyPeriodLabel.setText("dal " + inizio + " al " + fine);
+            therapyPeriodLabel.setText("dal " + inizio.format(periodFormatter) + " al " + fine.format(periodFormatter));
         } else if (inizio != null) {
-            therapyPeriodLabel.setText("dal " + inizio);
+            therapyPeriodLabel.setText("dal " + inizio.format(periodFormatter));
         } else {
             therapyPeriodLabel.setText("—");
         }
@@ -452,7 +452,7 @@ public class PatientReportController {
             }
             String text = s.getDescrizione() + " (intensita " + s.getIntensita() + ")";
             if (s.getDateStamp() != null) {
-                text += " — " + symptomFormatter.format(s.getDateStamp());
+                text += ", " + symptomFormatter.format(s.getDateStamp());
             }
             if (s.getNoteAggiuntive() != null && !s.getNoteAggiuntive().isBlank()) {
                 text += "\n" + s.getNoteAggiuntive();

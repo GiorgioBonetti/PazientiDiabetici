@@ -68,7 +68,7 @@ public class PatientMeasurementsController {
     private String codiceFiscale;
 
     private final DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("dd/MM HH:mm");
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final ObservableList<Glicemia> allMeasurements =
             FXCollections.observableArrayList();
