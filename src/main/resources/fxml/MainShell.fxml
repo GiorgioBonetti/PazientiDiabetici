@@ -30,7 +30,10 @@
                 </VBox>
 
                 <!-- Notifiche -->
-                <Button fx:id="notificationsButton" styleClass="icon-button" text="🔔" />
+                <StackPane>
+                    <Button fx:id="notificationsButton" onAction="#handleNotificationsClick" styleClass="icon-button" text="🔔" />
+                    <Label fx:id="notificationsBadgeLabel" styleClass="notification-badge" text="0" StackPane.alignment="TOP_RIGHT" />
+                </StackPane>
 
                 <!-- Utente -->
                 <HBox alignment="CENTER" spacing="8" styleClass="user-chip">

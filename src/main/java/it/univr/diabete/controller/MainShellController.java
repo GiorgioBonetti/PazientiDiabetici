@@ -3,13 +3,25 @@ package it.univr.diabete.controller;
 import it.univr.diabete.MainApp;
 import it.univr.diabete.dao.PazienteDAO;
 import it.univr.diabete.dao.impl.PazienteDAOImpl;
+import it.univr.diabete.model.Notification;
 import it.univr.diabete.model.Paziente;
+import it.univr.diabete.service.NotificationService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
+import javafx.geometry.Side;
+import javafx.geometry.Bounds;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.animation.FadeTransition;
@@ -18,6 +30,8 @@ import javafx.animation.SequentialTransition;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class MainShellController {
 
@@ -26,6 +40,8 @@ public class MainShellController {
     private SequentialTransition alertAnimation;
 
     @FXML private Label userInitialsLabel;
+    @FXML private Label notificationsBadgeLabel;
+    @FXML private Button notificationsButton;
     // role labels removed from UI
 
     @FXML private Button dashboardButton;
@@ -52,11 +68,25 @@ public class MainShellController {
     private Button activeNavButton;
 
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
+    private final NotificationService notificationService = new NotificationService();
+
+    private ContextMenu notificationsMenu;
+
+    private static final DateTimeFormatter NOTIF_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM HH:mm");
 
     public String getRole() { return role; }
     public String getUserName() { return userName; }
     public String getCodiceFiscale() { return codiceFiscale; }
     public String getLoggedUserId() { return loggedUserId; }
+
+    @FXML
+    private void initialize() {
+        if (notificationsBadgeLabel != null) {
+            notificationsBadgeLabel.setVisible(false);
+            notificationsBadgeLabel.setManaged(false);
+        }
+    }
 
     // compatibilità
     public void setUserData(String role, String userName) {
@@ -84,6 +114,7 @@ public class MainShellController {
 
         configureSidebarForRole();
         loadDashboard();
+        refreshNotifications();
     }
 
     private void configureSidebarForRole() {
@@ -207,6 +238,7 @@ public class MainShellController {
 
             contentArea.getChildren().setAll(dashboard);
             setActiveNav(dashboardButton);
+            refreshNotifications();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -438,6 +470,198 @@ public class MainShellController {
 
     public StackPane getContentArea() {
         return contentArea;
+    }
+
+    @FXML
+    private void handleNotificationsClick() {
+        if (notificationsMenu != null && notificationsMenu.isShowing()) {
+            notificationsMenu.hide();
+            return;
+        }
+        refreshNotifications();
+        showNotificationsMenu();
+    }
+
+    public void refreshNotifications() {
+        if (role == null || loggedUserId == null) {
+            updateNotificationBadge(0);
+            return;
+        }
+        try {
+            int unread = notificationService.countUnread(role, loggedUserId);
+            updateNotificationBadge(unread);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateNotificationBadge(int count) {
+        if (notificationsBadgeLabel == null) {
+            return;
+        }
+        if (count <= 0) {
+            notificationsBadgeLabel.setVisible(false);
+            notificationsBadgeLabel.setManaged(false);
+            return;
+        }
+        notificationsBadgeLabel.setText(String.valueOf(count));
+        notificationsBadgeLabel.setVisible(true);
+        notificationsBadgeLabel.setManaged(true);
+    }
+
+    private void showNotificationsMenu() {
+        if (notificationsButton == null) {
+            return;
+        }
+        List<Notification> notifications;
+        try {
+            notifications = notificationService.fetchLatest(role, loggedUserId, 30);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        VBox panel = new VBox(10);
+        panel.getStyleClass().add("notification-panel");
+
+        Label title = new Label("Notifiche");
+        title.getStyleClass().add("notification-panel-title");
+        panel.getChildren().add(title);
+
+        VBox list = new VBox(8);
+        list.getStyleClass().add("notification-list");
+
+        if (notifications.isEmpty()) {
+            Label empty = new Label("Nessuna notifica recente.");
+            empty.getStyleClass().add("notification-empty");
+            list.getChildren().add(empty);
+        } else {
+            for (Notification n : notifications) {
+                list.getChildren().add(buildNotificationItem(n));
+            }
+        }
+
+        ScrollPane scroll = new ScrollPane(list);
+        scroll.setFitToWidth(true);
+        scroll.setPrefViewportHeight(320);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.getStyleClass().add("notification-scroll");
+
+        panel.getChildren().addAll(new Separator(), scroll);
+
+        CustomMenuItem panelItem = new CustomMenuItem(panel, false);
+        panelItem.setHideOnClick(false);
+
+        notificationsMenu = new ContextMenu();
+        notificationsMenu.setAutoHide(true);
+        notificationsMenu.getItems().setAll(panelItem);
+
+        Bounds bounds = notificationsButton.localToScreen(notificationsButton.getBoundsInLocal());
+        double panelWidth = 340;
+        double x = bounds.getMaxX() - panelWidth;
+        double y = bounds.getMaxY() + 6;
+        notificationsMenu.show(notificationsButton, x, y);
+    }
+
+    private VBox buildNotificationItem(Notification n) {
+        VBox root = new VBox(6);
+        root.getStyleClass().add("notification-item");
+        if (!n.isRead()) {
+            root.getStyleClass().add("notification-item-unread");
+        }
+
+        HBox header = new HBox(8);
+        Label title = new Label(n.getTitle() != null ? n.getTitle() : "Notifica");
+        title.getStyleClass().add("notification-title");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label severity = new Label(n.getSeverity() != null ? n.getSeverity() : "INFO");
+        severity.getStyleClass().add("notification-severity");
+        severity.getStyleClass().add("notification-severity-" + severity.getText().toLowerCase());
+
+        header.getChildren().addAll(title, spacer, severity);
+
+        Label body = new Label(n.getBody() != null ? n.getBody() : "");
+        body.setWrapText(true);
+        body.getStyleClass().add("notification-body");
+
+        String timeText = n.getCreatedAt() != null ? NOTIF_TIME_FORMATTER.format(n.getCreatedAt()) : "";
+        Label time = new Label(timeText);
+        time.getStyleClass().add("notification-time");
+
+        root.getChildren().addAll(header, body, time);
+
+        root.setOnMouseClicked(e -> {
+            try {
+                notificationService.markAsRead(n.getId());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            refreshNotifications();
+            if (notificationsMenu != null) {
+                notificationsMenu.hide();
+            }
+            handleNotificationAction(n);
+        });
+
+        return root;
+    }
+
+    private void handleNotificationAction(Notification n) {
+        if (n == null || n.getActionType() == null) {
+            return;
+        }
+        String action = n.getActionType();
+        String ref = n.getActionRefId();
+        try {
+            switch (action) {
+                case NotificationService.ACTION_OPEN_MEASUREMENTS -> {
+                    if ("Paziente".equalsIgnoreCase(role)) {
+                        handleMeasurementsNav();
+                    } else if (ref != null) {
+                        Paziente p = pazienteDAO.findById(ref);
+                        if (p != null) {
+                            openPatientMeasurements(p.getNome() + " " + p.getCognome(), p.getCodiceFiscale());
+                        }
+                    }
+                }
+                case NotificationService.ACTION_OPEN_THERAPY -> {
+                    if ("Paziente".equalsIgnoreCase(role)) {
+                        handleTherapyNav();
+                    } else if (ref != null) {
+                        Paziente p = pazienteDAO.findById(ref);
+                        if (p != null) {
+                            openPatientTherapy(p.getNome() + " " + p.getCognome(), p.getCodiceFiscale());
+                        }
+                    }
+                }
+                case NotificationService.ACTION_OPEN_PATIENT -> {
+                    if (ref != null) {
+                        Paziente p = pazienteDAO.findById(ref);
+                        if (p != null) {
+                            openPatientDetail(p);
+                        }
+                    }
+                }
+                case NotificationService.ACTION_OPEN_REPORT -> {
+                    if ("Paziente".equalsIgnoreCase(role)) {
+                        handleReportsNav();
+                    } else if (ref != null) {
+                        Paziente p = pazienteDAO.findById(ref);
+                        if (p != null) {
+                            openPatientReport(p.getNome() + " " + p.getCognome(), p.getCodiceFiscale());
+                        }
+                    }
+                }
+                case NotificationService.ACTION_OPEN_MESSAGES -> handleMessagesNav();
+                default -> {
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void showGlobalSuccess(String msg) {

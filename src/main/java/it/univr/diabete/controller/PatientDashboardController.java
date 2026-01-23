@@ -16,6 +16,7 @@ import it.univr.diabete.model.Glicemia;
 import it.univr.diabete.model.Paziente;
 import it.univr.diabete.model.Sintomo;
 import it.univr.diabete.model.Terapia;
+import it.univr.diabete.service.NotificationService;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -41,6 +42,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.scene.control.CheckBox;
 import java.time.LocalDate;
@@ -50,6 +52,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.application.Platform;
 public class PatientDashboardController {
 
     @FXML
@@ -97,6 +100,7 @@ public class PatientDashboardController {
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
     private final SintomoDAO sintomoDAO = new SintomoDAOImpl();
+    private final NotificationService notificationService = new NotificationService();
 
     // tutti i record scaricati dal DB per questo paziente
     private final ObservableList<Glicemia> allMeasurements =
@@ -160,9 +164,209 @@ public class PatientDashboardController {
     public void setPatientData(String fullName, String codiceFiscale) {
         this.codiceFiscale = codiceFiscale;
         patientNameLabel.setText(fullName);
-        refreshPatientName();
-        loadMeasurements();   // carica dal DB e applica filtro
-        loadTodaySymptoms();
+        loadDashboardData();
+        runNotificationsAsync();
+    }
+
+    private void loadDashboardData() {
+        if (codiceFiscale == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now();
+        LocalDate start = today.minusDays(30);
+        LocalDateTime startTs = start.atStartOfDay();
+        LocalDateTime endTs = today.plusDays(1).atStartOfDay().minusSeconds(1);
+
+        try (java.sql.Connection conn = it.univr.diabete.database.Database.getConnection()) {
+            // nome paziente
+            String sqlPatient = "SELECT nome, cognome FROM Paziente WHERE codiceFiscale = ?";
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(sqlPatient)) {
+                ps.setString(1, codiceFiscale);
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        patientNameLabel.setText(rs.getString("nome") + " " + rs.getString("cognome"));
+                    }
+                }
+            }
+
+            // glicemie ultimi 30 giorni
+            String sqlGlicemia = """
+                SELECT id, fkPaziente, valore, dateStamp, parteGiorno
+                FROM Glicemia
+                WHERE fkPaziente = ? AND dateStamp BETWEEN ? AND ?
+                ORDER BY dateStamp
+                """;
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(sqlGlicemia)) {
+                ps.setString(1, codiceFiscale);
+                ps.setTimestamp(2, java.sql.Timestamp.valueOf(startTs));
+                ps.setTimestamp(3, java.sql.Timestamp.valueOf(endTs));
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    List<Glicemia> list = new java.util.ArrayList<>();
+                    while (rs.next()) {
+                        Glicemia g = new Glicemia();
+                        g.setId(rs.getInt("id"));
+                        g.setFkPaziente(rs.getString("fkPaziente"));
+                        g.setValore(rs.getInt("valore"));
+                        g.setParteGiorno(rs.getString("parteGiorno"));
+                        java.sql.Timestamp ts = rs.getTimestamp("dateStamp");
+                        if (ts != null) {
+                            g.setDateStamp(ts.toLocalDateTime());
+                        }
+                        list.add(g);
+                    }
+                    allMeasurements.setAll(list);
+                    applyFilterAndRefresh();
+                    updateTodayGlycemiaTasks();
+                }
+            }
+
+            // sintomi oggi
+            String sqlSintomi = """
+                SELECT id, descrizione, dataInizio, dataFine, `intensità`, frequenza,
+                       noteAggiuntive, fkPaziente, datestamp
+                FROM Sintomo
+                WHERE fkPaziente = ? AND DATE(datestamp) = ?
+                ORDER BY datestamp DESC
+                """;
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(sqlSintomi)) {
+                ps.setString(1, codiceFiscale);
+                ps.setDate(2, java.sql.Date.valueOf(today));
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    List<Sintomo> list = new java.util.ArrayList<>();
+                    while (rs.next()) {
+                        Sintomo s = new Sintomo();
+                        s.setId(rs.getInt("id"));
+                        s.setDescrizione(rs.getString("descrizione"));
+                        java.sql.Date di = rs.getDate("dataInizio");
+                        if (di != null) {
+                            s.setDataInizio(di.toLocalDate());
+                        }
+                        java.sql.Date df = rs.getDate("dataFine");
+                        if (df != null) {
+                            s.setDataFine(df.toLocalDate());
+                        }
+                        s.setIntensita(rs.getInt("intensità"));
+                        s.setFrequenza(rs.getString("frequenza"));
+                        s.setNoteAggiuntive(rs.getString("noteAggiuntive"));
+                        s.setFkPaziente(rs.getString("fkPaziente"));
+                        java.sql.Timestamp ts = rs.getTimestamp("datestamp");
+                        if (ts != null) {
+                            s.setDateStamp(ts.toLocalDateTime());
+                        }
+                        list.add(s);
+                    }
+                    todaySymptoms.setAll(list);
+                }
+            }
+
+            // stato terapia oggi (una terapia principale)
+            String sqlTerapia = """
+                SELECT id
+                FROM Terapia
+                WHERE fkPaziente = ?
+                ORDER BY dataInizio DESC
+                LIMIT 1
+                """;
+            Integer terapiaId = null;
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(sqlTerapia)) {
+                ps.setString(1, codiceFiscale);
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        terapiaId = rs.getInt("id");
+                    }
+                }
+            }
+
+            if (terapiaId == null) {
+                chkTerapiaAssunta.setSelected(false);
+                chkTerapiaAssunta.setDisable(true);
+                return;
+            }
+
+            String sqlFarmaci = """
+                SELECT fkFarmaco, assunzioniGiornaliere, quantita
+                FROM FarmacoTerapia
+                WHERE fkTerapia = ?
+                """;
+            List<FarmacoTerapia> farmaci = new java.util.ArrayList<>();
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(sqlFarmaci)) {
+                ps.setInt(1, terapiaId);
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        FarmacoTerapia tf = new FarmacoTerapia();
+                        tf.setFkTerapia(terapiaId);
+                        tf.setFkFarmaco(rs.getInt("fkFarmaco"));
+                        tf.setAssunzioniGiornaliere(rs.getInt("assunzioniGiornaliere"));
+                        tf.setQuantita(rs.getInt("quantita"));
+                        farmaci.add(tf);
+                    }
+                }
+            }
+
+            if (farmaci.isEmpty()) {
+                chkTerapiaAssunta.setSelected(false);
+                chkTerapiaAssunta.setDisable(true);
+                return;
+            }
+
+            String sqlAssunzioni = """
+                SELECT fkFarmaco, SUM(quantitaAssunta) AS qty
+                FROM Assunzione
+                WHERE fkPaziente = ? AND fkTerapia = ? AND dateStamp BETWEEN ? AND ?
+                GROUP BY fkFarmaco
+                """;
+            Map<Integer, Integer> qtyByFarmaco = new java.util.HashMap<>();
+            try (java.sql.PreparedStatement ps = conn.prepareStatement(sqlAssunzioni)) {
+                ps.setString(1, codiceFiscale);
+                ps.setInt(2, terapiaId);
+                ps.setTimestamp(3, java.sql.Timestamp.valueOf(today.atStartOfDay()));
+                ps.setTimestamp(4, java.sql.Timestamp.valueOf(today.plusDays(1).atStartOfDay().minusSeconds(1)));
+                try (java.sql.ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        qtyByFarmaco.put(rs.getInt("fkFarmaco"), rs.getInt("qty"));
+                    }
+                }
+            }
+
+            int targetDoses = farmaci.stream()
+                    .mapToInt(FarmacoTerapia::getAssunzioniGiornaliere)
+                    .sum();
+            int takenDoses = 0;
+            for (FarmacoTerapia tf : farmaci) {
+                int perDose = tf.getQuantita();
+                if (perDose <= 0) {
+                    continue;
+                }
+                int qty = qtyByFarmaco.getOrDefault(tf.getFkFarmaco(), 0);
+                takenDoses += (qty / perDose);
+            }
+            chkTerapiaAssunta.setDisable(false);
+            chkTerapiaAssunta.setSelected(takenDoses >= targetDoses);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void runNotificationsAsync() {
+        if (codiceFiscale == null) {
+            return;
+        }
+        Thread t = new Thread(() -> {
+            try {
+                notificationService.generatePatientDashboardNotifications(codiceFiscale);
+                Platform.runLater(() -> {
+                    MainShellController shell = MainApp.getMainShellController();
+                    if (shell != null) {
+                        shell.refreshNotifications();
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        t.setDaemon(true);
+        t.start();
     }
 
     private void refreshPatientName() {
@@ -186,7 +390,9 @@ public class PatientDashboardController {
         if (codiceFiscale == null) return;
 
         try {
-            List<Glicemia> lista = glicemiaDAO.findByPazienteId(codiceFiscale);
+            LocalDate end = LocalDate.now();
+            LocalDate start = end.minusDays(30);
+            List<Glicemia> lista = glicemiaDAO.findByPazienteIdAndDateRange(codiceFiscale, start, end);
             allMeasurements.setAll(lista);
             applyFilterAndRefresh();
             updateTodayTasks();
@@ -361,27 +567,29 @@ public class PatientDashboardController {
 
             LocalDate today = LocalDate.now();
 
-            // 4) Target giornaliero atteso: somma di (quantità per assunzione * assunzioni/giorno) per ogni farmaco
+            // 4) Target giornaliero atteso: assunzioni/giorno per ogni farmaco
             int targetGiornalieroTotale = farmaci.stream()
-                    .mapToInt(tf -> tf.getQuantita() * tf.getAssunzioniGiornaliere())
+                    .mapToInt(FarmacoTerapia::getAssunzioniGiornaliere)
                     .sum();
 
-            // 5) Quantità effettivamente assunta oggi su tutti i farmaci
-            int quantitaAssuntaOggiTotale = 0;
-
+            // 5) Assunzioni odierne aggregate in un'unica query
+            List<Assunzione> assunzioniOggi =
+                    assunzioneDAO.findByPazienteAndDateRange(codiceFiscale, today, today);
+            int dosiAssunteOggiTotale = 0;
             for (FarmacoTerapia tf : farmaci) {
-                List<Assunzione> assunzioni =
-                        assunzioneDAO.findByPazienteAndTerapiaAndFarmaco(codiceFiscale, tf.getFkFarmaco(), terapiaCorrente.getId());
-
-                int qFarmacoOggi = assunzioni.stream()
-                        .filter(a -> isSameDay(a.getDateStamp(), today))
+                int quantitaPerDose = tf.getQuantita();
+                if (quantitaPerDose <= 0) {
+                    continue;
+                }
+                int qFarmacoOggi = assunzioniOggi.stream()
+                        .filter(a -> a.getFkTerapia() == terapiaCorrente.getId()
+                                && a.getFkFarmaco() == tf.getFkFarmaco())
                         .mapToInt(Assunzione::getQuantitaAssunta)
                         .sum();
-
-                quantitaAssuntaOggiTotale += qFarmacoOggi;
+                dosiAssunteOggiTotale += (qFarmacoOggi / quantitaPerDose);
             }
 
-            boolean terapiaCompletaOggi = quantitaAssuntaOggiTotale >= targetGiornalieroTotale;
+            boolean terapiaCompletaOggi = dosiAssunteOggiTotale >= targetGiornalieroTotale;
 
             chkTerapiaAssunta.setDisable(false);
             chkTerapiaAssunta.setSelected(terapiaCompletaOggi);
@@ -464,4 +672,5 @@ public class PatientDashboardController {
             e.printStackTrace();
         }
     }
+
 }

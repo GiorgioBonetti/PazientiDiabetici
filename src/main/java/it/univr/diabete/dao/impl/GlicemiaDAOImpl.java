@@ -62,6 +62,78 @@ public class GlicemiaDAOImpl implements GlicemiaDAO {
             return result;
         }
     }
+
+    @Override
+    public List<Glicemia> findByPazienteIdAndDate(String codiceFiscale, java.time.LocalDate day) throws Exception {
+        String sql = """
+            SELECT * FROM Glicemia
+            WHERE fkPaziente = ? AND dateStamp BETWEEN ? AND ?
+            ORDER BY dateStamp
+            """;
+        java.time.LocalDateTime start = day.atStartOfDay();
+        java.time.LocalDateTime end = day.plusDays(1).atStartOfDay().minusSeconds(1);
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, codiceFiscale);
+            ps.setTimestamp(2, Timestamp.valueOf(start));
+            ps.setTimestamp(3, Timestamp.valueOf(end));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Glicemia> list = new ArrayList<>();
+                while (rs.next()) {
+                    Glicemia g = new Glicemia();
+                    g.setId(rs.getInt("id"));
+                    g.setFkPaziente(rs.getString("fkPaziente"));
+                    g.setValore(rs.getInt("valore"));
+                    g.setParteGiorno(rs.getString("parteGiorno"));
+                    Timestamp ts = rs.getTimestamp("dateStamp");
+                    if (ts != null) {
+                        g.setDateStamp(ts.toLocalDateTime());
+                    }
+                    list.add(g);
+                }
+                return list;
+            }
+        }
+    }
+
+    @Override
+    public List<Glicemia> findByPazienteIdAndDateRange(String codiceFiscale, java.time.LocalDate start, java.time.LocalDate end) throws Exception {
+        String sql = """
+            SELECT * FROM Glicemia
+            WHERE fkPaziente = ? AND dateStamp BETWEEN ? AND ?
+            ORDER BY dateStamp
+            """;
+        java.time.LocalDateTime startTs = start.atStartOfDay();
+        java.time.LocalDateTime endTs = end.plusDays(1).atStartOfDay().minusSeconds(1);
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, codiceFiscale);
+            ps.setTimestamp(2, Timestamp.valueOf(startTs));
+            ps.setTimestamp(3, Timestamp.valueOf(endTs));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Glicemia> list = new ArrayList<>();
+                while (rs.next()) {
+                    Glicemia g = new Glicemia();
+                    g.setId(rs.getInt("id"));
+                    g.setFkPaziente(rs.getString("fkPaziente"));
+                    g.setValore(rs.getInt("valore"));
+                    g.setParteGiorno(rs.getString("parteGiorno"));
+                    Timestamp ts = rs.getTimestamp("dateStamp");
+                    if (ts != null) {
+                        g.setDateStamp(ts.toLocalDateTime());
+                    }
+                    list.add(g);
+                }
+                return list;
+            }
+        }
+    }
     @Override
     public void insert(Glicemia g) throws Exception {
 

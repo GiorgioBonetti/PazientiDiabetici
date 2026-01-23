@@ -10,6 +10,10 @@ public interface GlicemiaDAO {
     // ⭐ AGGIUNGERE QUESTO:
     List<Glicemia> findAll() throws Exception;
 
+    List<Glicemia> findByPazienteIdAndDate(String codiceFiscale, java.time.LocalDate day) throws Exception;
+
+    List<Glicemia> findByPazienteIdAndDateRange(String codiceFiscale, java.time.LocalDate start, java.time.LocalDate end) throws Exception;
+
     void insert(Glicemia g) throws Exception;
 
     void update(Glicemia g) throws Exception;

@@ -1,13 +1,16 @@
 package it.univr.diabete.controller;
 
+import it.univr.diabete.MainApp;
 import it.univr.diabete.dao.GlicemiaDAO;
 import it.univr.diabete.dao.impl.GlicemiaDAOImpl;
 import it.univr.diabete.model.Glicemia;
+import it.univr.diabete.service.NotificationService;
 import it.univr.diabete.ui.ErrorDialog;  // ← IMPORT Aggiunto
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.application.Platform;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +23,7 @@ public class AddGlicemiaController {
     private Runnable callbackRicarica;
 
     private final GlicemiaDAO glicemiaDAO = new GlicemiaDAOImpl();
+    private final NotificationService notificationService = new NotificationService();
 
     @FXML
     private void initialize() {
@@ -77,6 +81,21 @@ public class AddGlicemiaController {
             g.setDateStamp(LocalDateTime.now());
 
             glicemiaDAO.insert(g);
+            Thread t = new Thread(() -> {
+                try {
+                    notificationService.onGlucoseRecorded(g);
+                    Platform.runLater(() -> {
+                        MainShellController shell = MainApp.getMainShellController();
+                        if (shell != null) {
+                            shell.refreshNotifications();
+                        }
+                    });
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            t.setDaemon(true);
+            t.start();
 
             if (callbackRicarica != null) {
                 callbackRicarica.run();

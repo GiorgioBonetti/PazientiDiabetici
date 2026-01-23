@@ -109,11 +109,143 @@
 
 .icon-button:focused {
     -fx-background-radius: 50;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 0);
+    -fx-effect: none;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-insets: 0;
 }
 
 .icon-button:hover {
     -fx-background-color: #f3f4f6;
+}
+
+/* ====== NOTIFICATIONS ====== */
+
+.notification-badge {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-font-size: 9px;
+    -fx-font-weight: 700;
+    -fx-padding: 2 6 2 6;
+    -fx-background-radius: 999;
+    -fx-translate-x: 6;
+    -fx-translate-y: -6;
+}
+
+.notification-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 12;
+    -fx-pref-width: 340;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.12), 16, 0.2, 0, 4);
+}
+
+.notification-panel-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.notification-list {
+    -fx-padding: 2 0 0 0;
+}
+
+.notification-scroll {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.notification-scroll .viewport {
+    -fx-background-color: transparent;
+}
+
+.notification-item {
+    -fx-background-color: #f9fafb;
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+    -fx-border-color: #e5e7eb;
+    -fx-border-radius: 12;
+    -fx-cursor: hand;
+}
+
+.notification-item:hover {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #c7d2fe;
+    -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.18), 10, 0.25, 0, 2);
+}
+
+.notification-item-unread {
+    -fx-background-color: #eef2ff;
+    -fx-border-color: #c7d2fe;
+}
+
+.notification-title {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.notification-body {
+    -fx-font-size: 11px;
+    -fx-text-fill: #4b5563;
+}
+
+.notification-time {
+    -fx-font-size: 10px;
+    -fx-text-fill: #9ca3af;
+}
+
+.context-menu {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+
+.context-menu .menu-item,
+.context-menu .menu-item:focused,
+.context-menu .custom-menu-item,
+.context-menu .custom-menu-item:focused {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.notification-scroll:focused,
+.notification-scroll .viewport:focused {
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.notification-severity {
+    -fx-font-size: 9px;
+    -fx-font-weight: 700;
+    -fx-padding: 2 6 2 6;
+    -fx-background-radius: 999;
+    -fx-text-fill: white;
+}
+
+.notification-severity-info {
+    -fx-background-color: #3b82f6;
+}
+
+.notification-severity-warning {
+    -fx-background-color: #f59e0b;
+}
+
+.notification-severity-critical {
+    -fx-background-color: #ef4444;
+}
+
+.notification-empty {
+    -fx-font-size: 11px;
+    -fx-text-fill: #9ca3af;
+    -fx-padding: 8 0 8 0;
 }
 
 /* ====== SIDEBAR ====== */

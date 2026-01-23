@@ -30,4 +30,9 @@ public interface AssunzioneDAO {
      * Elimina una assunzione.
      */
     void delete(int id) throws Exception;
+
+    /**
+     * Restituisce tutte le assunzioni di un paziente in un intervallo di date (inclusivo).
+     */
+    List<Assunzione> findByPazienteAndDateRange(String pazienteId, java.time.LocalDate start, java.time.LocalDate end) throws Exception;
 }

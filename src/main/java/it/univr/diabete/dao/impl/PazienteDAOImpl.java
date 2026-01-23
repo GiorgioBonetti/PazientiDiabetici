@@ -99,6 +99,45 @@ public class PazienteDAOImpl implements PazienteDAO {
             return result;
         }
     }
+
+    @Override
+    public List<Paziente> findByDiabetologo(String diabetologoId) throws Exception {
+        String sql = """
+        SELECT nome, cognome, email, numeroTelefono, dataNascita, sesso, codiceFiscale, password, fkDiabetologo
+        FROM Paziente
+        WHERE fkDiabetologo = ?
+        ORDER BY codiceFiscale DESC
+        """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, diabetologoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Paziente> result = new ArrayList<>();
+                while (rs.next()) {
+                    Paziente p = new Paziente();
+                    p.setNome(rs.getString("nome"));
+                    p.setCognome(rs.getString("cognome"));
+                    p.setEmail(rs.getString("email"));
+                    p.setNumeroTelefono(rs.getString("numeroTelefono"));
+
+                    Date dob = rs.getDate("dataNascita");
+                    if (dob != null) {
+                        p.setDataNascita(dob.toLocalDate());
+                    }
+
+                    p.setSesso(rs.getString("sesso"));
+                    p.setCodiceFiscale(rs.getString("codiceFiscale"));
+                    p.setPassword(rs.getString("password"));
+                    p.setFkDiabetologo(rs.getString("fkDiabetologo"));
+
+                    result.add(p);
+                }
+                return result;
+            }
+        }
+    }
     @Override
     public Paziente findById(String id) throws Exception {
         String sql = """

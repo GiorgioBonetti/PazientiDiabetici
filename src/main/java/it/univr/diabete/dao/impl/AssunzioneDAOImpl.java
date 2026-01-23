@@ -104,4 +104,44 @@ public class AssunzioneDAOImpl implements AssunzioneDAO {
             ps.executeUpdate();
         }
     }
+
+    @Override
+    public List<Assunzione> findByPazienteAndDateRange(String pazienteId, java.time.LocalDate start, java.time.LocalDate end) throws Exception {
+        String sql = """
+            SELECT id, fkPaziente, fkFarmaco, fkTerapia, dateStamp, quantitaAssunta
+            FROM Assunzione
+            WHERE fkPaziente = ? AND dateStamp BETWEEN ? AND ?
+            ORDER BY dateStamp DESC
+            """;
+        java.time.LocalDateTime startTs = start.atStartOfDay();
+        java.time.LocalDateTime endTs = end.plusDays(1).atStartOfDay().minusSeconds(1);
+
+        List<Assunzione> result = new ArrayList<>();
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, pazienteId);
+            ps.setTimestamp(2, Timestamp.valueOf(startTs));
+            ps.setTimestamp(3, Timestamp.valueOf(endTs));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Assunzione a = new Assunzione();
+                    a.setId(rs.getInt("id"));
+                    a.setFkPaziente(rs.getString("fkPaziente"));
+                    a.setFkTerapia(rs.getInt("fkTerapia"));
+                    a.setFkFarmaco(rs.getInt("fkFarmaco"));
+                    Timestamp ts = rs.getTimestamp("dateStamp");
+                    if (ts != null) {
+                        a.setDateStamp(ts.toLocalDateTime());
+                    }
+                    a.setQuantitaAssunta(rs.getInt("quantitaAssunta"));
+                    result.add(a);
+                }
+            }
+        }
+
+        return result;
+    }
 }

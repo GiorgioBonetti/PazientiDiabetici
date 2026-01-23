@@ -140,6 +140,27 @@ public class MessageDAOImpl implements MessageDAO {
     }
 
     @Override
+    public Map<String, Integer> getUnreadByDiabetologist(String patientId) throws Exception {
+        String sql = """
+            SELECT fkDiabetologo, COUNT(*) AS cnt
+            FROM Messaggi
+            WHERE fkPaziente = ? AND mittente = 'DIABETOLOGO' AND letto = 0
+            GROUP BY fkDiabetologo
+            """;
+        Map<String, Integer> result = new HashMap<>();
+        try (Connection conn = Database.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, patientId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.put(rs.getString("fkDiabetologo"), rs.getInt("cnt"));
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
     public void markAsRead(String patientId, String diabetologistId, String recipientRole) throws Exception {
         String senderRoleToMark = "PAZIENTE";
         if ("PAZIENTE".equalsIgnoreCase(recipientRole)) {

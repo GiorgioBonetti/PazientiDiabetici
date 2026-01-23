@@ -7,6 +7,7 @@ import it.univr.diabete.dao.impl.MessageDAOImpl;
 import it.univr.diabete.dao.impl.PazienteDAOImpl;
 import it.univr.diabete.database.Database;
 import it.univr.diabete.model.Paziente;
+import it.univr.diabete.service.NotificationService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -16,6 +17,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.application.Platform;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -62,6 +64,7 @@ public class DoctorDashboardController {
 
     private final PazienteDAO pazienteDAO = new PazienteDAOImpl();
     private final MessageDAO messageDAO = new MessageDAOImpl();
+    private final NotificationService notificationService = new NotificationService();
 
     private final ObservableList<Paziente> allPatients = FXCollections.observableArrayList();
     private FilteredList<Paziente> filteredPatients;
@@ -86,10 +89,40 @@ public class DoctorDashboardController {
     }
 
     private void reloadDashboard() {
-        loadKpis();
-        loadAlerts();
-        loadInactivePatients();
-        loadPatientsList();
+        try (Connection conn = Database.getConnection()) {
+            loadKpis(conn);
+
+            loadAlerts(conn);
+
+            loadInactivePatients(conn);
+
+            loadPatientsList(conn);
+
+            runNotificationsAsync();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void runNotificationsAsync() {
+        if (idDiabetologoLoggato == null || idDiabetologoLoggato.isBlank()) {
+            return;
+        }
+        Thread t = new Thread(() -> {
+            try {
+                notificationService.generateDoctorDashboardNotifications(idDiabetologoLoggato);
+                Platform.runLater(() -> {
+                    MainShellController shell = MainApp.getMainShellController();
+                    if (shell != null) {
+                        shell.refreshNotifications();
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        t.setDaemon(true);
+        t.start();
     }
 
     private void setupPatientsList() {
@@ -107,22 +140,50 @@ public class DoctorDashboardController {
                 return fullName.contains(q) || email.contains(q) || idStr.contains(q);
             });
         });
-        loadPatientsList();
+        try (Connection conn = Database.getConnection()) {
+            loadPatientsList(conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void loadPatientsList() {
+
+    private void loadPatientsList(Connection conn) {
         String doctorId = getDoctorId();
         if (doctorId == null) {
             allPatients.clear();
             return;
         }
         try {
-            List<Paziente> lista = pazienteDAO.findAll();
-            List<Paziente> filtered = lista.stream()
-                    .filter(p -> p.getFkDiabetologo() != null
-                            && p.getFkDiabetologo().equalsIgnoreCase(doctorId))
-                    .toList();
-            allPatients.setAll(filtered);
+            String sql = """
+                SELECT nome, cognome, email, numeroTelefono, dataNascita, sesso, codiceFiscale, password, fkDiabetologo
+                FROM Paziente
+                WHERE fkDiabetologo = ?
+                ORDER BY codiceFiscale DESC
+                """;
+            List<Paziente> result = new ArrayList<>();
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, doctorId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Paziente p = new Paziente();
+                        p.setNome(rs.getString("nome"));
+                        p.setCognome(rs.getString("cognome"));
+                        p.setEmail(rs.getString("email"));
+                        p.setNumeroTelefono(rs.getString("numeroTelefono"));
+                        java.sql.Date dob = rs.getDate("dataNascita");
+                        if (dob != null) {
+                            p.setDataNascita(dob.toLocalDate());
+                        }
+                        p.setSesso(rs.getString("sesso"));
+                        p.setCodiceFiscale(rs.getString("codiceFiscale"));
+                        p.setPassword(rs.getString("password"));
+                        p.setFkDiabetologo(rs.getString("fkDiabetologo"));
+                        result.add(p);
+                    }
+                }
+            }
+            allPatients.setAll(result);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -230,27 +291,45 @@ public class DoctorDashboardController {
         }
     }
 
-    private void loadKpis() {
+    private void loadKpis(Connection conn) {
         String doctorId = getDoctorId();
         if (doctorId == null) {
             return;
         }
-        try (Connection conn = Database.getConnection()) {
-            totalPatientsLabel.setText(String.valueOf(countPatients(conn, doctorId)));
-            todayVisitsLabel.setText(String.valueOf(countMeasurementsToday(conn, doctorId)));
-            unreadMessagesLabel.setText(String.valueOf(messageDAO.countUnreadForDiabetologist(doctorId)));
+        String sql = """
+            SELECT
+                (SELECT COUNT(*) FROM Paziente WHERE fkDiabetologo = ?) AS totalPatients,
+                (SELECT COUNT(*)
+                 FROM Glicemia g
+                 JOIN Paziente p ON p.codiceFiscale = g.fkPaziente
+                 WHERE p.fkDiabetologo = ? AND DATE(g.dateStamp) = CURDATE()) AS todayMeasurements,
+                (SELECT COUNT(*)
+                 FROM Messaggi
+                 WHERE fkDiabetologo = ? AND mittente = 'PAZIENTE' AND letto = 0) AS unreadMessages
+            """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, doctorId);
+            ps.setString(2, doctorId);
+            ps.setString(3, doctorId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    totalPatientsLabel.setText(String.valueOf(rs.getInt("totalPatients")));
+                    todayVisitsLabel.setText(String.valueOf(rs.getInt("todayMeasurements")));
+                    unreadMessagesLabel.setText(String.valueOf(rs.getInt("unreadMessages")));
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void loadAlerts() {
+    private void loadAlerts(Connection conn) {
         String doctorId = getDoctorId();
         if (doctorId == null) {
             return;
         }
         List<AlertRow> rows = new ArrayList<>();
-        try (Connection conn = Database.getConnection()) {
+        try {
             DateRange range = getSelectedRange();
             rows.addAll(loadGlycemicAlerts(conn, doctorId, range));
         } catch (Exception e) {
@@ -267,7 +346,7 @@ public class DoctorDashboardController {
         }
     }
 
-    private void loadInactivePatients() {
+    private void loadInactivePatients(Connection conn) {
         String doctorId = getDoctorId();
         if (doctorId == null) {
             return;
@@ -286,8 +365,7 @@ public class DoctorDashboardController {
             GROUP BY p.codiceFiscale, p.nome, p.cognome
             HAVING lastDate IS NULL OR DATEDIFF(CURDATE(), DATE(lastDate)) >= ?
             """;
-        try (Connection conn = Database.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, doctorId);
             ps.setInt(2, INACTIVITY_DAYS);
             try (ResultSet rs = ps.executeQuery()) {
@@ -407,7 +485,13 @@ public class DoctorDashboardController {
                 "Oggi", "Ultimi 3 giorni", "Ultimi 7 giorni", "Ultimi 30 giorni", "Tutto"
         ));
         alertsFilter.getSelectionModel().select("Oggi");
-        alertsFilter.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> loadAlerts());
+        alertsFilter.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
+            try (Connection conn = Database.getConnection()) {
+                loadAlerts(conn);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private DateRange getSelectedRange() {

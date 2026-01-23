@@ -15,5 +15,7 @@ public interface MessageDAO {
 
     Map<String, Integer> getUnreadByPatient(String diabetologistId) throws Exception;
 
+    Map<String, Integer> getUnreadByDiabetologist(String patientId) throws Exception;
+
     void markAsRead(String patientId, String diabetologistId, String recipientRole) throws Exception;
 }
